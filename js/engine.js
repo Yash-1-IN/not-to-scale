@@ -198,7 +198,7 @@ const Book = (() => {
 
   // ---------- Page turns ----------
   function turnPage(index) {
-    if (busy || index < 0 || index >= pages.length || index === pageIndex) return;
+    if (busy || !started || index < 0 || index >= pages.length || index === pageIndex) return;
     busy = true;
     clearAttention();
     stopHints();

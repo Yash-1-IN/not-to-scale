@@ -13,3 +13,6 @@
 | Isotopes | Tritium is radioactive (slowly decays) | Half-life ~12.3 years |
 | Isotopes | Isotopes of an element have the same chemical properties but different masses (neutrons have no charge) | IB Chemistry S1.2 |
 | Isotopes | Nuclei are hugely oversized in the picture; electrons don't really orbit | Nucleus ~1e-15 m vs atom ~1e-10 m; quantum model (see hydrogen page) |
+| Shells | Electron arrangements: H 1, He 2, Li 2,1, Be 2,2, B 2,3, C 2,4, N 2,5, O 2,6, F 2,7, Ne 2,8, Na 2,8,1 | Standard electron configurations; IB Chemistry S1.3 |
+| Shells | The first shell holds a maximum of 2 electrons, the second a maximum of 8 | Shell capacity 2n^2 (n=1, 2); IB Chemistry S1.3 |
+| Shells | Shells are energy levels; electrons are spread out in cloud-like regions, not on neat rings | Quantum mechanical model of the atom; IB Chemistry S1.3 |

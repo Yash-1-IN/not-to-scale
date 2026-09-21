@@ -130,6 +130,7 @@ body {
 .hit:focus { outline: none; }
 .hit:focus-visible { stroke: var(--frame); stroke-width: 3; stroke-dasharray: 8 8; }
 .nucleon-label { font: 500 15px "Fredoka", sans-serif; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.nuc-sym { font: 500 22px "Fredoka", sans-serif; fill: #fff; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .atom-name { font: 500 26px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; }
 .atom-sub { font: italic 400 18px "Nunito", sans-serif; fill: var(--ink); text-anchor: middle; }
 .cloud-dot { fill: var(--electron); }

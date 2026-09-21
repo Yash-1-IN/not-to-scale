@@ -68,3 +68,13 @@
   hydrogen page; all three isotope zooms and back. Camera is translate(0 0) scale(1) every time.
 - Testing note: the browser preview throttles animation; set gsap.ticker.lagSmoothing(0) to test in real time.
 - Builder's feedback on the isotopes page: keeps grey neutrons, p/n letters, "the common one".
+
+## Phase 5 — Page 3: Electron shells
+- Tap the atom to add a proton and an electron, hydrogen to sodium. Electrons fly in and the shell's electrons
+  spread out evenly; the nucleus label and the electron arrangement (e.g. 2,8,1) update. Back removes the
+  last electron (from hydrogen, Back turns to the previous page).
+- Final tap: the neat rings dissolve into fuzzy clouds, with the caption that shells are a simplification.
+- Electrons are drawn by a small per-frame loop (shells drift slowly; still under reduced motion).
+- Engine: page turns are ignored until the book has opened (found by testing).
+- Checked in a real-time run through hydrogen to sodium, the reveal, and Back twice: arrangements correct
+  (2,2 for Be; 2,8 for Ne; 2,8,1 for Na), electron counts match, no console errors.
