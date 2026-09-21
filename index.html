@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Website stuff</title>
+  <script>document.documentElement.className = "js";</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500&family=Nunito:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-style="flat">
+
+  <div class="frame" aria-hidden="true"></div>
+
+  <button class="style-toggle" id="styleToggle" type="button" aria-pressed="false">
+    Style: <span id="styleName">Flat</span>
+  </button>
+
+  <main class="page">
+    <h1 class="title fade" id="title">Website stuff</h1>
+
+    <div class="rule" aria-hidden="true">
+      <span class="cap cap-left"></span>
+      <span class="line"></span>
+      <span class="cap cap-right"></span>
+    </div>
+
+    <p class="caption fade" id="caption">This is a hydrogen atom, not to scale of course</p>
+
+    <svg class="scene" id="scene" viewBox="0 0 1000 480" role="img"
+         aria-labelledby="sceneTitle sceneDesc">
+      <title id="sceneTitle">A hydrogen atom</title>
+      <desc id="sceneDesc">A large red circle, the proton, with a much smaller blue dot, the electron, circling slowly around it.</desc>
+
+      <defs>
+        <!-- Makes edges slightly wobbly, used by the paper-cutout style -->
+        <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="5"/>
+        </filter>
+      </defs>
+
+      <g id="camera">
+        <circle class="orbit fade" id="orbit" cx="470" cy="240" r="160"/>
+        <circle class="proton shape fade" id="proton" cx="470" cy="240" r="34"/>
+        <g id="electronArm">
+          <circle class="electron shape fade" id="electron" cx="630" cy="240" r="8"/>
+        </g>
+      </g>
+    </svg>
+
+    <p class="legend fade" id="legend">
+      <span class="dot dot-p" aria-hidden="true"></span>proton
+      <span class="dot dot-e" aria-hidden="true"></span>electron
+    </p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
