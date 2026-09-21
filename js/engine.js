@@ -25,6 +25,7 @@ const Book = (() => {
   const chimed = new Set();
   const el = {};
 
+  const taps = s => (s.tap ? [].concat(s.tap) : []); // a state may have one tap transition or a list
   const page = () => pages[pageIndex];
   const state = () => page().states[stateName];
 
@@ -133,7 +134,7 @@ const Book = (() => {
     (page().hotspots || []).forEach(h => {
       const e = ctx.hotspotEls[h.id];
       if (!e) return;
-      const on = started && !busy && s.tap && s.tap.hotspot === h.id;
+      const on = started && !busy && taps(s).some(t => t.hotspot === h.id);
       e.setAttribute("tabindex", on ? "0" : "-1");
       e.style.pointerEvents = on ? "auto" : "none";
     });
@@ -142,7 +143,7 @@ const Book = (() => {
   function startHints() {
     const s = state();
     (page().hotspots || []).forEach(h => {
-      if (s.tap && s.tap.hotspot === h.id && h.hint) h.hint.start(ctx, false);
+      if (taps(s).some(t => t.hotspot === h.id) && h.hint) h.hint.start(ctx, false);
     });
   }
   function stopHints() {
@@ -163,14 +164,13 @@ const Book = (() => {
     if (busy || !started) return;
     const p = page();
     const s = state();
-    const tr = kind === "tap" ? s.tap : s[kind];
+    const tr = kind === "tap" ? taps(s).find(t => t.hotspot === hotspotId) : s[kind];
 
     if (!tr) {
       if (kind === "next" && s.final) turnPage(pageIndex + 1);
       else if (kind === "back") turnPage(pageIndex - 1);
       return;
     }
-    if (kind === "tap" && tr.hotspot !== hotspotId) return;
 
     busy = true;
     clearAttention();
@@ -237,15 +237,16 @@ const Book = (() => {
     clearTimeout(idleTimer);
     if (!started || busy) return;
     const s = state();
-    const kind = s.tap ? "tap" : canNext() ? "next" : null;
+    const kind = taps(s).length ? "tap" : canNext() ? "next" : null;
     const key = page().id + ":" + stateName;
     if (!kind || chimed.has(key)) return;
     idleTimer = setTimeout(() => {
       chimed.add(key);
       Sound.tindin();
       if (kind === "tap") {
-        const h = (page().hotspots || []).find(x => x.id === s.tap.hotspot);
-        if (h && h.hint) h.hint.start(ctx, true);
+        (page().hotspots || []).forEach(h => {
+          if (h.hint && taps(s).some(t => t.hotspot === h.id)) h.hint.start(ctx, true);
+        });
       } else {
         el.nextBtn.classList.add("attn");
       }

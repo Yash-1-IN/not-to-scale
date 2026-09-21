@@ -129,6 +129,9 @@ body {
 .hit { fill: transparent; cursor: pointer; }
 .hit:focus { outline: none; }
 .hit:focus-visible { stroke: var(--frame); stroke-width: 3; stroke-dasharray: 8 8; }
+.nucleon-label { font: 500 15px "Fredoka", sans-serif; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.atom-name { font: 500 26px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; }
+.atom-sub { font: italic 400 18px "Nunito", sans-serif; fill: var(--ink); text-anchor: middle; }
 .cloud-dot { fill: var(--electron); }
 .cloud-blink { fill: var(--electron); }
 .cloud-arrow line { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
@@ -153,6 +156,7 @@ body {
 }
 .dot { display: inline-block; border-radius: 50%; margin-right: 0.4rem; vertical-align: middle; }
 .dot-p { width: 14px; height: 14px; background: var(--proton); }
+.dot-n { width: 14px; height: 14px; background: #B8BEC6; margin-left: 0.6rem; }
 .dot-e { width: 7px; height: 7px; background: var(--electron); margin-left: 0.6rem; }
 
 /* ---------- Buttons ---------- */

@@ -5,8 +5,12 @@ const Camera = (() => {
 
   // Zoom a group in or out around a point. Returns the tween.
   //   Camera.zoomTo("#cam", { scale: 5, origin: "470 240" })
-  function zoomTo(target, { scale = 1, origin = "470 240", duration = 1.8, ease = "power2.inOut" } = {}) {
-    return gsap.to(target, { scale, svgOrigin: origin, duration, ease });
+  // Give `center: [x, y]` to also slide the zoom point to that spot on screen; leave it out to zoom in place.
+  // (The maths is done here with a fixed "0 0" origin, so zooming to different points one after another is safe.)
+  function zoomTo(target, { scale = 1, origin = "470 240", center = null, duration = 1.8, ease = "power2.inOut" } = {}) {
+    const [ox, oy] = origin.split(" ").map(Number);
+    const [cx, cy] = center || [ox, oy];
+    return gsap.to(target, { scale, svgOrigin: "0 0", x: cx - scale * ox, y: cy - scale * oy, duration, ease });
   }
 
   // Zoom out from a small scene (`inner`) into a much bigger one (`outer`) drawn around the same point.

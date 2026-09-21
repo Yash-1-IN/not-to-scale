@@ -47,3 +47,14 @@
 - Back on a state with no `back` of its own turns to the previous page.
 - Checked with a temporary second page made from pages/_template.js (page turn, counter, contents), then removed.
 - Next: builder adds a test page from the template; then Phase 5 (isotopes, electron shells, ionic bonding).
+
+## Phase 5 — Page 2: Isotopes
+- Three hydrogen atoms side by side (hydrogen-1, deuterium, tritium). Tap one: the others fade, the camera
+  slides and zooms into its nucleus (p / n letters as well as colours). Back returns; after all three have been
+  looked at, a summary caption appears (same protons = same element, different neutrons = isotopes).
+- Engine: a state's `tap` can now be a list, so a page can have several tappable things.
+- Camera: zoomTo now does its own maths with a fixed origin, so zooming to different points in turn is reliable
+  (the old way put the camera in the wrong place on the second and third tap).
+- Test page from the Phase 4 checkpoint removed. Builder confirmed adding a page from the template works
+  (only snag: Windows hid the .txt/.js extension).
+- Next: page 3, electron shells (hydrogen to sodium), after review.
