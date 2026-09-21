@@ -33,7 +33,17 @@
     </div>
 
     <div class="captions" aria-live="polite">
-      <p class="caption fade" id="caption1">This is a hydrogen atom, not to scale of course</p>
+      <div class="caption-stack" id="page1Captions">
+        <p class="caption fade" id="caption1">This is a hydrogen atom, not to scale of course</p>
+        <div class="caption" id="captionScale">
+          <p>Remember, not to scale. If the proton were the size of a marble, the electron would be about half a kilometre away.</p>
+          <p class="footnote">Also, protons aren't really red. Colour is a light thing, and a proton is far smaller than the wavelength of light.</p>
+        </div>
+        <div class="caption" id="captionCloud">
+          <p>Actually, electrons don't orbit like little planets. We only know where one is <em>likely</em> to be, so it's more like a fuzzy cloud.</p>
+          <p class="footnote">Denser dots mean more likely. This cloud is called an orbital. More on that later.</p>
+        </div>
+      </div>
       <div class="caption caption2" id="caption2">
         <p>Zoom out far enough and the atom disappears. Next to a person, it's too small to draw.</p>
         <p class="footnote">About 0.1 nanometres wide, roughly a billion times narrower than a hand. The arrow is doing all the work.</p>
@@ -76,12 +86,18 @@
         </g>
       </g>
 
-      <!-- The atom -->
+      <!-- The atom (#atomLayer = zoom out to the world, #cam = zoom into the proton) -->
       <g id="atomLayer">
-        <circle class="orbit fade" id="orbit" cx="470" cy="240" r="160"/>
-        <circle class="proton fade" id="proton" cx="470" cy="240" r="34"/>
-        <g id="electronArm">
-          <circle class="electron fade" id="electron" cx="630" cy="240" r="8"/>
+        <g id="cam">
+          <circle class="orbit fade" id="orbit" cx="470" cy="240" r="160"/>
+          <g id="cloud"></g>
+          <circle class="proton fade" id="proton" cx="470" cy="240" r="34"/>
+          <g id="electronArm">
+            <circle class="electron fade" id="electron" cx="630" cy="240" r="8"/>
+          </g>
+          <circle class="tap-ring" id="tapRing" cx="470" cy="240" r="56" opacity="0"/>
+          <circle class="hit" id="atomHit" cx="470" cy="240" r="185" tabindex="-1" role="button"
+                  aria-label="Tap the atom to zoom in"/>
         </g>
       </g>
 

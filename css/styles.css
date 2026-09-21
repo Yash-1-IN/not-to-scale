@@ -101,10 +101,11 @@ body {
   justify-items: center;
   width: 100%;
 }
+.caption-stack { grid-area: 1 / 1; display: grid; justify-items: center; }
 .caption {
   grid-area: 1 / 1;
   margin: 0;
-  max-width: 36ch;
+  max-width: 42ch;
   text-align: center;
   font-size: clamp(1.05rem, 2vw, 1.3rem);
 }
@@ -123,6 +124,13 @@ body {
 .orbit { fill: none; stroke: var(--ink); stroke-opacity: 0.18; stroke-width: 2; stroke-dasharray: 2 9; stroke-linecap: round; }
 .proton { fill: var(--proton); }
 .electron { fill: var(--electron); }
+
+/* Tap-gold ring + invisible hit area over the atom */
+.tap-ring { fill: none; stroke: var(--tap); stroke-width: 3; pointer-events: none; }
+.hit { fill: transparent; cursor: pointer; }
+.hit:focus { outline: none; }
+.hit:focus-visible { stroke: var(--frame); stroke-width: 3; stroke-dasharray: 8 8; }
+.cloud-dot { fill: var(--electron); }
 
 .pointer-label { font: 500 30px "Fredoka", sans-serif; fill: var(--ink); }
 .pointer-line { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
