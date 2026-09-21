@@ -77,14 +77,14 @@ function goNext() {
   if (busy || onWorldPage || !started) return;
   busy = true;
   clearAttention();
-  Sound.zwoop({ dur: reduceMotion ? 0.25 : 0.7 });
+  Sound.zwoop(reduceMotion ? { dur: 0.25 } : {});
   updateNav();
   zoomTl.play();
 }
 function goBack() {
   if (busy || !onWorldPage) return;
   busy = true;
-  Sound.zwoop({ reverse: true, dur: reduceMotion ? 0.25 : 0.7 });
+  Sound.zwoop(reduceMotion ? { reverse: true, dur: 0.25 } : { reverse: true });
   updateNav();
   zoomTl.reverse();
 }

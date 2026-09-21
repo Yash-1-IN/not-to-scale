@@ -16,3 +16,8 @@
 - Attention chime: after ~8 s idle on page 1, once, Next glows gold.
 - Sound lab (small "sound lab" link, bottom centre): play buttons + sliders + numbers to copy.
 - Next: tune sounds by ear, copy numbers into sound.js defaults, hide the lab.
+
+## Sound tuning (round 1, one listener)
+- zwoop length 0.25 -> 1 s (now used as-is for the zoom); tin-din gap 0.15, decay 0.65. Others unchanged.
+- The person in the park is bald, on purpose.
+- Sound lab kept for the planned group vote; hide it before sharing.

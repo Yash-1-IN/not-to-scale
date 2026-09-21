@@ -5,8 +5,8 @@
 const Sound = (() => {
   const defaults = {
     master: 0.15,                                   // overall volume (keep low)
-    zwoop:  { f0: 300,  f1: 900,  dur: 0.25 },      // camera zoom: pitch sweep in Hz, seconds
-    tindin: { hi: 1570, lo: 1175, gap: 0.12, decay: 0.4 }, // attention chime: G6 then D6
+    zwoop:  { f0: 300,  f1: 900,  dur: 1 }   ,      // camera zoom: pitch sweep in Hz, seconds
+    tindin: { hi: 1570, lo: 1175, gap: 0.15, decay: 0.65 }, // attention chime: G6 then D6
     pop:    { f: 600, dur: 0.09 },                  // something appears / tapped
     page:   { f0: 800, f1: 2600, dur: 0.35 }        // page turn: filtered-noise sweep
   };
