@@ -78,3 +78,9 @@
 - Engine: page turns are ignored until the book has opened (found by testing).
 - Checked in a real-time run through hydrogen to sodium, the reveal, and Back twice: arrangements correct
   (2,2 for Be; 2,8 for Ne; 2,8,1 for Na), electron counts match, no console errors.
+
+## Wrapped up for now
+- Pages built: 1 hydrogen (tap zoom, cloud + "it could be here" arrows, replay, world scale), 2 isotopes, 3 electron shells.
+- Sound settings tuned by builder (round 1, one listener); sound lab still in for a planned group vote.
+- Next session: page 4 ionic bonding (reuses the shell drawing), then the rest of the backlog in the spec (section 9).
+  Phase 6 (accessibility pass, phone test, about page, GitHub Pages) still to do.
