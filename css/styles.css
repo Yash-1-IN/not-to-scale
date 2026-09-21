@@ -101,7 +101,6 @@ body {
   justify-items: center;
   width: 100%;
 }
-.caption-stack { grid-area: 1 / 1; display: grid; justify-items: center; }
 .caption {
   grid-area: 1 / 1;
   margin: 0;
@@ -109,7 +108,7 @@ body {
   text-align: center;
   font-size: clamp(1.05rem, 2vw, 1.3rem);
 }
-.caption2 p { margin: 0 0 0.5rem; }
+.caption p { margin: 0 0 0.5rem; }
 .footnote { font-style: italic; font-size: 0.95em; }
 
 /* ---------- Scene ---------- */
@@ -131,6 +130,10 @@ body {
 .hit:focus { outline: none; }
 .hit:focus-visible { stroke: var(--frame); stroke-width: 3; stroke-dasharray: 8 8; }
 .cloud-dot { fill: var(--electron); }
+.cloud-blink { fill: var(--electron); }
+.cloud-arrow line { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+.cloud-arrow polygon { fill: var(--ink); }
+.arrow-label { font: 500 22px "Fredoka", sans-serif; fill: var(--ink); }
 
 .pointer-label { font: 500 30px "Fredoka", sans-serif; fill: var(--ink); }
 .pointer-line { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
@@ -178,6 +181,23 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 @keyframes glow {
   50% { box-shadow: 0 0 0 9px rgba(245, 165, 36, 0.12); }
 }
+
+/* ---------- Top bar (contents + page counter) ---------- */
+.topbar { position: fixed; top: 18px; left: 22px; z-index: 40; display: flex; align-items: center; gap: 0.8rem; }
+.topbar .mute { position: static; }
+.counter { font: 600 0.85rem "Nunito", sans-serif; }
+
+/* ---------- Contents page ---------- */
+.contents { position: fixed; inset: 0; z-index: 35; background: var(--paper); overflow-y: auto; padding: 5rem 24px 3rem; }
+.contents-inner { max-width: 640px; margin: 0 auto; }
+.contents h2 { font: 400 2.4rem "Fredoka", sans-serif; margin: 0 0 1.5rem; }
+.contents h3 { font: 500 1.05rem "Fredoka", sans-serif; margin: 1.6rem 0 0.4rem; color: var(--frame); }
+.contents ul { list-style: none; margin: 0; padding: 0; }
+.contents li { margin: 0.15rem 0; }
+.toc-item { font: 600 1.05rem "Nunito", sans-serif; color: var(--ink); background: none; border: 0; padding: 0.3rem 0; cursor: pointer; text-align: left; }
+.toc-item:hover { text-decoration: underline; }
+.toc-soon { color: #8a8790; font-size: 1rem; padding: 0.3rem 0; }
+.toc-soon span { font-style: italic; font-size: 0.85rem; }
 
 /* ---------- Sound lab ---------- */
 .lab-link {

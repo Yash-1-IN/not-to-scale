@@ -31,3 +31,19 @@
 - Gold tap-ring pulses on the atom until tapped; the 8 s idle chime now strengthens the ring (atom untapped)
   or glows Next (after the cloud). Next still works from either atom state and returns to it on Back.
 - One-shot per visit: after the cloud appears the atom isn't re-tappable (reload to replay).
+
+## Phase 3 additions
+- Replay button (shown once the cloud appears): fades the cloud, brings the orbiting electron back.
+- "It could be here... or here..." arrows: six arrows point at real dots in the cloud, one at a time and
+  getting faster; a bright electron blinks at each spot. Skipped to the end when you press Next.
+
+## Phase 4 — Turning it into a book
+- Pages are data: one file each in pages/ (title, topic, drawing, states, hotspots, captions).
+- js/engine.js reads them and handles page turns (with the page-turn sound), Back/Next/Replay, keyboard
+  arrows, page counter, contents page, the attention chime, captions and tappable hotspots.
+- js/camera.js holds the zoom helpers (zoomTo, crossZoom) so every page zooms the same way.
+- Hydrogen page rebuilt in this format; behaves as before. The world scene is still part of it.
+- Contents page groups pages by IB topic; unwritten pages from the spec show as "coming soon".
+- Back on a state with no `back` of its own turns to the previous page.
+- Checked with a temporary second page made from pages/_template.js (page turn, counter, contents), then removed.
+- Next: builder adds a test page from the template; then Phase 5 (isotopes, electron shells, ionic bonding).

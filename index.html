@@ -16,6 +16,11 @@
 
   <button class="mute" id="mute" type="button" aria-pressed="false">Sound: on</button>
 
+  <div class="topbar" id="topbar" hidden>
+    <button class="mute" id="contentsBtn" type="button">Contents</button>
+    <span class="counter" id="counter" aria-label="Page number"></span>
+  </div>
+
   <!-- Cover: the first tap unlocks audio -->
   <div class="cover" id="cover">
     <h1 class="cover-title">Not to Scale</h1>
@@ -32,93 +37,35 @@
       <span class="cap cap-right"></span>
     </div>
 
-    <div class="captions" aria-live="polite">
-      <div class="caption-stack" id="page1Captions">
-        <p class="caption fade" id="caption1">This is a hydrogen atom, not to scale of course</p>
-        <div class="caption" id="captionScale">
-          <p>Remember, not to scale. If the proton were the size of a marble, the electron would be about half a kilometre away.</p>
-          <p class="footnote">Also, protons aren't really red. Colour is a light thing, and a proton is far smaller than the wavelength of light.</p>
-        </div>
-        <div class="caption" id="captionCloud">
-          <p>Actually, electrons don't orbit like little planets. We only know where one is <em>likely</em> to be, so it's more like a fuzzy cloud.</p>
-          <p class="footnote">Denser dots mean more likely. This cloud is called an orbital. More on that later.</p>
-        </div>
-      </div>
-      <div class="caption caption2" id="caption2">
-        <p>Zoom out far enough and the atom disappears. Next to a person, it's too small to draw.</p>
-        <p class="footnote">About 0.1 nanometres wide, roughly a billion times narrower than a hand. The arrow is doing all the work.</p>
-      </div>
+    <!-- Two stacked caption layers; the engine crossfades between them -->
+    <div class="captions" id="captions" aria-live="polite">
+      <div class="caption" id="capA"></div>
+      <div class="caption" id="capB"></div>
     </div>
 
-    <svg class="scene" id="scene" viewBox="0 0 1000 480" role="img"
-         aria-labelledby="sceneTitle sceneDesc">
-      <title id="sceneTitle">From a hydrogen atom to a person</title>
-      <desc id="sceneDesc">A red circle, the proton, with a much smaller blue dot, the electron, circling it. On the next page, the view zooms out to a person standing in a park, with an arrow pointing at their hand, where a hydrogen atom would be too small to see.</desc>
-
-      <defs>
-        <clipPath id="worldClip"><rect x="0" y="0" width="1000" height="480" rx="22"/></clipPath>
-      </defs>
-
-      <!-- The real world: starts hugely magnified on the hand, zooms out to normal -->
-      <g clip-path="url(#worldClip)">
-        <g id="world" class="world">
-          <rect x="-500" y="-500" width="2000" height="1000" fill="#CFE8FF"/>
-          <circle cx="880" cy="80" r="42" fill="#FFD75E"/>
-          <ellipse cx="200" cy="90" rx="70" ry="22" fill="#fff"/>
-          <ellipse cx="245" cy="78" rx="45" ry="20" fill="#fff"/>
-          <ellipse cx="640" cy="60" rx="60" ry="18" fill="#fff"/>
-          <ellipse cx="260" cy="440" rx="380" ry="120" fill="#A9D98C"/>
-          <ellipse cx="760" cy="450" rx="330" ry="100" fill="#8CCB74"/>
-          <rect x="-500" y="435" width="2000" height="500" fill="#6DB35A"/>
-          <!-- tree -->
-          <rect x="815" y="230" width="30" height="210" fill="#8A5A3B"/>
-          <circle cx="830" cy="170" r="115" fill="#3E9B57"/>
-          <circle cx="770" cy="215" r="70" fill="#3E9B57"/>
-          <!-- person -->
-          <rect x="360" y="290" width="22" height="145" rx="8" fill="#2B2F4A"/>
-          <rect x="388" y="290" width="22" height="145" rx="8" fill="#2B2F4A"/>
-          <rect x="352" y="424" width="34" height="14" rx="7" fill="#1B1A22"/>
-          <rect x="384" y="424" width="34" height="14" rx="7" fill="#1B1A22"/>
-          <rect x="350" y="160" width="70" height="145" rx="24" fill="#8B5CF6"/>
-          <circle cx="385" cy="118" r="32" fill="#F1B98A"/>
-          <path d="M405 178 Q440 205 470 240" fill="none" stroke="#8B5CF6" stroke-width="26" stroke-linecap="round"/>
-          <circle id="hand" cx="470" cy="240" r="14" fill="#F1B98A"/>
-        </g>
-      </g>
-
-      <!-- The atom (#atomLayer = zoom out to the world, #cam = zoom into the proton) -->
-      <g id="atomLayer">
-        <g id="cam">
-          <circle class="orbit fade" id="orbit" cx="470" cy="240" r="160"/>
-          <g id="cloud"></g>
-          <circle class="proton fade" id="proton" cx="470" cy="240" r="34"/>
-          <g id="electronArm">
-            <circle class="electron fade" id="electron" cx="630" cy="240" r="8"/>
-          </g>
-          <circle class="tap-ring" id="tapRing" cx="470" cy="240" r="56" opacity="0"/>
-          <circle class="hit" id="atomHit" cx="470" cy="240" r="185" tabindex="-1" role="button"
-                  aria-label="Tap the atom to zoom in"/>
-        </g>
-      </g>
-
-      <!-- The "it's really small" arrow -->
-      <g id="pointer">
-        <text class="pointer-label fade" id="pointerLabel" x="600" y="128" text-anchor="middle">it's really small</text>
-        <path class="pointer-line fade" id="pointerLine" d="M 560 145 Q 545 200 496 224"/>
-        <polygon class="pointer-head fade" id="pointerHead" points="486,229 503.5,228.3 497.3,215.7"/>
-      </g>
+    <!-- The engine draws each page's picture into #pageRoot -->
+    <svg class="scene" id="scene" viewBox="0 0 1000 480" role="img" aria-labelledby="sceneTitle sceneDesc">
+      <title id="sceneTitle"></title>
+      <desc id="sceneDesc"></desc>
+      <g id="pageRoot"></g>
     </svg>
 
-    <p class="legend fade" id="legend">
-      <span class="dot dot-p" aria-hidden="true"></span>proton
-      <span class="dot dot-e" aria-hidden="true"></span>electron
-    </p>
+    <p class="legend fade" id="legend" hidden></p>
   </main>
 
   <nav class="nav" id="nav" aria-label="Pages">
     <button class="nav-btn" id="backBtn" type="button" hidden>&larr; Back</button>
+    <button class="nav-btn" id="replayBtn" type="button" hidden>&#8634; Replay</button>
     <button class="nav-btn" id="nextBtn" type="button" hidden>Next &rarr;</button>
   </nav>
+
+  <!-- Contents page -->
+  <section class="contents" id="contents" hidden aria-label="Contents">
+    <div class="contents-inner">
+      <h2>Contents</h2>
+      <div id="tocBody"></div>
+    </div>
+  </section>
 
   <button class="lab-link" id="labLink" type="button">sound lab</button>
   <section class="lab" id="lab" hidden aria-label="Sound lab">
@@ -132,6 +79,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="js/sound.js"></script>
   <script src="js/lab.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/engine.js"></script>
+
+  <!-- Pages, in book order. To add a page, add one line here (see pages/_template.js). -->
+  <script src="pages/00-planned.js"></script>
+  <script src="pages/01-hydrogen.js"></script>
+
+  <script>Book.boot();</script>
 </body>
 </html>
