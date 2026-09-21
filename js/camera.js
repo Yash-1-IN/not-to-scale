@@ -6,11 +6,17 @@ const Camera = (() => {
   // Zoom a group in or out around a point. Returns the tween.
   //   Camera.zoomTo("#cam", { scale: 5, origin: "470 240" })
   // Give `center: [x, y]` to also slide the zoom point to that spot on screen; leave it out to zoom in place.
-  // (The maths is done here with a fixed "0 0" origin, so zooming to different points one after another is safe.)
+  // The group's transform is written directly ("translate scale"), so any zoom can follow any other.
   function zoomTo(target, { scale = 1, origin = "470 240", center = null, duration = 1.8, ease = "power2.inOut" } = {}) {
+    const el = gsap.utils.toArray(target)[0];
     const [ox, oy] = origin.split(" ").map(Number);
     const [cx, cy] = center || [ox, oy];
-    return gsap.to(target, { scale, svgOrigin: "0 0", x: cx - scale * ox, y: cy - scale * oy, duration, ease });
+    if (!el._camera) el._camera = { s: 1, x: 0, y: 0 };
+    const cam = el._camera;
+    return gsap.to(cam, {
+      s: scale, x: cx - scale * ox, y: cy - scale * oy, duration, ease,
+      onUpdate: () => el.setAttribute("transform", "translate(" + cam.x + " " + cam.y + ") scale(" + cam.s + ")")
+    });
   }
 
   // Zoom out from a small scene (`inner`) into a much bigger one (`outer`) drawn around the same point.

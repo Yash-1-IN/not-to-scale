@@ -58,3 +58,13 @@
 - Test page from the Phase 4 checkpoint removed. Builder confirmed adding a page from the template works
   (only snag: Windows hid the .txt/.js extension).
 - Next: page 3, electron shells (hydrogen to sodium), after review.
+
+## Fix: camera left shifted after zooming out
+- Builder reported (screenshots) that after zooming back out, the proton / nuclei were off-screen on both the
+  hydrogen page and the isotopes page. Reproduced: GSAP's own zoom-point handling left the camera at
+  matrix(1,0,0,1,1504,768) instead of the identity after a zoom out.
+- Camera.zoomTo now tweens plain numbers and writes the SVG transform itself ("translate(x y) scale(s)"),
+  so any zoom can follow any other. Verified in a real-time run: tap, back, replay, tap again, back on the
+  hydrogen page; all three isotope zooms and back. Camera is translate(0 0) scale(1) every time.
+- Testing note: the browser preview throttles animation; set gsap.ticker.lagSmoothing(0) to test in real time.
+- Builder's feedback on the isotopes page: keeps grey neutrons, p/n letters, "the common one".
