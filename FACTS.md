@@ -33,3 +33,12 @@
 | Metallic bonding | Metals are malleable because the electron sea still bonds the ions regardless of how the layers slide; ionic solids shatter instead, because sliding brings like charges together and they repel | IB Chemistry S2.3 |
 | Periodic trends | Atomic radius decreases left to right across a period: more protons pull the same outer shell in tighter, with no extra shielding shell added | IB Chemistry S3.1 |
 | Functional groups | -OH = alcohol (e.g. ethanol); -COOH = carboxylic acid (e.g. ethanoic acid); -Cl = halogenoalkane (e.g. chloroethane); -NH2 = amine (e.g. ethylamine) | IB Chemistry S3.2, standard organic chemistry nomenclature |
+| Exothermic/endothermic | Exothermic: products lower in energy than reactants, difference released as heat; endothermic: products higher, heat absorbed from surroundings | IB Chemistry R1.1 |
+| Exothermic/endothermic | An instant cold pack works by an endothermic reaction (commonly ammonium nitrate dissolving in water) | Standard chemistry; common cold-pack chemistry |
+| Collision theory | Particles must collide with enough energy (and suitable orientation) to react; not every collision succeeds | IB Chemistry R2.2 |
+| Collision theory | Heating increases both collision frequency and the proportion of collisions with enough energy to react | IB Chemistry R2.2 |
+| Equilibrium | Dynamic equilibrium: forward and reverse rates become equal, so amounts stop changing even though the reaction keeps happening both ways | IB Chemistry R2.3 |
+| Acids and bases | Brønsted–Lowry: an acid is a proton (H+) donor, a base is a proton acceptor | IB Chemistry R3.1 |
+| Acids and bases | HCl + NH3 -> Cl- + NH4+; Cl- is HCl's conjugate base, NH4+ is NH3's conjugate acid | IB Chemistry R3.1, standard acid-base chemistry |
+| Redox | Oxidation is loss of electrons (at the anode); reduction is gain of electrons (at the cathode) — "OIL RIG" | IB Chemistry R3.2 |
+| Redox | In an electrochemical cell, electrons flow through the external wire from anode to cathode | IB Chemistry R3.2 |

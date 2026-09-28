@@ -266,7 +266,7 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 .h-plus { fill: #fff; stroke: var(--ink); stroke-width: 2; }
 .h-plus-label { font: 700 13px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .flow-arrow { fill: var(--tap); }
-.ball { fill: var(--heat); }
+.ball { fill: #8B8590; }
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {

@@ -137,3 +137,33 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   wait+screenshot rather than one long wait. Used a temporary console.log in engine.js's turnPage to
   confirm this against real state (busy/started/pageIndex) rather than guessing; removed it after.
 - All 12 pages walked end to end in the browser with console-error checks; no errors found.
+
+## Phase 5 — Pages 13-17: the rest of the backlog (all 17 book pages now built)
+- 13 Exothermic vs endothermic: a ball rolls along an energy-profile curve, downhill (releasing heat)
+  or uphill (absorbing it, like an instant cold pack). Fixed the ball's resting colour, which defaulted
+  to the "heat" orange even after an endothermic (cold) run; it now settles to a neutral grey.
+- 14 Collision theory: red/blue particles bounce in a box (shared particle-box helper); only a fast
+  enough collision reacts, turning both particles green. Tap heats the mixture.
+- 15 Equilibrium: 20 particles interconvert both ways at fixed rates (exponential waiting times); the
+  live reactant:product count settles into a steady, K-like split even though particles keep switching.
+- 16 Acids and bases: HCl hands an H+ across to NH3, forming Cl- and NH4+ (mirrors the ionic-bonding
+  page's transfer choreography, but for a proton instead of an electron).
+- 17 Redox and electrochemical cells: electrons loop continuously along the wire from anode to cathode
+  once tapped. Caught a real bug before shipping: an electron's starting position was set with a raw
+  DOM `setAttribute("transform", ...)`, then animated via GSAP's x/y — the same class of GSAP
+  transform-cache mismatch fixed earlier in camera.js. Fixed by setting the start position with
+  `gsap.set()` instead, so GSAP's own cache and the animation agree from frame one. Also found and
+  fixed: gsap.to() can't resolve a `var(--tap)` string as a colour to tween, and reusing --tap here
+  would have broken the "tap-gold means tap this, nothing else" rule anyway; removed that flash rather
+  than reusing the wrong colour.
+- Found and fixed a real bug in pages 14 and 15: their legends used `class="dot"` with only an inline
+  `background`, but the base `.dot` CSS rule has no width/height (only the `.dot-p`/`.dot-e` subclasses
+  do), so the swatches were invisible. Added explicit width/height to both.
+- Polish: nudged the redox page's anode/cathode labels down; they were overlapping the solution rect's
+  bottom edge, not the electrodes as first suspected.
+- Testing note: confirmed the "stuck, can't navigate" symptom seen a few times this batch is pane
+  flakiness (GSAP's ticker starved of animation frames in the backgrounded pane), not app bugs — the
+  same page always worked on a clean retry with more wait+screenshot cycles, and DOM state checks
+  (busy/started/pageIndex) matched a normal, still-in-progress transition each time it was inspected.
+- All 17 pages now exist and are registered in index.html; contents page (00-planned.js) is fully
+  "lit up", no "coming soon" entries left.
