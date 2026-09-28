@@ -306,6 +306,21 @@ const Book = (() => {
     el.contentsBtn.focus();
   }
 
+  // ---------- About (reachable from the cover, and from the topbar once the book is open) ----------
+  function openAbout(returnFocusTo) {
+    el.about.hidden = false;
+    el.page.setAttribute("inert", "");
+    el.nav.setAttribute("inert", "");
+    el.about.dataset.returnTo = returnFocusTo;
+    el.aboutClose.focus();
+  }
+  function closeAbout() {
+    el.about.hidden = true;
+    if (started) { el.page.removeAttribute("inert"); el.nav.removeAttribute("inert"); }
+    const back = el.about.dataset.returnTo === "cover" ? el.aboutLinkCover : el.aboutBtn;
+    back.focus();
+  }
+
   // ---------- Opening the book ----------
   function startBook() {
     el.page.removeAttribute("inert");
@@ -337,7 +352,8 @@ const Book = (() => {
   // ---------- Setup ----------
   function boot() {
     ["scene", "page", "title", "captions", "capA", "capB", "legend", "nav", "backBtn", "nextBtn", "replayBtn",
-      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "lab", "labLink", "labClose"
+      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "lab", "labLink", "labClose",
+      "aboutBtn", "about", "aboutClose", "aboutLinkCover"
     ].forEach(id => { el[id] = $(id); });
 
     // Mute button
@@ -357,10 +373,14 @@ const Book = (() => {
     el.backBtn.addEventListener("click", () => go("back"));
     el.replayBtn.addEventListener("click", () => go("replay"));
     el.contentsBtn.addEventListener("click", () => (el.contents.hidden ? openContents() : closeContents()));
+    el.aboutBtn.addEventListener("click", () => openAbout("topbar"));
+    el.aboutLinkCover.addEventListener("click", () => openAbout("cover"));
+    el.aboutClose.addEventListener("click", closeAbout);
     document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !el.about.hidden) { closeAbout(); return; }
       if (!started) return;
       if (e.key === "Escape") { if (!el.contents.hidden) closeContents(); return; }
-      if (!el.lab.hidden || !el.contents.hidden) return;
+      if (!el.lab.hidden || !el.contents.hidden || !el.about.hidden) return;
       if (e.key === "ArrowRight") go("next");
       else if (e.key === "ArrowLeft") go("back");
     });

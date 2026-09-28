@@ -194,3 +194,16 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   check exhaustively — reviewed the rest of the pages by eye against the "not colour alone" rule and
   found no other cases (every other multi-entity page already differs by label, size, or shape:
   proton/electron, p/n, Na/Cl symbols, element letters, formula labels).
+
+## Phase 6 — Phone test and About page
+- Phone test (375x812 emulated): checked the cover, hydrogen page (open + tap-to-zoom), collision
+  theory (a denser page with a 3-item legend), and the contents page. All read cleanly, no horizontal
+  overflow, legend wraps sensibly, tap targets stayed reasonably sized. No changes needed.
+- Added an About page: a link on the cover ("About this book") reachable before opening the book, and
+  an "About" button in the topbar reachable from any page once it's open. Both open the same overlay
+  (reusing the Contents panel's styling) with what the book is, that it simplifies on purpose, and who
+  made it; Escape or Close returns focus to whichever link opened it. Wired centrally in js/engine.js
+  (openAbout/closeAbout), not tied to the page system, since it isn't a chemistry page.
+- Verified both entry points open/close correctly with no console errors; the placeholder attribution
+  line ("Made by an IB Chemistry student, built together with Claude Code") in index.html can be
+  changed any time by editing the #about section directly.

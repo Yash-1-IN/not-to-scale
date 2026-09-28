@@ -61,6 +61,15 @@ body {
   cursor: pointer;
 }
 .open-btn:hover { background: #33313f; }
+.about-link {
+  margin-top: 0.5rem;
+  background: none;
+  border: 0;
+  font: italic 0.9rem "Nunito", sans-serif;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
 
 /* ---------- Page ---------- */
 .page {
