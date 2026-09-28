@@ -250,3 +250,39 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   GSAP lag smoothing): fired the mass spec beam and watched the swarm settle, stepped through all four
   ionic states forward and back, stepped through all four emission falls plus the comparison sweep, and
   revealed the mole's jar. No console errors in any of them.
+
+## Round 3 — Organic/reactivity feedback pass
+- Functional groups (12): found the real bug behind "the label text is hidden" — the badge was a
+  fixed-radius circle repeatedly scaled with GSAP's `scale`+`svgOrigin`, the same class of bug as the
+  ionic-page ring earlier, and here it left a permanent residual CSS transform (confirmed via
+  `getComputedStyle().transform` showing a stray translate after the first tap) that silently pushed
+  the coloured circle away from the white label sitting on top of it. Fixed properly this time: the
+  badge is now a rounded-rect pill sized per label (a fixed circle was always going to be too small for
+  "COOH"/"NH2" regardless of the transform bug) and animated purely via x/y/width/height attributes,
+  never a CSS transform.
+- Exothermic/endothermic (13): the "too flat" curve was a real bug, not just a style choice — a
+  quadratic Bezier's rendered peak is a 25/50/25 blend of its three points, so using the intended peak
+  height as the control point's height means the curve never actually reaches that height. Fixed by
+  solving that blend backwards for the control height so the curve provably passes through the intended
+  peak (confirmed XHUMP sits exactly midway between X0 and X1, so the peak's x is always correct too).
+  Also added a bracket-and-label showing "activation energy" against the energy axis, and fixed the
+  idle ball "sway": its breathing pulse used `scale`+`svgOrigin` anchored at the *reactant* position
+  even while resting at the *product* position after a roll, so it visibly lurched toward reactants on
+  every pulse. Switched to pulsing the ball's own radius attribute instead, sidestepping the whole
+  transform-origin question. Same off-canvas tap-ring bug as the other pages, fixed the same way.
+- Collision theory (14): squircle tap-ring (was another off-canvas circle). The heat-up pulse used
+  `scale`+`transformOrigin:"center"` on every particle while the physics ticker was concurrently
+  writing their cx/cy every frame — the two fighting over the same elements is what could let particles
+  visually spill past the walls. Switched the pulse to animate each particle's own radius attribute
+  (still relative to its own current size, so different species keep their sizes). Also added a direct
+  reclamp right when a particle's radius grows on a successful reaction, in case the bigger circle no
+  longer fits at its old position — belt and braces on top of the transform fix.
+- Equilibrium (15): squircle tap-ring. Rebalanced and restructured: tapping now runs three scenarios in
+  sequence on the same 20 particles — equal rates (settles close to 10:10), then rates favouring
+  product, then rates favouring reactant — by re-aiming each particle's next flip at new rate constants
+  rather than resetting the box, so the split visibly *shifts* live. Ties directly into the equilibrium
+  constant K = [product]/[reactant], which the captions now name explicitly.
+- Root-caused the "particles escaping the box" report to CSS `scale`/`transformOrigin` tweens running
+  on elements whose position the physics ticker also owns — confirmed no escapes over a 4-second,
+  ~170-frame automated position scan before AND after the collision-theory fix, with worst-case wall
+  margin at exactly 0 (touching, correctly clamped) rather than negative (poking through).

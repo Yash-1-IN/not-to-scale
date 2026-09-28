@@ -20,7 +20,7 @@
     <rect class="fade" x="${BOX.x0}" y="${BOX.y0}" width="${BOX.x1 - BOX.x0}" height="${BOX.y1 - BOX.y0}" rx="14" fill="none" stroke="var(--ink)" stroke-width="3"/>
     <g id="particles"></g>
     <text class="graph-label fade" id="counter" x="500" y="440">reacted so far: 0</text>
-    <circle class="tap-ring" id="ring" cx="500" cy="260" r="330" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="${BOX.x0 - 24}" y="${BOX.y0 - 24}" width="${BOX.x1 - BOX.x0 + 48}" height="${BOX.y1 - BOX.y0 + 48}" rx="34" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="260" r="420"/>`;
 
   const heat = {
@@ -28,10 +28,15 @@
     play(ctx) {
       ctx.data.particles.forEach(p => { if (p.kind !== "product") { p.vx *= 1.7; p.vy *= 1.7; } });
       ctx.data.threshold = THRESHOLD_HOT;
-      // A relative scale pulse (not an absolute radius) so each particle keeps its own size after it.
-      return gsap.timeline()
-        .to("#particles circle", { scale: 1.4, transformOrigin: "center", duration: 0.4, ease: "power2.out" }, 0)
-        .to("#particles circle", { scale: 1, transformOrigin: "center", duration: 0.4, ease: "power2.in" }, 0.4);
+      // Pulse each particle's own radius attribute rather than a CSS scale: the physics ticker keeps
+      // writing cx/cy on these same circles every frame while this plays, and a CSS transform pulsing
+      // concurrently with that is exactly what let particles visually drift past the walls.
+      const tl = gsap.timeline();
+      ctx.data.particles.forEach(p => {
+        tl.to(p.el, { attr: { r: p.r * 1.4 }, duration: 0.4, ease: "power2.out" }, 0)
+          .to(p.el, { attr: { r: p.r }, duration: 0.4, ease: "power2.in" }, 0.4);
+      });
+      return tl;
     }
   };
 
@@ -88,6 +93,12 @@
           p.el.setAttribute("fill", LOOK.product.fill);
           p.el.setAttribute("stroke", LOOK.product.stroke);
           p.el.setAttribute("r", LOOK.product.r);
+          // The new radius can be bigger than the one that was inside the walls a moment ago —
+          // reclamp now rather than waiting for next frame's step() to catch it.
+          p.x = Math.min(Math.max(p.x, BOX.x0 + p.r), BOX.x1 - p.r);
+          p.y = Math.min(Math.max(p.y, BOX.y0 + p.r), BOX.y1 - p.r);
+          p.el.setAttribute("cx", p.x.toFixed(1));
+          p.el.setAttribute("cy", p.y.toFixed(1));
         });
         d.reacted += 2;
         ctx.$("#counter").textContent = "reacted so far: " + d.reacted;
