@@ -216,3 +216,37 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   anything the deployed site needs (all of pages/, js/, css/ are tracked).
 - Phase 6 checklist from the spec: accessibility pass (done), phone test (done), About page (done),
   GitHub Pages instructions (done, deploy itself is up to the builder).
+
+## Round 2 — Feedback pass on four pages
+- Mass spectrometry (05): full rework. The ion path from source to detector is now a real curve
+  (straight to the field edge, a quadratic bezier through it, straight to the detector), drawn with
+  native SVG `getPointAtLength` rather than a motion-path plugin, matching the technique already used
+  for the hydrogen page's pointer arrow. Each ion leaves its own dotted trail (revealed by fading the
+  dashed path in as the ion travels it). Added a faint dot grid inside the field box (the usual "field
+  out of the page" symbol). After the first pair lands, 24 more ions fire automatically along the same
+  two paths in a shuffled but seeded order, each nudging its bar up by a fixed 5px, so the bars settle
+  on the same final heights as before — the same "sample repeatedly until it settles" idea as the
+  hydrogen page's cloud dots. Rearranged the whole apparatus to the left half of the scene, graph on
+  the right, so nothing overlaps. Fixed a real, pre-existing bug while doing this: the ion circles and
+  bars had a `class` (`particle`, `mass-bar`) whose CSS `fill` rule silently overrode the inline `fill`
+  attribute meant to distinguish neon-20 (red) from neon-22 (blue) — both ions and both bars were
+  rendering in the same colour. Fixed by setting colour via an inline `style` attribute, which beats a
+  class selector's specificity.
+- Ionic bonding (04): the tap hint was a plain circle sized to fit the two atoms, which for the current
+  atom radius already went off the top of the canvas (`cy - r` went negative). Replaced it with a
+  rounded rect ("squircle") sized to the atoms' actual bounds, and switched from a duplicated inline
+  copy of the ring-pulse logic to the shared `Hint.ring` helper (which turned out to be shape-agnostic
+  already, so a `<rect class="tap-ring">` works with zero changes to hint.js).
+- Emission spectra (06): added a small bar chart ("size of the jump") next to the atom. Each fall grows
+  its own bar, height proportional to how far the electron jumped, in the fall's own colour. After the
+  fourth fall, a dot flies from the top of each bar down to its matching line on the spectrum strip
+  below, so the size of each jump and its position in the spectrum visibly line up (biggest jump lands
+  closest to violet). Back on any fall shrinks that bar back down to match.
+- The mole (07): the jar outline extended to y=430 while the "6.02 x 10^23" / "particles in one mole"
+  text sat at y=400/432, so the text crossed the jar's bottom edge and rounded corners. Shortened the
+  jar (bottom now at y=360) and tightened the dot scatter to match, opening clear space below the
+  outline for both lines of text.
+- Tested all four in the browser pane (fresh port each time, wait+screenshot cycles, never disabling
+  GSAP lag smoothing): fired the mass spec beam and watched the swarm settle, stepped through all four
+  ionic states forward and back, stepped through all four emission falls plus the comparison sweep, and
+  revealed the mole's jar. No console errors in any of them.

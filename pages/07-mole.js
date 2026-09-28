@@ -14,18 +14,18 @@
   };
   const dots = [];
   for (let i = 0; i < 55; i++) {
-    const x = CX - 130 + rand() * 260, y = CY - 30 + rand() * 180;
+    const x = CX - 130 + rand() * 260, y = CY - 30 + rand() * 140;
     dots.push(`<circle class="particle fade" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${3 + rand() * 3}"/>`);
   }
 
   const svg = `
-    <path d="M ${CX - 150} ${CY - 120} L ${CX - 150} ${CY + 170} Q ${CX - 150} ${CY + 200} ${CX - 120} ${CY + 200}
-             L ${CX + 120} ${CY + 200} Q ${CX + 150} ${CY + 200} ${CX + 150} ${CY + 170} L ${CX + 150} ${CY - 120}"
+    <path d="M ${CX - 150} ${CY - 120} L ${CX - 150} ${CY + 100} Q ${CX - 150} ${CY + 130} ${CX - 120} ${CY + 130}
+             L ${CX + 120} ${CY + 130} Q ${CX + 150} ${CY + 130} ${CX + 150} ${CY + 100} L ${CX + 150} ${CY - 120}"
           class="fade" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
     <g id="dots">${dots.join("")}</g>
 
     <text id="counter" class="atom-name" x="${CX}" y="400" opacity="0">0</text>
-    <text id="caption2b" class="atom-sub" x="${CX}" y="432" opacity="0"></text>
+    <text id="caption2b" class="atom-sub" x="${CX}" y="428" opacity="0"></text>
 
     <circle class="tap-ring" id="ring" cx="${CX}" cy="${CY + 20}" r="185" opacity="0"/>
     <circle class="hit" id="hit" cx="${CX}" cy="${CY + 20}" r="230"/>`;

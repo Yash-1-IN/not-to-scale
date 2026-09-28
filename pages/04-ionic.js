@@ -43,7 +43,7 @@
     ${atomSVG("cl", CL_X, "Cl", 2, 7, 8)}
     <g id="travelE"></g>
     <path id="pullField" d="M ${NA_X + RAD[1] + 10} ${CY} L ${CL_X - RAD[1] - 10} ${CY}" opacity="0"/>
-    <circle class="tap-ring" id="ring" cx="500" cy="${CY}" r="270" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="${NA_X - RAD[1] - 20}" y="${CY - RAD[1] - 20}" width="${CL_X - NA_X + (RAD[1] + 20) * 2}" height="${(RAD[1] + 20) * 2}" rx="36" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="${CY}" r="480"/>`;
 
   // The lone electron in sodium's outer shell (the 9th, at index 0 of shell 1) is the one that moves.
@@ -134,20 +134,7 @@
 
     hotspots: [{
       id: "hit", selector: "#hit", label: "Tap to see what happens between sodium and chlorine",
-      hint: {
-        start(ctx, strong) {
-          const d = ctx.data;
-          if (d.ring) d.ring.kill();
-          gsap.set("#ring", { opacity: strong ? 1 : 0.5, strokeWidth: strong ? 5 : 3 });
-          if (ctx.reduceMotion) return;
-          d.ring = gsap.to("#ring", { opacity: strong ? 0.3 : 0.1, duration: strong ? 0.8 : 1.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
-        },
-        stop(ctx) {
-          if (ctx.data.ring) ctx.data.ring.kill();
-          ctx.data.ring = null;
-          gsap.to("#ring", { opacity: 0, duration: 0.3 });
-        }
-      }
+      hint: Hint.ring("#ring", "500 " + CY)
     }],
 
     setup(ctx) {
