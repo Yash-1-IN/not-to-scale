@@ -115,3 +115,25 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   the same tab, occasionally leaving a tab in a stuck, pre-"Open the book" state after repeated
   same-tab reloads. Confirmed with curl that the served files were always current; a fresh tab (or a
   manual stylesheet reload) always showed the true state. Not an issue for the shipped file:// page.
+
+## Phase 5 — Pages 9-12: covalent bonding, metallic bonding, periodic trends, functional groups
+- 09 Covalent bonding: two hydrogen atoms slide together and their electrons meet as a shared pair,
+  forming H2. Caught a real bug before shipping: the electrons were drawn nested inside the sliding
+  nucleus groups, so their own movement would have compounded with the group's slide (landing far off
+  centre). Fixed by drawing the electrons as un-nested, absolute-coordinate circles.
+- 10 Metallic bonding: a lattice of ions with ~26 electrons drifting through it via the shared
+  particle-box helper; tap "hammers" the metal, the bottom two rows slip sideways while the electron
+  sea keeps drifting, showing why metals bend instead of shattering. Removed a leftover broken bit of
+  markup-splitting code that would have duplicated element ids and doubled the top two rows.
+- 11 Periodic trends: eight same-size atoms (Na to Ar) shrink into their real relative sizes on tap,
+  aligned on one baseline. Sizes are relative only, not claiming real pm values (the noble-gas radius
+  question is genuinely ambiguous, so we sidestepped it).
+- 12 Functional groups: one carbon-chain drawing with a swappable end group; tapping cycles ethanol
+  (-OH) -> ethanoic acid (-COOH) -> chloroethane (-Cl) -> ethylamine (-NH2) and loops back to ethanol.
+- Diagnosed real testing-pane behaviour worth recording: GSAP's ticker (rAF-driven) does not advance at
+  all while the pane sits idle, even across many real seconds of `wait`; only forcing a repaint (a
+  screenshot) pumps it forward, and it then fast-forwards through the stalled gap (default lag
+  smoothing). Don't call gsap.ticker.lagSmoothing(0) when testing here, and always interleave
+  wait+screenshot rather than one long wait. Used a temporary console.log in engine.js's turnPage to
+  confirm this against real state (busy/started/pageIndex) rather than guessing; removed it after.
+- All 12 pages walked end to end in the browser with console-error checks; no errors found.

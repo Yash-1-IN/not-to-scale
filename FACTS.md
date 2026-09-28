@@ -28,3 +28,8 @@
 | The mole | There are likely more molecules in a glass of water than glasses of water in all the oceans | Fermi estimate: ~250 mL water ≈ 13.9 mol ≈ 8×10²⁴ molecules; Earth's oceans ≈ 1.4×10²¹ L ≈ 5.6×10²¹ glasses — order-of-magnitude check, a well-known chemistry-teaching comparison |
 | Gases | Gas particles move constantly and collide with the walls of their container; this is pressure | IB Chemistry S1.5, kinetic theory of gases |
 | Gases | Heating a gas increases the particles' speed, so they hit the walls more often and harder | IB Chemistry S1.5 |
+| Covalent bonding | Two hydrogen atoms share a pair of electrons instead of transferring one; each counts the pair toward its own outer shell | IB Chemistry S2.2 |
+| Metallic bonding | Metal atoms release their outer electrons into a shared, delocalised "sea"; the remaining ions are positive | IB Chemistry S2.3 |
+| Metallic bonding | Metals are malleable because the electron sea still bonds the ions regardless of how the layers slide; ionic solids shatter instead, because sliding brings like charges together and they repel | IB Chemistry S2.3 |
+| Periodic trends | Atomic radius decreases left to right across a period: more protons pull the same outer shell in tighter, with no extra shielding shell added | IB Chemistry S3.1 |
+| Functional groups | -OH = alcohol (e.g. ethanol); -COOH = carboxylic acid (e.g. ethanoic acid); -Cl = halogenoalkane (e.g. chloroethane); -NH2 = amine (e.g. ethylamine) | IB Chemistry S3.2, standard organic chemistry nomenclature |
