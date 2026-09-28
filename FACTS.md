@@ -19,3 +19,12 @@
 | Ionic bonding | Sodium (2,8,1) gives its outer electron to chlorine (2,8,7), forming Na+ and Cl- (2,8 each) | IB Chemistry S2.1; standard electron configurations |
 | Ionic bonding | Opposite charges attract; this electrostatic attraction is the ionic bond | IB Chemistry S2.1 |
 | Ionic bonding | A real ionic compound is a giant lattice of many ions, not a single pair | IB Chemistry S2.1 |
+| Mass spectrometry | Lighter ions deflect more than heavier ions in a magnetic field (same charge, less momentum) | IB Chemistry S1.2 AHL; standard mass spectrometry principle |
+| Mass spectrometry | Neon is mostly neon-20 with some neon-22 and a trace of neon-21 | Natural abundances: ~90.5% Ne-20, ~9.2% Ne-22, ~0.3% Ne-21 |
+| Emission spectra | Hydrogen's four visible emission lines (red, cyan, blue, violet) come from electrons falling to the second shell (the Balmer series) | IB Chemistry S1.3; standard atomic physics |
+| Emission spectra | A bigger fall releases a more energetic, bluer photon (E=hf, shorter wavelength = more energy) | IB Chemistry S1.3 |
+| Emission spectra | Every element has its own pattern of spectral lines | IB Chemistry S1.3 |
+| The mole | Avogadro's constant is 6.02 × 10²³ particles per mole | IB Chemistry S1.4; standard value 6.02214076×10²³ |
+| The mole | There are likely more molecules in a glass of water than glasses of water in all the oceans | Fermi estimate: ~250 mL water ≈ 13.9 mol ≈ 8×10²⁴ molecules; Earth's oceans ≈ 1.4×10²¹ L ≈ 5.6×10²¹ glasses — order-of-magnitude check, a well-known chemistry-teaching comparison |
+| Gases | Gas particles move constantly and collide with the walls of their container; this is pressure | IB Chemistry S1.5, kinetic theory of gases |
+| Gases | Heating a gas increases the particles' speed, so they hit the walls more often and harder | IB Chemistry S1.5 |
