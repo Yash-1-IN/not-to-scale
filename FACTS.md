@@ -16,3 +16,6 @@
 | Shells | Electron arrangements: H 1, He 2, Li 2,1, Be 2,2, B 2,3, C 2,4, N 2,5, O 2,6, F 2,7, Ne 2,8, Na 2,8,1 | Standard electron configurations; IB Chemistry S1.3 |
 | Shells | The first shell holds a maximum of 2 electrons, the second a maximum of 8 | Shell capacity 2n^2 (n=1, 2); IB Chemistry S1.3 |
 | Shells | Shells are energy levels; electrons are spread out in cloud-like regions, not on neat rings | Quantum mechanical model of the atom; IB Chemistry S1.3 |
+| Ionic bonding | Sodium (2,8,1) gives its outer electron to chlorine (2,8,7), forming Na+ and Cl- (2,8 each) | IB Chemistry S2.1; standard electron configurations |
+| Ionic bonding | Opposite charges attract; this electrostatic attraction is the ionic bond | IB Chemistry S2.1 |
+| Ionic bonding | A real ionic compound is a giant lattice of many ions, not a single pair | IB Chemistry S2.1 |

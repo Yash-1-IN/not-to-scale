@@ -84,3 +84,12 @@
 - Sound settings tuned by builder (round 1, one listener); sound lab still in for a planned group vote.
 - Next session: page 4 ionic bonding (reuses the shell drawing), then the rest of the backlog in the spec (section 9).
   Phase 6 (accessibility pass, phone test, about page, GitHub Pages) still to do.
+
+## Phase 5 — Page 4: Ionic bonding
+- Sodium and chlorine drawn with the same shell style as page 3. Tap 1: sodium's outer electron flies across
+  to chlorine (chlorine was pre-laid-out on an 8-slot ring with the 8th slot hidden, so it doesn't need to
+  re-arrange when the electron arrives); +/- charges fade in. Tap 2: the ions slide together, shells nearly
+  touching. Back reverses each step; from "atoms", Back turns to the previous page.
+- Bug caught while testing: the "bring together" distance was computed from a wrong constant (220 instead of
+  the real 440px gap), so the ions barely moved. Fixed by computing FAR_APART from the actual atom positions.
+- Verified in a real-time run: tap, tap, back, back, with screenshots at each step and no console errors.
