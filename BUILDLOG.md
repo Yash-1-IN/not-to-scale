@@ -93,3 +93,25 @@
 - Bug caught while testing: the "bring together" distance was computed from a wrong constant (220 instead of
   the real 440px gap), so the ions barely moved. Fixed by computing FAR_APART from the actual atom positions.
 - Verified in a real-time run: tap, tap, back, back, with screenshots at each step and no console errors.
+
+## Phase 5 — Pages 5-8: mass spectrometry, emission spectra, the mole, gases
+Switched to a leaner page pattern for the rest of the backlog (2-4 states, one clear tap-reveal each)
+to get through the list faster, still chemistry-checked and animated, reusing the engine as-is.
+- Added js/hint.js (the gold tap-ring, shared instead of copy-pasted per page) and js/particles.js
+  (a small bouncing-particle-box helper for gases/collision-theory/equilibrium-style pages).
+- 05 Mass spectrometry: neon-20/22 ions fire through a field, lighter ion curves more, lands on its
+  own spot; a small bar graph (mass spectrum) grows to show relative abundance.
+- 06 Emission spectra: hydrogen's electron falls back to the second shell from further and further
+  out on each tap, releasing red/cyan/blue/violet light onto a spectrum strip (4 states, Back removes
+  the last line).
+- 07 The mole: a jar of specks too many to count; tap makes a number flicker and settle on Avogadro's
+  constant, with the "more molecules in a glass than glasses in the ocean" comparison.
+- 08 Gases: particles bouncing in a sealed box (pure wall-bounce, footnoted as a simplification); tap
+  heats the gas, particles speed up.
+- Found and fixed a real unit-mismatch bug before it shipped: gases.js first computed its own frame
+  delta from the ticker's raw time (assumed seconds) instead of reusing its deltaTime argument in ms,
+  which would have frozen the animation; matched it to the pattern already verified in shells.js.
+- Testing note: the local http.server + browser pane cache CSS/JS aggressively across navigations in
+  the same tab, occasionally leaving a tab in a stuck, pre-"Open the book" state after repeated
+  same-tab reloads. Confirmed with curl that the served files were always current; a fresh tab (or a
+  manual stylesheet reload) always showed the true state. Not an issue for the shipped file:// page.

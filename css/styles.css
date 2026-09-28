@@ -251,6 +251,23 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
   .page { padding-bottom: 7rem; }
 }
 
+/* ---------- Shared bits for pages 5 onward ---------- */
+.particle { fill: var(--ion, #4C6E9E); }
+:root { --ion: #4C6E9E; --heat: #E05A2B; --product: #2E9E63; --pos-ion: var(--proton); --neg-ion: var(--electron); }
+.molecule-label { font: 500 20px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; }
+.axis-line { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; fill: none; }
+.energy-curve { stroke: var(--ink); stroke-width: 3; fill: none; stroke-linecap: round; }
+.energy-fill { fill: var(--heat); opacity: 0.18; }
+.spectrum-strip { fill: #14121b; }
+.spectrum-line { stroke-width: 5; }
+.mass-bar { fill: var(--electron); }
+.mass-axis-label, .graph-label { font: 500 15px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; }
+.wire { stroke: var(--ink); stroke-width: 4; fill: none; stroke-linecap: round; }
+.h-plus { fill: #fff; stroke: var(--ink); stroke-width: 2; }
+.h-plus-label { font: 700 13px "Fredoka", sans-serif; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.flow-arrow { fill: var(--tap); }
+.ball { fill: var(--heat); }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .nav-btn.attn { animation: none; outline: 3px solid var(--tap); outline-offset: 3px; }
