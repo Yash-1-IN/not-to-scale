@@ -167,3 +167,30 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   (busy/started/pageIndex) matched a normal, still-in-progress transition each time it was inspected.
 - All 17 pages now exist and are registered in index.html; contents page (00-planned.js) is fully
   "lit up", no "coming soon" entries left.
+
+## Phase 6 — Accessibility pass
+- Real, book-wide bug found and fixed: every page's `idle()` (the gentle breathing/bobbing/orbiting
+  motion) started infinite GSAP loops unconditionally, never checking `prefers-reduced-motion` — this
+  affected all 12 pages that define an idle(), including ones built in earlier sessions (hydrogen,
+  isotopes, ionic bonding). Fixed centrally in js/engine.js instead of patching every page: both call
+  sites now do `if (p.idle && !reduceMotion) p.idle(ctx)`, so idle motion is skipped everywhere when
+  the OS/browser asks for reduced motion, matching §6/§10 of the spec. Confirmed idle motion still
+  runs normally otherwise (checked the hydrogen page's electron move between two screenshots).
+  (The ticker-driven pages — shells, gases, metallic, collision, equilibrium — already guarded their
+  own per-frame render loops individually and needed no change.)
+- Colour-only differentiation fixed on pages 14 (collision theory) and 15 (equilibrium): reactant,
+  reactant-B and product were previously told apart by fill colour alone. Both pages' species now also
+  differ in size (and product gets a white outline ring), and the legend swatches were resized and
+  outlined to match, consistent with the book's own rule and the hydrogen page's proton/electron
+  precedent. Also fixed a related bug this uncovered: the collision page's "heat" pulse animated the
+  raw SVG `r` attribute to one shared value for every particle, which would have erased the new size
+  differences after the first heat-up; changed it to a relative GSAP `scale` pulse instead, which
+  preserves each particle's own base radius.
+- Keyboard check (hydrogen page): Tab moves focus straight from Contents to the atom's hotspot with a
+  visible dashed focus outline, and Enter activates it exactly like a tap. This path is shared by every
+  page's hotspots through the engine, so it should hold everywhere.
+- Not independently verified live: prefers-reduced-motion end-to-end in the browser (this pane has no
+  way to emulate that media feature, only colour scheme), and text contrast/every page's colour-only
+  check exhaustively — reviewed the rest of the pages by eye against the "not colour alone" rule and
+  found no other cases (every other multi-entity page already differs by label, size, or shape:
+  proton/electron, p/n, Na/Cl symbols, element letters, formula labels).

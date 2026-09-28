@@ -17,6 +17,13 @@
   };
   const expWait = rate => -Math.log(1 - rand()) / rate;
 
+  // Reactant and product differ by more than colour (size, and an outline on product), so the
+  // page still reads without colour.
+  const LOOK = {
+    reactant: { r: 6, fill: "var(--electron)", stroke: "none" },
+    product: { r: 9, fill: "var(--heat)", stroke: "#fff" }
+  };
+
   const svg = `
     <rect class="fade" x="${BOX.x0}" y="${BOX.y0}" width="${BOX.x1 - BOX.x0}" height="${BOX.y1 - BOX.y0}" rx="14" fill="none" stroke="var(--ink)" stroke-width="3"/>
     <g id="particles"></g>
@@ -35,7 +42,12 @@
       const d = ctx.data;
       d.running = false;
       d.particles.forEach(p => {
-        if (p.kind !== "reactant") { d.counts[p.kind]--; d.counts.reactant++; p.kind = "reactant"; p.el.setAttribute("fill", "var(--electron)"); }
+        if (p.kind !== "reactant") {
+          d.counts[p.kind]--; d.counts.reactant++; p.kind = "reactant"; p.r = LOOK.reactant.r;
+          p.el.setAttribute("fill", LOOK.reactant.fill);
+          p.el.setAttribute("stroke", LOOK.reactant.stroke);
+          p.el.setAttribute("r", LOOK.reactant.r);
+        }
       });
       ctx.$("#counter").textContent = "reactant " + d.counts.reactant + " : " + d.counts.product + " product";
       return gsap.timeline();
@@ -48,7 +60,7 @@
     title: "Equilibrium: a reaction that runs both ways at once",
     description: "Twenty particles bouncing in a box, all starting as reactant (blue). Tapping starts the reaction: particles keep switching to product (orange) and back again in both directions, and the running count settles into a steady split even though individual particles never stop converting.",
     svg,
-    legend: '<span class="dot" style="width:14px;height:14px;background:var(--electron)" aria-hidden="true"></span>reactant <span class="dot" style="width:14px;height:14px;background:var(--heat)" aria-hidden="true"></span>product',
+    legend: '<span class="dot" style="width:12px;height:12px;background:var(--electron)" aria-hidden="true"></span>reactant <span class="dot" style="width:18px;height:18px;background:var(--heat);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)" aria-hidden="true"></span>product',
     start: "before",
 
     hotspots: [{ id: "hit", selector: "#hit", label: "Tap to start the reaction", hint: Hint.ring("#ring", "500 250") }],
@@ -67,17 +79,23 @@
         const angle = rand() * Math.PI * 2, speed = 40 + rand() * 30;
         const el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         el.setAttribute("class", "fade");
-        el.setAttribute("r", 7);
-        el.setAttribute("fill", "var(--electron)");
+        el.setAttribute("r", LOOK.reactant.r);
+        el.setAttribute("fill", LOOK.reactant.fill);
+        el.setAttribute("stroke", "none");
+        el.setAttribute("stroke-width", 2);
         el.setAttribute("cx", x); el.setAttribute("cy", y);
         layer.appendChild(el);
-        const p = { x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 7, el, kind: "reactant" };
+        const p = { x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: LOOK.reactant.r, el, kind: "reactant" };
         p.flipAt = expWait(RATE_FORWARD);
         d.particles.push(p);
       }
       const setKind = (p, kind) => {
         d.counts[p.kind]--; p.kind = kind; d.counts[kind]++;
-        p.el.setAttribute("fill", kind === "reactant" ? "var(--electron)" : "var(--heat)");
+        const look = LOOK[kind];
+        p.el.setAttribute("fill", look.fill);
+        p.el.setAttribute("stroke", look.stroke);
+        p.el.setAttribute("r", look.r);
+        p.r = look.r;
         p.flipAt = d.t + expWait(kind === "reactant" ? RATE_FORWARD : RATE_REVERSE);
         ctx.$("#counter").textContent = "reactant " + d.counts.reactant + " : " + d.counts.product + " product";
       };

@@ -213,7 +213,7 @@ const Book = (() => {
         gsap.set(el.scene, { opacity: 1 });
         gsap.set(el.captions, { opacity: 1 });
         gsap.set(el.legend, { opacity: 0 });
-        const tl = gsap.timeline({ onComplete: () => { busy = false; if (p.idle) p.idle(ctx); enterState(p.start); } });
+        const tl = gsap.timeline({ onComplete: () => { busy = false; if (p.idle && !reduceMotion) p.idle(ctx); enterState(p.start); } });
         tl.to(el.capA, { opacity: 1, duration: 0.7 }, 0);
         tl.add(p.intro ? p.intro(ctx) : defaultIntro(), 0.2);
         if (p.legend && state().legend !== false) tl.to(el.legend, { opacity: 1, duration: 0.5 }, "-=0.2");
@@ -313,7 +313,7 @@ const Book = (() => {
 
     const finish = () => {
       started = true;
-      if (p.idle) p.idle(ctx);
+      if (p.idle && !reduceMotion) p.idle(ctx);
       enterState(p.start);
     };
 
