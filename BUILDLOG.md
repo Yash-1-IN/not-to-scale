@@ -207,3 +207,12 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - Verified both entry points open/close correctly with no console errors; the placeholder attribution
   line ("Made by an IB Chemistry student, built together with Claude Code") in index.html can be
   changed any time by editing the #about section directly.
+
+## Phase 6 — GitHub Pages instructions
+- No `gh` CLI available in this environment, and pushing to a public GitHub repo needs the builder's
+  own account, so this is manual rather than automated. Added a step-by-step "Publishing it on GitHub
+  Pages" section to README.md: create a repo, push this folder to it, turn on Pages (branch main, root
+  folder), and how to publish later updates (commit + push). Confirmed no .gitignore is excluding
+  anything the deployed site needs (all of pages/, js/, css/ are tracked).
+- Phase 6 checklist from the spec: accessibility pass (done), phone test (done), About page (done),
+  GitHub Pages instructions (done, deploy itself is up to the builder).
