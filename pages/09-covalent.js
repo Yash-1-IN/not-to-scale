@@ -23,7 +23,7 @@
     <circle class="electron fade" id="ae" cx="${H1_X - RAD}" cy="${CY}" r="7"/>
     <circle class="electron fade" id="be" cx="${H2_X + RAD}" cy="${CY}" r="7"/>
     <text class="molecule-label fade" id="label" x="500" y="380" opacity="0"></text>
-    <circle class="tap-ring" id="ring" cx="500" cy="${CY}" r="240" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="211" y="118" width="578" height="204" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="${CY}" r="420"/>`;
 
   const bond = {
@@ -64,7 +64,7 @@
     legend: '<span class="dot dot-p" aria-hidden="true"></span>nucleus <span class="dot dot-e" aria-hidden="true"></span>electron',
     start: "apart",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to bring the two hydrogen atoms together", hint: Hint.ring("#ring", "500 " + CY) }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to bring the two hydrogen atoms together", hint: Hint.ring("#ring", "500 220") }],
 
     intro() {
       return gsap.to(["#a .fade", "#b .fade", "#ae", "#be"], { opacity: 1, duration: 0.6, stagger: 0.05 });

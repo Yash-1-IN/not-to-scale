@@ -1,8 +1,13 @@
 # Not to Scale
 
-An interactive picture book of IB Chemistry, 17 pages covering the syllabus from the hydrogen atom to
+An interactive picture book of IB Chemistry, 19 pages covering the syllabus from the hydrogen atom to
 redox cells. Open `index.html` (double-click it). No install needed; it needs internet the first time
 for the fonts and GSAP.
+
+- **Link to one page:** add `#` and the page's id, e.g. `index.html#ionic` or
+  `https://your-username.github.io/not-to-scale/#maxwell`. The browser's Back button turns pages too.
+- **Check everything still works:** open `index.html?test`. The book taps through every page on its
+  own, sped up, and shows PASS or a list of problems in the corner. Takes about 15 seconds.
 
 ## How it's organised
 - `index.html` — the page shell. Lists the page files at the bottom.
@@ -10,6 +15,7 @@ for the fonts and GSAP.
   contents page, About panel, captions, attention chime, tappable things.
 - `js/camera.js` — zooming. `js/hint.js` — the gold "tap this" ring, shared by every page.
   `js/particles.js` — the bouncing-particle-box physics shared by a few pages.
+  `js/selftest.js` — the automated test (only runs with `?test` in the address).
   `js/sound.js` — the four synthesised sounds. `js/lab.js` — the sound lab.
 - `pages/01-hydrogen.js` — the first page. Every page is one file like this; see `pages/` for the rest.
 - `pages/00-planned.js` — the plan for the whole book (shown as "coming soon" on the contents page for

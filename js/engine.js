@@ -196,9 +196,39 @@ const Book = (() => {
     if (reduceMotion) tl.timeScale(12); // zooms become quick crossfades
   }
 
+  // ---------- Links to a page (index.html#ionic) ----------
+  // The URL names the page, so a link can open a specific one and the browser's Back/Forward buttons
+  // turn pages. Plain hash assignment (not history.pushState) because pushState throws on file://.
+  let hashTarget = -1; // the page the URL names, as far as the book knows
+
+  function indexFromHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const i = pages.findIndex(p => p.id === id);
+    return i >= 0 ? i : 0;
+  }
+  function writeHash(i) {
+    hashTarget = i;
+    if (i === 0 && !location.hash) return; // the first page needs no hash
+    if (location.hash.slice(1) !== pages[i].id) location.hash = pages[i].id;
+  }
+  function onHashChange() {
+    const i = indexFromHash();
+    if (i === hashTarget) return;
+    hashTarget = i;
+    if (!started) { unloadPage(); loadPage(i); return; }
+    if (!el.contents.hidden) closeContents();
+    followHash();
+  }
+  function followHash() {
+    if (hashTarget === pageIndex) return;
+    if (busy) { setTimeout(followHash, 150); return; }
+    turnPage(hashTarget);
+  }
+
   // ---------- Page turns ----------
   function turnPage(index) {
     if (busy || !started || index < 0 || index >= pages.length || index === pageIndex) return;
+    writeHash(index);
     busy = true;
     clearAttention();
     stopHints();
@@ -388,7 +418,9 @@ const Book = (() => {
 
     if (!pages.length) { console.warn("No pages registered."); return; }
     buildContents();
-    loadPage(0);
+    loadPage(indexFromHash());
+    hashTarget = pageIndex;
+    window.addEventListener("hashchange", onHashChange);
 
     el.openBook.addEventListener("click", () => {
       Sound.unlock();
@@ -398,5 +430,15 @@ const Book = (() => {
     });
   }
 
-  return { register, plan: setPlan, boot, pages };
+  // Read-only peek at the running book, for js/selftest.js.
+  const debug = {
+    turnPage,
+    index: () => pageIndex,
+    stateName: () => stateName,
+    busy: () => busy,
+    started: () => started,
+    ctx: () => ctx
+  };
+
+  return { register, plan: setPlan, boot, pages, debug };
 })();

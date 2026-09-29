@@ -18,7 +18,7 @@
       <text class="h-plus-label fade" id="protonLabel" x="${AX + R}" y="${CY}">H⁺</text>
     </g>
 
-    <circle class="tap-ring" id="ring" cx="500" cy="${CY}" r="320" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="223" y="163" width="554" height="186" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="${CY}" r="420"/>`;
 
   const give = {
@@ -52,7 +52,7 @@
     svg,
     start: "apart",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to let the acid hand over its proton", hint: Hint.ring("#ring", "500 " + CY) }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to let the acid hand over its proton", hint: Hint.ring("#ring", "500 256") }],
 
     intro() {
       return gsap.to(["circle.fade", "text.fade"], { opacity: 1, duration: 0.6, stagger: 0.04 });

@@ -18,7 +18,7 @@
     <text class="atom-sub fade" x="${CX2}" y="${SOL_Y + SOL_H + 54}">reduction — gains electrons</text>
 
     <g id="electrons"></g>
-    <circle class="tap-ring" id="ring" cx="500" cy="260" r="330" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="167" y="118" width="668" height="358" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="260" r="420"/>`;
 
   function makeElectrons(ctx) {
@@ -43,9 +43,12 @@
       const els = makeElectrons(ctx);
       // Position each electron with GSAP itself (never a raw attribute) before animating its x/y,
       // so GSAP's own transform cache starts from the same place it will animate from.
+      // Placed (and hidden) straight away: during its start delay an electron would otherwise sit at
+      // (0, 0), peeking out of the top-left corner of the scene.
       d.flows = els.map((g, i) => {
+        gsap.set(g, { x: PATH[0][0], y: PATH[0][1], opacity: 0 });
         const tl = gsap.timeline({ repeat: -1, delay: i * (2.4 / N_E) });
-        tl.set(g, { x: PATH[0][0], y: PATH[0][1] });
+        tl.set(g, { x: PATH[0][0], y: PATH[0][1], opacity: 1 });
         for (let s = 1; s < PATH.length; s++) tl.to(g, { x: PATH[s][0], y: PATH[s][1], duration: 0.6, ease: "none" });
         return tl;
       });
@@ -70,7 +73,7 @@
     svg,
     start: "off",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to let the cell run", hint: Hint.ring("#ring", "500 260") }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to let the cell run", hint: Hint.ring("#ring", "501 297") }],
 
     setup(ctx) { ctx.data.flows = []; },
     teardown(ctx) { (ctx.data.flows || []).forEach(f => f.kill()); },

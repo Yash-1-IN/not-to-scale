@@ -16,7 +16,7 @@
   const svg = `
     <rect class="fade" x="${BOX.x0}" y="${BOX.y0}" width="${BOX.x1 - BOX.x0}" height="${BOX.y1 - BOX.y0}" rx="14" fill="none" stroke="var(--ink)" stroke-width="3"/>
     <g id="particles"></g>
-    <circle class="tap-ring" id="ring" cx="500" cy="250" r="330" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="168" y="88" width="664" height="324" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="250" r="420"/>`;
 
   const heat = {

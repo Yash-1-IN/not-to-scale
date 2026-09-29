@@ -26,7 +26,7 @@
     <rect class="fade" id="groupDot" x="${GX - GROUPS[0].w / 2}" y="${GY - PILL_H / 2}" width="${GROUPS[0].w}" height="${PILL_H}" rx="${PILL_H / 2}"/>
     <text class="nuc-sym fade" id="groupLabel" x="${GX}" y="${GY}"></text>
     <text class="molecule-label fade" id="name" x="450" y="150"></text>
-    <circle class="tap-ring" id="ring" cx="450" cy="240" r="270" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="271" y="109" width="378" height="220" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="450" cy="240" r="420"/>`;
 
   // The badge is a pill sized to fit each label (a fixed-size circle hid "COOH"/"NH₂" past its edge).
@@ -77,7 +77,7 @@
     svg,
     start: "m0",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to try a different functional group", hint: Hint.ring("#ring", "450 240") }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to try a different functional group", hint: Hint.ring("#ring", "460 219") }],
 
     setup(ctx) { ctx.$("#groupDot").setAttribute("fill", GROUPS[0].colour); ctx.$("#groupLabel").textContent = GROUPS[0].label; ctx.$("#name").textContent = "part of " + GROUPS[0].example; },
 

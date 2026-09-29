@@ -26,6 +26,8 @@ Book.plan([
   ] },
   { topic: "Reactivity 2 — How much, how fast, how far?", items: [
     "Collision theory: why heating speeds things up",
+    "Maxwell–Boltzmann: why a little heat goes a long way",
+    "Catalysts: a lower hump to get over",
     "Equilibrium: a reaction that runs both ways at once"
   ] },
   { topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [

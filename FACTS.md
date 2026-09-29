@@ -44,3 +44,8 @@
 | Redox | In an electrochemical cell, electrons flow through the external wire from anode to cathode | IB Chemistry R3.2 |
 | Exothermic/endothermic | Activation energy is the energy gap between the reactants' level and the peak of the hump, the minimum needed to react at all | IB Chemistry R2.2 (activation energy) |
 | Equilibrium | The equilibrium constant K = [product] / [reactant] at equilibrium; a larger K means more product at equilibrium, a smaller K means more reactant | IB Chemistry R2.3, simplified for a single-step A ⇌ B model (a real K uses concentrations and stoichiometric powers) |
+| Maxwell–Boltzmann | Particles in a gas have a spread of kinetic energies: most modest, a long tail of a few with high energy | IB Chemistry R2.2 |
+| Maxwell–Boltzmann | Heating lowers and widens the curve and shifts its peak to higher energy; the area under it (the number of particles) stays the same | IB Chemistry R2.2 |
+| Maxwell–Boltzmann | A modest temperature rise multiplies the fraction of particles with energy ≥ Ea (here 6 → 25 of 200 for T × 1.6 with Ea = 4.5 kT) | Computed on the page from the 3D energy distribution f(E) = 2√(E/π)(kT)^(−3/2)e^(−E/kT); tail fraction erfc(√x) + 2√(x/π)e^(−x), x = Ea/kT: 0.029 → 0.132 (the page shows 25, not 26, because the 0.6% beyond the chart edge is spread back over the bars) |
+| Catalysts | A catalyst provides an alternative pathway with a lower activation energy; reactants, products and the overall energy change (ΔH) are unchanged | IB Chemistry R2.2 |
+| Catalysts | The catalyst is not used up in the reaction | IB Chemistry R2.2 |

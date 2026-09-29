@@ -286,3 +286,28 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   on elements whose position the physics ticker also owns — confirmed no escapes over a 4-second,
   ~170-frame automated position scan before AND after the collision-theory fix, with worst-case wall
   margin at exactly 0 (touching, correctly clamped) rather than negative (poking through).
+
+## Round 4 — Catalysts, Maxwell–Boltzmann, links to pages, automated self-test
+- **Maxwell–Boltzmann (`pages/14a-maxwell.js`):** 200 particles "measured" one at a time drop into
+  a kinetic-energy histogram, the mass-spec "keep firing until it settles" idea. Bar heights are exact
+  shares of the real 3D energy distribution (erf-based CDF, largest-remainder rounding), not random;
+  only the arrival order is shuffled. Heating re-measures: the curve is lower and wider, the old curve
+  stays as a dashed ghost, and the count past the activation-energy line goes 6 → 25. First version
+  piled the tail beyond the chart edge into the last bar, which showed as a fake spike; that ~0.6%
+  is now spread back over the bars by rescaling.
+- **Catalysts (`pages/14b-catalysts.js`):** the energy-page curve maths reused, with a second, dashed
+  green, lower hump between the same reactants and products; two activation-energy brackets by the axis
+  with dashed guide lines from each peak; the ball rolls the catalysed route along the path.
+- **Links to a page:** `index.html#ionic` opens that page (the cover still shows first), every page
+  turn writes its id into the URL, and the browser's Back/Forward buttons turn pages. Uses plain
+  `location.hash` assignment and `hashchange`, because `history.pushState` throws on `file://`.
+- **Automated self-test (`js/selftest.js`, run with `index.html?test`):** walks every page and every
+  reachable state (hotspots, Next, Replay, Back) at 20× speed, pumping `gsap.ticker.tick()` on a timer
+  so it runs even when the tab isn't painting. It checks landing states, captions (and that the old one
+  faded), enabled tap targets, Next on final states, text and tap outlines inside the canvas, particles
+  inside their box, console errors and warnings, and the #link + browser-Back round trip. Result: 19
+  pages, 87 transitions, PASS.
+- **Bugs the self-test found on its first run:** seven more pages (gases, covalent, metallic, periodic,
+  functional groups, acids, redox) had oversized circular tap hints going off the canvas; they now have
+  squircles fitted to each page's measured drawing bounds. Redox electrons sat at (0, 0), peeking out of
+  the top-left corner, during their staggered start delay; they're now placed and hidden up front.

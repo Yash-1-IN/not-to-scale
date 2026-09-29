@@ -27,7 +27,7 @@
   const svg = `
     <g id="lattice">${ionSVG}</g>
     <g id="sea"></g>
-    <circle class="tap-ring" id="ring" cx="500" cy="270" r="270" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="230" y="108" width="538" height="334" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="270" r="420"/>`;
 
   const hammer = {
@@ -61,7 +61,7 @@
     legend: '<span class="dot dot-p" aria-hidden="true"></span>metal ion (+) <span class="dot dot-e" aria-hidden="true"></span>delocalised electron',
     start: "solid",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to hammer the metal", hint: Hint.ring("#ring", "500 270") }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to hammer the metal", hint: Hint.ring("#ring", "499 275") }],
 
     setup(ctx) {
       const d = ctx.data;

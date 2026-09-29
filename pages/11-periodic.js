@@ -17,7 +17,7 @@
     ${atoms.map((a, i) => `
       <circle class="proton fade" id="atom${i}" cx="${a.x}" cy="${BASE_Y - START_R}" r="${START_R}"/>
       <text class="nuc-sym fade" id="sym${i}" x="${a.x}" y="${BASE_Y - START_R}">${a.sym}</text>`).join("")}
-    <circle class="tap-ring" id="ring" cx="500" cy="240" r="440" opacity="0"/>
+    <rect class="tap-ring" id="ring" x="72" y="226" width="836" height="136" rx="30" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="240" r="480"/>`;
 
   const shrink = {
@@ -41,7 +41,7 @@
     svg,
     start: "same",
 
-    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to see how atom size changes across a period", hint: Hint.ring("#ring", "500 240") }],
+    hotspots: [{ id: "hit", selector: "#hit", label: "Tap to see how atom size changes across a period", hint: Hint.ring("#ring", "490 294") }],
 
     intro() {
       return gsap.to(["circle.proton.fade", "text.nuc-sym.fade", "line.fade"], { opacity: 1, duration: 0.6, stagger: 0.05 });
