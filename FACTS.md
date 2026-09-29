@@ -42,5 +42,5 @@
 | Acids and bases | HCl + NH3 -> Cl- + NH4+; Cl- is HCl's conjugate base, NH4+ is NH3's conjugate acid | IB Chemistry R3.1, standard acid-base chemistry |
 | Redox | Oxidation is loss of electrons (at the anode); reduction is gain of electrons (at the cathode) — "OIL RIG" | IB Chemistry R3.2 |
 | Redox | In an electrochemical cell, electrons flow through the external wire from anode to cathode | IB Chemistry R3.2 |
-| Exothermic/endothermic | Activation energy is the energy gap between the reactants' level and the peak of the hump, the minimum needed to react at all | IB Chemistry R1.2 |
+| Exothermic/endothermic | Activation energy is the energy gap between the reactants' level and the peak of the hump, the minimum needed to react at all | IB Chemistry R2.2 (activation energy) |
 | Equilibrium | The equilibrium constant K = [product] / [reactant] at equilibrium; a larger K means more product at equilibrium, a smaller K means more reactant | IB Chemistry R2.3, simplified for a single-step A ⇌ B model (a real K uses concentrations and stoichiometric powers) |

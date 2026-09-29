@@ -16,6 +16,7 @@ for the fonts and GSAP.
   anything not yet written).
 - `pages/_template.js` — copy this to start a new page.
 - `FACTS.md` — every fact shown on screen and where it was checked. `BUILDLOG.md` — what was built when.
+- `PROJECT.md` — the full handover: how everything works, lessons learned, known issues, ideas.
 
 ## Adding a page
 1. Copy `pages/_template.js` to `pages/02-something.js`.
