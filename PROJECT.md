@@ -50,9 +50,15 @@ Back/Forward buttons turn pages.
 for f in js/*.js pages/*.js; do node --check "$f" || echo "FAIL $f"; done
 ```
 
-**Deploy:** manual GitHub Pages steps are in `README.md` ("Publishing it on GitHub Pages"). It needs
-the builder's own GitHub account. There is no `gh` CLI in the build environment. The git branch is
-`master` locally; the README tells you to rename it to `main` when pushing.
+**Repo:** https://github.com/Yash-1-IN/not-to-scale (**private**, branch `main`, tracking
+`origin/main`). To publish changes: commit, then `git push`. The GitHub CLI is installed at
+`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwe\bin\gh.exe`
+and signed in as Yash-1-IN (it may not be on PATH until a new shell).
+
+**Deploy:** GitHub Pages on a free account needs the repo to be **public** first
+(`gh repo edit --visibility public --accept-visibility-change-consequences`), then Settings → Pages →
+Deploy from branch `main`, folder `/`. Or run `gh api repos/Yash-1-IN/not-to-scale/pages -X POST -f source[branch]=main -f source[path]=/`.
+The manual steps are also in `README.md`.
 
 ---
 
