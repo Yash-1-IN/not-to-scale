@@ -11,7 +11,7 @@
   const x = k => 150 + k * 100;
   const col = k => (k < 3 ? C.ion : k === 3 ? C.grey : C.product);
   const svg = `${EL.map((e, k) => `
-    <rect class="fade" x="${x(k) - 42}" y="118" width="84" height="84" rx="14" fill="${col(k)}" opacity="0.9"/>
+    <rect class="fade" x="${x(k) - 42}" y="118" width="84" height="84" rx="14" fill="${col(k)}"/>
     ${K.t(x(k), 174, e[0], "atom-name fade", 'style="fill:#fff;font-size:34px"')}
     ${K.t(x(k), 236, e[1], "graph-label fade")}${K.t(x(k), 262, e[2], "graph-label fade")}
     <g class="ox" opacity="0">${K.t(x(k), 320, e[3], "molecule-label")}${K.t(x(k), 350, e[4], "graph-label")}</g>`).join("")}

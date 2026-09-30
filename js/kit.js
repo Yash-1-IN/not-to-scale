@@ -42,7 +42,7 @@ const Kit = (() => {
   }
   // A group centred on (0, 0), moved to (x, y) by GSAP when the page loads.
   const g = (id, x, y, inner, cls = "fade", extra = "") =>
-    `<g id="${id}" class="${cls}" data-x="${x}" data-y="${y}" ${extra}>${inner}</g>`;
+    `<g ${id ? `id="${id}"` : ""} class="${cls}" data-x="${x}" data-y="${y}" ${extra}>${inner}</g>`;
   // An atom-style disc with a white symbol, as a movable group.
   const atom = (id, x, y, rad, sym, fill = C.proton, cls = "fade") =>
     g(id, x, y, `<circle r="${rad}" fill="${fill}"/><text class="nuc-sym" style="font-size:${Math.max(11, Math.min(22, rad * 0.9))}px">${sym}</text>`, cls);
@@ -184,6 +184,7 @@ const Kit = (() => {
       },
       intro: cfg.intro || (ctx => {
         const els = ctx.$$(".fade");
+        if (!els.length) return gsap.timeline();
         return gsap.to(els, { opacity: 1, duration: 0.5, stagger: Math.min(0.05, 0.9 / (els.length || 1)) });
       }),
       idle: cfg.idle,

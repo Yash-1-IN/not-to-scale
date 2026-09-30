@@ -13,7 +13,7 @@
 
   const svg = `
     <rect class="fade" x="400" y="90" width="200" height="330" fill="#F3EBD9" stroke="var(--ink)" stroke-width="2.5"/>
-    <rect id="wet" class="fade" x="401" y="${BASE}" width="198" height="0" fill="#CFE8FF" opacity="0.8"/>
+    <rect id="wet" class="fade" x="401" y="${BASE}" width="198" height="0" fill="#CFE8FF" fill-opacity="0.8"/>
     <line class="fade" x1="400" y1="${BASE}" x2="600" y2="${BASE}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 5"/>
     <line id="frontLine" class="fade" x1="400" y1="${BASE}" x2="600" y2="${BASE}" stroke="#5A93C8" stroke-width="3"/>
     <ellipse id="mix" class="fade" cx="500" cy="${BASE}" rx="12" ry="9" fill="#3a3540"/>
