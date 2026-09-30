@@ -64,3 +64,14 @@
 | Exothermic/endothermic | ΔHc(methane) = −891 kJ mol⁻¹ | IB data booklet §14 |
 | Maxwell–Boltzmann, catalysts | Arrhenius equation k = Ae^(−Ea/RT) (HL) | IB data booklet §1 |
 | Redox | E⦵ Zn²⁺/Zn −0.76 V, Cu²⁺/Cu +0.34 V; in a Zn–Cu cell zinc is oxidized (anode) | IB data booklet §19 |
+| States of matter | Solid: particles closely packed in a regular pattern, vibrating in place; liquid: close but able to slide past each other; gas: far apart and moving fast, filling the container | IB Chemistry S1.1.2 |
+| Kelvin | T (K) = T (°C) + 273.15; 0 K is absolute zero; kelvin temperature is proportional to average kinetic energy | IB Chemistry S1.1.3; data booklet §4 |
+| Orbitals | An orbital is a region of space where an electron is likely to be found; s orbitals are spherical, p orbitals dumbbell-shaped along three axes; each orbital holds at most 2 electrons (s: 2, p: 6, d: 10, f: 14 per subshell) | IB Chemistry S1.3.4–5 |
+| Limit of convergence | Lines in a spectrum converge at high frequency; the limit corresponds to the ionization energy (hydrogen: 1312 kJ mol⁻¹) | IB Chemistry S1.3.6 (HL); data booklet §9 |
+| Successive ionization energies | Sodium's successive IEs (kJ mol⁻¹, rounded): 496, 4562, 6910, 9543, 13354, 16613, 20117, 25496, 28932, 141362, 159076 — jumps after the 1st and 9th mark shell boundaries. **Only the first (496) is in the booklet; the rest are from standard tables and approximate — please check against your textbook** | IB Chemistry S1.3.7 (HL); data booklet §9 (first IE only) |
+| Molar mass | Relative atomic mass is the weighted average of isotope masses; Cl ≈ 75.8 % Cl-35 and 24.2 % Cl-37 gives 35.5 (booklet 35.45); molar mass in g mol⁻¹ equals Ar/Mr numerically; NaCl 22.99 + 35.45 = 58.44 | IB Chemistry S1.4.2–3; data booklet §7 |
+| Empirical formula | Fe 69.9 %, O 30.1 % → 1.25 : 1.88 mol → 1 : 1.5 → 2 : 3 → Fe₂O₃ (69.9/55.85 = 1.25; 30.1/16.00 = 1.88); glucose C₆H₁₂O₆ has empirical formula CH₂O | IB Chemistry S1.4.4; data booklet §7 |
+| Concentration | c = n / V in mol dm⁻³; diluting lowers c, evaporating raises it; other measures: molality, mole fraction, ppm | IB Chemistry S1.4.5; data booklet §1 (n = CV) |
+| Avogadro's law | Equal volumes of gases at the same temperature and pressure contain equal numbers of particles; V ∝ n; molar volume of an ideal gas at STP is 22.7 dm³ mol⁻¹ (STP 273.15 K, 100 kPa) | IB Chemistry S1.4.6; data booklet §2, §4 |
+| Real gases | Real gases deviate from ideal behaviour at high pressure (particle volume matters) and low temperature (intermolecular attractions matter) | IB Chemistry S1.5.2 |
+| Ideal gas law | PV = nRT; for 0.10 mol at 300 K in 2.5 dm³, P = nRT/V = 0.10 × 8.31 × 300 / 2.5 = 99.7 ≈ 100 kPa; P ∝ 1/V at constant T; P ∝ T at constant V; V ∝ T at constant P | IB Chemistry S1.5.3–4; data booklet §1, §2 |

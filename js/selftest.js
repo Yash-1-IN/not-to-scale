@@ -76,6 +76,15 @@
       }
     });
 
+    // No two visible labels should sit on top of each other.
+    const shownOpacity = el => { let o = 1; for (let n = el; n && n !== root.parentNode; n = n.parentNode) if (n.nodeType === 1) o *= +getComputedStyle(n).opacity; return o; };
+    const labels = Array.from(root.querySelectorAll("text")).filter(el => el.textContent.trim() && shownOpacity(el) > 0.4).map(el => ({ el, b: el.getBoundingClientRect() }));
+    for (let i = 0; i < labels.length; i++) for (let j = i + 1; j < labels.length; j++) {
+      const a = labels[i].b, c = labels[j].b;
+      const w = Math.min(a.right, c.right) - Math.max(a.left, c.left), h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
+      if (w > 6 && h > 6) r.problems.push(`${name}: labels overlap: "${labels[i].el.textContent.trim().slice(0, 24)}" and "${labels[j].el.textContent.trim().slice(0, 24)}"`);
+    }
+
     const d = Book.debug.ctx().data;
     const box = root.querySelector('rect.fade[fill="none"]');
     if (d.particles && box) {

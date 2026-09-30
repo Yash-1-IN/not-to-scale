@@ -287,6 +287,16 @@ const Book = (() => {
   }
 
   // ---------- Contents page ----------
+  // Book order follows the plan (the syllabus), whatever order the page files load in. Pages that
+  // aren't in the plan go last, in the order they registered.
+  function sortByPlan() {
+    const order = [];
+    plan.forEach(t => t.items.forEach(item => order.push([].concat(item)[0] + "|" + t.topic)));
+    const rank = p => { const i = order.indexOf(p.title + "|" + p.topic); return i < 0 ? 1e6 : i; };
+    const first = new Map(pages.map((p, i) => [p, i]));
+    pages.sort((a, b) => rank(a) - rank(b) || first.get(a) - first.get(b));
+  }
+
   // A plan item is a title, or [title, syllabus code] — the code is shown beside it.
   function buildContents() {
     const topics = plan.map(t => ({
@@ -430,6 +440,7 @@ const Book = (() => {
     ["pointerdown", "keydown"].forEach(evt => document.addEventListener(evt, armAttention));
 
     if (!pages.length) { console.warn("No pages registered."); return; }
+    sortByPlan();
     buildContents();
     loadPage(indexFromHash());
     hashTarget = pageIndex;
