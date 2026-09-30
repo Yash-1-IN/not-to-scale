@@ -104,6 +104,7 @@
       },
       catalysed: {
         caption: "A catalyst gives the reaction a different route with a lower hump. Same start, same finish, but far less energy needed to get over.",
+        booklet: "§1 equations (HL): in k = Ae<sup>−Ea/RT</sup>, a smaller Ea gives a larger rate constant k.",
         footnote: "The catalyst comes out unchanged, and the overall energy change stays the same. With a lower hump, many more particles have enough energy — see the Maxwell–Boltzmann page.",
         back: removeCatalyst,
         final: true

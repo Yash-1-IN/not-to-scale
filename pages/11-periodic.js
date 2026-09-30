@@ -4,10 +4,10 @@
 (() => {
   const BASE_Y = 340; // every atom's bottom edge sits on this line
   const START_R = 46; // all atoms start this size, then shrink to their real relative size
-  const ELEMENTS = [
-    { sym: "Na", r: 46 }, { sym: "Mg", r: 40 }, { sym: "Al", r: 35 }, { sym: "Si", r: 31 },
-    { sym: "P", r: 28 }, { sym: "S", r: 26 }, { sym: "Cl", r: 24 }, { sym: "Ar", r: 22 }
-  ];
+  // Atomic (covalent) radii in pm from the IB data booklet, section 10, drawn in proportion
+  // (sodium, the biggest, keeps START_R). Argon's 101 pm is a hair bigger than chlorine's 100 pm.
+  const PM = { Na: 160, Mg: 140, Al: 124, Si: 114, P: 109, S: 104, Cl: 100, Ar: 101 };
+  const ELEMENTS = Object.entries(PM).map(([sym, pm]) => ({ sym, pm, r: START_R * pm / PM.Na }));
   const X0 = 140, DX = 100;
 
   const atoms = ELEMENTS.map((e, i) => ({ ...e, x: X0 + i * DX }));
@@ -37,7 +37,7 @@
     id: "periodic",
     topic: "Structure 3 — Classification of matter",
     title: "Walking across the periodic table: trends in atom size",
-    description: "Eight atoms in a row, sodium to argon, all starting the same size. Tapping shrinks them one after another from left to right, ending with sodium the largest and argon the smallest, all sitting on the same baseline.",
+    description: "Eight atoms in a row, sodium to argon, all starting the same size. Tapping shrinks them one after another from left to right to their sizes in proportion to the IB data booklet's radii: sodium the largest, getting steadily smaller to chlorine, with argon a hair bigger than chlorine, all sitting on the same baseline.",
     svg,
     start: "same",
 
@@ -60,7 +60,8 @@
       },
       shown: {
         caption: "Each atom has one more proton than the last, pulling the very same outer shell in a little tighter. So atoms get smaller as you move across a period.",
-        footnote: "Sizes here are relative to each other, not to any real measurement — not to scale, of course.",
+        footnote: "Argon breaks the pattern by a whisker: noble gases hardly ever bond, so their radii are estimated differently and don't compare neatly. The sizes are in proportion to each other; the atoms themselves are, of course, not to scale.",
+        booklet: "§10 atomic radii (pm): Na 160, Mg 140, Al 124, Si 114, P 109, S 104, Cl 100, Ar 101.",
         final: true
       }
     }

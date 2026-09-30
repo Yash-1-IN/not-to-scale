@@ -1,6 +1,6 @@
 # Not to Scale
 
-An interactive picture book of IB Chemistry, 19 pages covering the syllabus from the hydrogen atom to
+An interactive picture book of IB Chemistry, 20 pages (of a planned 83 following the syllabus) covering the syllabus from the hydrogen atom to
 redox cells. Open `index.html` (double-click it). No install needed; it needs internet the first time
 for the fonts and GSAP.
 

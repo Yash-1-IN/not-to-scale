@@ -167,6 +167,7 @@
       },
       result: {
         caption: "Lighter ions are easier to deflect, so neon-20 curves more than neon-22. One pair only tells you where they land — firing many more, and counting the hits, is what actually builds the graph.",
+        booklet: "§7 periodic table: neon's relative atomic mass is 20.18 — just above 20, because almost all neon is neon-20.",
         footnote: "The bar graph is the result: a mass spectrum. Taller bars mean more of that isotope. (A trace of neon-21 exists too, too small to draw here.)",
         final: true
       }

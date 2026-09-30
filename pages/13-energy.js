@@ -139,6 +139,7 @@
       },
       exo: {
         caption: "The products end up lower in energy than the reactants. The difference is released as heat, warming the surroundings.",
+        booklet: "§14 enthalpies of combustion: burning methane, ΔH<sub>c</sub> = −891 kJ mol⁻¹ — the minus sign means energy released.",
         footnote: "This is an exothermic reaction, like burning fuel. Tap to try one that goes the other way.",
         tap: toEndo,
         back: backToStart

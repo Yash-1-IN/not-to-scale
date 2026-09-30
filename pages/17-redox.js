@@ -89,6 +89,7 @@
       },
       on: {
         caption: "Electrons flow through the wire from the anode to the cathode. The anode loses electrons — oxidation. The cathode gains them — reduction.",
+        booklet: "§19 standard reduction potentials: in a zinc–copper cell, zinc (E<sup>⦵</sup> = −0.76 V) is oxidized at the anode and copper (+0.34 V) is reduced at the cathode. The more negative E<sup>⦵</sup> gets oxidized.",
         footnote: "A memory trick: OIL RIG — Oxidation Is Loss, Reduction Is Gain.",
         back: turnOff,
         final: true

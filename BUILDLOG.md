@@ -320,3 +320,24 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - Back rolls along the curve too, instead of sliding straight across the graph: exo → start rolls back
   down the exo curve; endo → exo rolls back to the reactants on the endo curve, swaps curves, then
   rolls forward along the exo curve. Self-test PASS (19 pages, 87 transitions).
+
+## Round 6 — Le Châtelier, full syllabus plan, data booklet references
+- **Le Châtelier (`pages/15b-lechatelier.js`, R2.3.4):** a box already at equilibrium (equal rates,
+  K = 1). Tap pours in 10 reactant; tap removes all product. Each particle flips on its own random
+  clock, so the shift is genuine: measured 11:9 → (add) 23:7 → settles ≈15:15; (remove product) 12:2
+  → settles ≈7:7. Captions make the point that K doesn't change, only the position does.
+- **Plan = the school's G12 half-yearly chemistry syllabus:** `00-planned.js` now lists 83 topics
+  (20 built, 63 "coming soon"), each with its syllabus code (e.g. S1.2.2, R2.3.4, "HL" where marked).
+  The engine accepts plan items as `"Title"` or `["Title", "code"]` and shows the code beside each line.
+- **Book order now matches the syllabus** (script tags reordered), which fixes the long-standing
+  contents-numbering bug: numbers now run in order under each heading. Emission spectra now comes
+  before electron shells, as in the syllabus.
+- **Data booklet references:** a state can carry `booklet: "…"`, rendered under the caption as a
+  "Data booklet §N" note. Added to 14 pages with values checked against the 2025 booklet (text extracted
+  with pypdf into the session scratchpad): §1 equations, §2 constants, §5 spectrum, §7 periodic table,
+  §10 radii, §11 bond lengths, §12 bond enthalpies, §14 combustion, §16 lattice enthalpy, §19 E⦵,
+  §20 IR. The About page explains the notes.
+- **Fact fix found via the booklet:** the periodic-trends page claimed argon is the smallest atom in
+  period 3; the booklet gives Cl 100 pm, Ar 101 pm. Radii are now drawn in proportion to the booklet
+  values, and a footnote explains the noble-gas quirk.
+- Self-test PASS: 20 pages, 91 transitions.

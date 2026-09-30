@@ -83,6 +83,7 @@
       },
       hot: {
         caption: "Heating a gas makes its particles move faster. Faster particles hit the walls more often, and harder — that's what pressure is.",
+        booklet: "§1 equations: PV = nRT — at fixed volume, a hotter gas has a higher pressure. §2: R = 8.31 J K⁻¹ mol⁻¹.",
         back: cool,
         final: true
       }

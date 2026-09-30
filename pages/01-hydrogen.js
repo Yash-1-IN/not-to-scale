@@ -310,6 +310,7 @@
       },
       zoomed: {
         caption: "Remember, not to scale. If the proton were the size of a marble, the electron would be about half a kilometre away.",
+        booklet: "§2 physical constants: a proton (1.672622 × 10⁻²⁷ kg) is about 1836 times heavier than an electron (9.109384 × 10⁻³¹ kg).",
         footnote: "Also, protons aren't really red. Colour is a light thing, and a proton is far smaller than the wavelength of light.",
         back: smearIntoCloud
       },

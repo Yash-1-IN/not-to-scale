@@ -9,13 +9,17 @@
 
   const GROUPS = [
     { label: "OH", family: "alcohols", example: "ethanol", colour: "#2E6FE0", w: 54,
-      note: "Alcohols like this one tend to dissolve in water and burn cleanly." },
+      note: "Alcohols like this one tend to dissolve in water and burn cleanly.",
+      booklet: "§20 infrared data: an alcohol's O–H absorbs at 3200–3600 cm⁻¹ (strong, broad) — one way chemists spot this family." },
     { label: "COOH", family: "carboxylic acids", example: "ethanoic acid", colour: "#E05A2B", w: 98,
-      note: "The acid in vinegar (ethanoic acid) is a carboxylic acid, this same family." },
+      note: "The acid in vinegar (ethanoic acid) is a carboxylic acid, this same family.",
+      booklet: "§20 infrared data: a carboxylic acid shows C=O at 1700–1750 cm⁻¹ and a very broad O–H at 2500–3000 cm⁻¹." },
     { label: "Cl", family: "halogenoalkanes", example: "chloroethane", colour: "#2E9E63", w: 48,
-      note: "Swap in a halogen atom like this and you get a halogenoalkane instead." },
+      note: "Swap in a halogen atom like this and you get a halogenoalkane instead.",
+      booklet: "§20 infrared data: C–Cl absorbs at 600–800 cm⁻¹." },
     { label: "NH₂", family: "amines", example: "ethylamine", colour: "#6A2BD9", w: 68,
-      note: "Amines like this one often smell fishy, and turn up in a lot of biology." }
+      note: "Amines like this one often smell fishy, and turn up in a lot of biology.",
+      booklet: "§20 infrared data: a primary amine's N–H shows two bands at 3300–3500 cm⁻¹." }
   ];
 
   const svg = `
@@ -63,6 +67,7 @@
     states["m" + i] = {
       caption: "This is " + g.example + ". The –" + g.label + " group makes it one of the " + g.family + " — tap to see another family.",
       footnote: g.note,
+      booklet: g.booklet,
       tap: goTo(next),
       final: i === GROUPS.length - 1
     };

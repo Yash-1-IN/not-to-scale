@@ -166,6 +166,7 @@
       },
       ions: {
         caption: "Opposite charges attract, so the ions pull together. This electrical attraction is called an ionic bond.",
+        booklet: "§10 ionic radii: Na⁺ 102 pm, Cl⁻ 181 pm. §16 lattice enthalpies: pulling a mole of NaCl apart into ions takes 790 kJ.",
         footnote: "In a real crystal of salt, millions of ions stack together this way, not just one pair.",
         back: pullApart,
         final: true

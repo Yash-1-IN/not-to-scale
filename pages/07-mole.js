@@ -78,6 +78,7 @@
       },
       revealed: {
         caption: "Chemists count in groups of 6.02 × 10²³, called a mole. It's a number, the same way “a dozen” means 12.",
+        booklet: "§2 physical constants: Avogadro constant, N<sub>A</sub> = 6.02 × 10²³ mol⁻¹.",
         footnote: "It's so big that there are probably more molecules in a single glass of water than there are glasses of water in all the world's oceans put together.",
         final: true
       }

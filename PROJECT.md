@@ -4,7 +4,7 @@ The single source of truth for this project: what it is, how it works, what's be
 wrong and why, and what could come next. If a Claude session loses its context, read this file first,
 then `BUILDLOG.md` (detailed history) and `FACTS.md` (every on-screen fact and its source).
 
-Last updated: 2026-09-30, round 4 (catalysts, Maxwell–Boltzmann, links to pages, self-test).
+Last updated: 2026-09-30, round 6 (Le Châtelier, full syllabus plan, data booklet references).
 
 ---
 
@@ -19,9 +19,13 @@ small, slightly cheeky footnotes like "not to scale, of course" and "protons are
   no quizzes, no scores.
 - **Builder:** an IB Chemistry student, new to coding. Built with Claude Code across several sessions.
 - **Origin:** `chemistry-storybook-spec.md` (the original brief) and `sketch.png` (the builder's mock-up).
-- **Status:** 19 pages: the spec's 17, plus Maxwell–Boltzmann and catalysts. All six spec phases are
-  done, three rounds of the builder's feedback applied, plus links to single pages and an automated
-  self-test (PASS: 19 pages, 87 transitions). Not yet deployed.
+- **Status:** 20 pages built out of a planned 83. The plan follows the builder's school syllabus
+  (G12 half-yearly, IB Chemistry first assessment 2025), with a code on every line. All six spec phases
+  are done, plus links to single pages, data booklet references and an automated self-test (PASS: 20
+  pages, 91 transitions). Pushed to a private GitHub repo; not yet deployed.
+- **Sources the builder supplied:** `G12 HY Syllabus Focus 2027.pdf` (the chemistry topic list,
+  mirrored in `pages/00-planned.js`) and the IB `DataBook2025.pdf` (the Chemistry data booklet, first
+  assessment 2025, version 1.1). Both live in the builder's Downloads folder, not the repo.
 
 ---
 
@@ -120,6 +124,7 @@ A page is a plain object passed to `Book.register({...})`:
 | `svg` | markup string injected into `#pageRoot` |
 | `legend` | optional HTML shown bottom-left |
 | `start` | name of the first state |
+| (state) `booklet` | optional HTML shown under the caption as a "Data booklet" note, e.g. `"§2 physical constants: …"`. Cite a real section and value. |
 | `states` | `{ name: { caption, footnote?, legend?, final?, onEnter?, next?, back?, tap?, replay? } }` |
 | `hotspots` | `[{ id, selector, label, hint }]` — `selector` points at an invisible `.hit` shape |
 | `setup(ctx)` | once, when the page loads (build DOM, start tickers) |
@@ -165,6 +170,10 @@ Then it sets `#ionic`, checks it opens, calls `history.back()` and checks it ret
 `gsap.ticker.tick()` every 16 ms so it runs even while the tab isn't painting. What it doesn't check:
 how things look, sound, keyboard-only use, reduced motion, phone layout.
 
+**The plan (`pages/00-planned.js`):** topics, each with items that are `"Title"` or
+`["Title", "syllabus code"]`. A page switches its line on when its `title` and `topic` match exactly.
+Keep `index.html`'s script order the same as the plan's order, so contents numbers run in sequence.
+
 **Adding a page:** copy `pages/_template.js`, give it a unique `id`, match `title`/`topic` to a line in
 `00-planned.js` (or add one), add its `<script>` tag to `index.html`, refresh. Then add its facts to
 `FACTS.md` and an entry to `BUILDLOG.md`.
@@ -204,11 +213,13 @@ noise sweeping 800→2600 Hz in 0.35 s.
 
 ## 7. Page catalogue
 
-Book order is the order of `<script>` tags in `index.html`. The # column is the file number; the page
-counter in the book differs from 15 onwards (Maxwell–Boltzmann is page 15, catalysts 16, equilibrium 17,
-acids 18, redox 19). Page ids for `#` links, in book order: hydrogen, isotopes, shells, ionic, massspec,
-emission, mole, gases, covalent, metallic, periodic, functional, energy, collision, maxwell, catalysts,
-equilibrium, acids, redox.
+Book order is the order of `<script>` tags in `index.html`, which now follows the syllabus plan. The
+# column is just the file number; it isn't the page number in the book. Page ids for `#` links, in book
+order: hydrogen, isotopes, massspec, emission, shells, mole, gases, ionic, covalent, metallic,
+periodic, functional, energy, collision, maxwell, catalysts, equilibrium, lechatelier, acids, redox.
+Pages with a data booklet note: hydrogen §2, isotopes §2, massspec §7, emission §1/§5, mole §2,
+gases §1/§2, ionic §10/§16, covalent §11/§12, periodic §10, functional §20 (per group), energy §14,
+maxwell §1, catalysts §1, redox §19.
 
 | # | File | IB | Shows | Interaction |
 |---|---|---|---|---|
@@ -229,6 +240,7 @@ equilibrium, acids, redox.
 | 14a | `14a-maxwell.js` | R2.2 | Kinetic-energy histogram with an activation-energy line and an "enough energy to react" count | Tap → 200 particles drop one by one into exact 3D Maxwell–Boltzmann bar heights (erf-based CDF, largest-remainder rounding, shuffled arrival), then the smooth curve fades in: 6 past Ea. Tap → heat (T × 1.6): the old curve becomes a dashed ghost, the bars re-measure, and the new curve is lower and wider: 25 past Ea. Back walks both steps back. Labels "cooler"/"hotter" on the curves. |
 | 14b | `14b-catalysts.js` | R2.2 | Exothermic profile, tall hump, "Ea without catalyst" bracket | Tap → a dashed green, lower hump fades in with its own "Ea with catalyst" bracket and dashed guides from each peak to the axis; the ball rolls the lower route (`getPointAtLength`). Back → removed. Same peak maths as page 13. |
 | 15 | `15-equilibrium.js` | R2.3 | 20 particles flipping reactant ⇄ product | Tap → equal rates (≈10:10). Tap → rates favour product (≈3:17, large K). Tap → favour reactant (≈14:6, small K). The rates are re-aimed live, not reset. Back walks the scenarios back. |
+| 15b | `15b-lechatelier.js` | R2.3.4 | A box already at equilibrium (equal rates, K = 1), 20 particles | Tap → pour in 10 reactant: it shifts until even again (measured 23:7 → ≈15:15). Tap → remove all product: it rebuilds (≈7:7). Every particle flips on its own random clock. Back undoes each step. |
 | 16 | `16-acids.js` | R3.1 | HCl, NH₃, H⁺ | Tap → proton hops across; Cl⁻ and NH₄⁺ (Brønsted–Lowry). |
 | 17 | `17-redox.js` | R3.2 | Two electrodes, wire, solution | Tap → electrons loop anode → cathode; oxidation / reduction labelled (OIL RIG). |
 
@@ -266,7 +278,11 @@ equilibrium, acids, redox.
 14. **Links: `location.hash`, not `history.pushState`**, because pushState throws a SecurityError on `file://`.
 15. **Changing only the `#` part of the URL doesn't reload the page.** When scripting tests, a "fresh"
     navigation to `index.html#x` from `index.html#y` keeps the old, already-open book.
-16. **Chemistry checks that mattered:** emission falls end on shell 2 (Balmer, visible), not shell 1
+16. **Check drawn "trends" against the data booklet.** Periodic trends said argon was the smallest
+    atom in period 3; the booklet's radii (§10) put chlorine at 100 pm and argon at 101 pm.
+17. **Reading the PDFs:** the Read tool couldn't render these PDFs (no poppler), so text was pulled
+    with `pypdf` installed into the session scratchpad (`pip install --target <scratch>/pylib pypdf`).
+18. **Chemistry checks that mattered:** emission falls end on shell 2 (Balmer, visible), not shell 1
     (Lyman, UV); the "glass of water vs oceans" claim was Fermi-checked; no overly precise noble-gas
     radii; the equilibrium K is flagged in `FACTS.md` as simplified for a one-step A ⇌ B model.
 
@@ -280,9 +296,6 @@ equilibrium, acids, redox.
   also hops across), `11-periodic.js` idle on atoms that also shrink, `04-ionic.js` nucleus pulses
   (the groups also slide). None reported broken yet, but it's the same bug class as three real bugs.
   The fix each time: pulse `r` instead.
-- **Contents numbering isn't in syllabus order.** Numbers follow `index.html` script order, so under
-  Structure 1 the list reads 1, 2, **5**, 3, 6, 7, 8. Fix: reorder the script tags to match
-  `00-planned.js` (Mass spec moves to #3, Ionic to #8, and so on). Reactivity 2 is already in order.
 - **The strong hint pulse scales the outline up to 1.3×**, so on wide pages (periodic trends: an
   836 px squircle) it briefly spills past the canvas edge while pulsing. It's clipped, so harmless.
 - **The "sound lab" link is still visible** at the bottom of every page. BUILDLOG says to hide it
@@ -318,6 +331,10 @@ equilibrium, acids, redox.
    squircles on every page) and the redox electrons parked at (0, 0). It now passes: 19 pages, 87
    transitions. This round was run on Opus 5.5 as a trial.
 
+8. **Round 6:** Le Châtelier page; the contents became the full school syllabus (83 topics with
+   codes) and book order now follows it, which fixed the numbering bug; data booklet notes on 14
+   pages; periodic radii corrected to the booklet. Repo: private on GitHub.
+
 **How the builder gives feedback:** screenshots plus a numbered list, one item per page. They
 appreciate root causes being found, not just symptoms patched.
 
@@ -343,8 +360,7 @@ appreciate root causes being found, not just symptoms patched.
 - ~~Catalysts (R2.2)~~ — done, round 4.
 - ~~Maxwell–Boltzmann distribution (R2.2)~~ — done, round 4. Possible follow-up: a third tap that adds
   a catalyst, sliding the Ea line left over the same curve to tie the two pages together.
-- **Le Chatelier (R2.3):** extend the equilibrium box by tapping to "add more reactant" (drop in
-  particles) and watch it shift.
+- ~~Le Chatelier (R2.3)~~ — done, round 6. Follow-up: a temperature step that *does* change K.
 - **VSEPR shapes (S2.2):** electron domains pushing apart. Tap to turn a bond into a lone pair:
   tetrahedral → trigonal pyramidal → bent (CH₄ → NH₃ → H₂O), angles shrinking 109.5 → 107 → 104.5.
 - **Intermolecular forces (S2.2):** water molecules clinging by hydrogen bonds vs methane drifting

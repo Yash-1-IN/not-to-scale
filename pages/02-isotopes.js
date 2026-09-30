@@ -153,6 +153,7 @@
       },
       summary: {
         caption: "Same number of protons, so all three are hydrogen. Different numbers of neutrons, so they are isotopes of each other.",
+        booklet: "§2 physical constants: a proton is 1.672622 × 10⁻²⁷ kg and a neutron 1.674927 × 10⁻²⁷ kg — nearly the same, so each extra neutron adds about one unit of mass.",
         footnote: "Neutrons have no charge, so the electron doesn't care. Isotopes have the same chemical properties, but different masses.",
         tap: allTaps,
         final: true

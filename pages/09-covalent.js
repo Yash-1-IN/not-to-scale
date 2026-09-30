@@ -82,6 +82,7 @@
       },
       bonded: {
         caption: "The two electrons now sit between the nuclei as a shared pair. Both atoms count that pair as part of their own outer shell.",
+        booklet: "§11 bond lengths: H–H is 74 pm. §12 bond enthalpies: breaking it takes 436 kJ mol⁻¹.",
         footnote: "This shared pair is what holds the two atoms together, an ordinary hydrogen molecule, H₂.",
         back: unbond,
         final: true

@@ -49,3 +49,18 @@
 | Maxwell–Boltzmann | A modest temperature rise multiplies the fraction of particles with energy ≥ Ea (here 6 → 25 of 200 for T × 1.6 with Ea = 4.5 kT) | Computed on the page from the 3D energy distribution f(E) = 2√(E/π)(kT)^(−3/2)e^(−E/kT); tail fraction erfc(√x) + 2√(x/π)e^(−x), x = Ea/kT: 0.029 → 0.132 (the page shows 25, not 26, because the 0.6% beyond the chart edge is spread back over the bars) |
 | Catalysts | A catalyst provides an alternative pathway with a lower activation energy; reactants, products and the overall energy change (ΔH) are unchanged | IB Chemistry R2.2 |
 | Catalysts | The catalyst is not used up in the reaction | IB Chemistry R2.2 |
+| Le Châtelier | When an equilibrium is disturbed (e.g. a substance added or removed), the position of equilibrium shifts to partly counteract the change | IB Chemistry R2.3.4 |
+| Le Châtelier | Changing concentrations shifts the position of equilibrium but does not change K; only temperature changes K | IB Chemistry R2.3.3–4 |
+| Periodic trends (corrected) | Period 3 atomic radii (pm): Na 160, Mg 140, Al 124, Si 114, P 109, S 104, Cl 100, Ar 101 — argon is NOT the smallest; the page previously said it was. Drawn in proportion now | IB data booklet (2025) §10 |
+| Hydrogen | Proton 1.672622 × 10⁻²⁷ kg vs electron 9.109384 × 10⁻³¹ kg: ratio ≈ 1836 | IB data booklet §2 |
+| Isotopes | Proton 1.672622 × 10⁻²⁷ kg, neutron 1.674927 × 10⁻²⁷ kg | IB data booklet §2 |
+| Mass spectrometry | Relative atomic mass of neon 20.18 | IB data booklet §7 |
+| Emission spectra | E = hf, c = fλ; visible spectrum ≈ 400–700 nm | IB data booklet §1, §5 |
+| The mole | Avogadro constant 6.02 × 10²³ mol⁻¹ | IB data booklet §2 |
+| Gases | PV = nRT; R = 8.31 J K⁻¹ mol⁻¹ | IB data booklet §1, §2 |
+| Ionic bonding | Ionic radii Na⁺ 102 pm, Cl⁻ 181 pm; lattice enthalpy of NaCl 790 kJ mol⁻¹ | IB data booklet §10, §16 |
+| Covalent bonding | H–H bond length 74 pm; H–H bond enthalpy 436 kJ mol⁻¹ | IB data booklet §11, §12 |
+| Functional groups | IR: alcohol O–H 3200–3600 cm⁻¹; carboxylic acid C=O 1700–1750 and O–H 2500–3000 cm⁻¹; C–Cl 600–800 cm⁻¹; primary amine N–H 3300–3500 cm⁻¹ (two bands) | IB data booklet §20 |
+| Exothermic/endothermic | ΔHc(methane) = −891 kJ mol⁻¹ | IB data booklet §14 |
+| Maxwell–Boltzmann, catalysts | Arrhenius equation k = Ae^(−Ea/RT) (HL) | IB data booklet §1 |
+| Redox | E⦵ Zn²⁺/Zn −0.76 V, Cu²⁺/Cu +0.34 V; in a Zn–Cu cell zinc is oxidized (anode) | IB data booklet §19 |

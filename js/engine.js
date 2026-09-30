@@ -47,7 +47,10 @@ const Book = (() => {
 
   // ---------- Captions: two stacked layers that crossfade ----------
   const layers = () => [el.capA, el.capB];
-  const captionHTML = s => "<p>" + s.caption + "</p>" + (s.footnote ? '<p class="footnote">' + s.footnote + "</p>" : "");
+  // A state's optional `booklet` is a pointer into the IB Chemistry data booklet, shown under the caption.
+  const captionHTML = s => "<p>" + s.caption + "</p>" +
+    (s.footnote ? '<p class="footnote">' + s.footnote + "</p>" : "") +
+    (s.booklet ? '<p class="booklet"><span>Data booklet</span> ' + s.booklet + "</p>" : "");
 
   function setCaptionInstant(s) {
     const [a, b] = layers();
@@ -284,10 +287,14 @@ const Book = (() => {
   }
 
   // ---------- Contents page ----------
+  // A plan item is a title, or [title, syllabus code] — the code is shown beside it.
   function buildContents() {
     const topics = plan.map(t => ({
       name: t.topic,
-      items: t.items.map(title => ({ title, index: pages.findIndex(p => p.title === title && p.topic === t.topic) }))
+      items: t.items.map(item => {
+        const [title, code] = [].concat(item);
+        return { title, code, index: pages.findIndex(p => p.title === title && p.topic === t.topic) };
+      })
     }));
     pages.forEach((p, i) => {
       if (topics.some(t => t.items.some(it => it.index === i))) return;
@@ -316,6 +323,12 @@ const Book = (() => {
           const tag = document.createElement("span");
           tag.textContent = " coming soon";
           li.appendChild(tag);
+        }
+        if (it.code) {
+          const code = document.createElement("span");
+          code.className = "toc-code";
+          code.textContent = it.code;
+          li.appendChild(code);
         }
         ul.appendChild(li);
       });

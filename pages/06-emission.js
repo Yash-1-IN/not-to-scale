@@ -104,6 +104,7 @@
   states["e" + (FALLS.length + 1)] = {
     caption: "Four falls, four coloured lines. This pattern is hydrogen's emission spectrum — like a fingerprint for the element. Watch the dots: the biggest jump lands closest to the violet end.",
     footnote: "Every element has its own pattern of lines, because its electrons sit at their own particular energies.",
+    booklet: "§1 equations: E = hf and c = fλ — more energy means a higher frequency and a shorter wavelength. §5: visible light runs from about 400 nm (violet) to 700 nm (red).",
     back: unfall(FALLS.length - 1),
     final: true
   };

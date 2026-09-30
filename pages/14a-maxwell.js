@@ -203,6 +203,7 @@
       },
       hot: {
         caption: "Hotter, the curve gets lower and stretches right. It's the same particles, so the same area — but far more of them now sit past the line.",
+        booklet: "§1 equations (HL): the Arrhenius equation, k = Ae<sup>−Ea/RT</sup> — raise T and the rate constant k climbs steeply.",
         footnote: "From " + pastEa(COOL) + " to " + pastEa(HOT) + " out of " + N + ": a modest temperature rise multiplies the number that can react. That's why heating speeds reactions up so much.",
         back: cool,
         final: true
