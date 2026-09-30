@@ -341,3 +341,24 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   period 3; the booklet gives Cl 100 pm, Ar 101 pm. Radii are now drawn in proportion to the booklet
   values, and a footnote explains the noble-gas quirk.
 - Self-test PASS: 20 pages, 91 transitions.
+
+## Round 7 — the "coming soon" list built out (63 new pages, 83/83)
+- **Request:** "build all that you can until the limit runs out" for the remaining syllabus topics. All 63
+  are now pages: Structure 1 (11), Structure 2 (15), Structure 3 (10), Reactivity 1 (9), Reactivity 2 (2),
+  Reactivity 3 (16), plus earlier pages re-slotted. Committed and pushed in batches per syllabus theme.
+- **`js/kit.js`:** a declarative page toolkit (`Kit.page`) so a page is an SVG string plus steps. Back is an
+  exact undo from recorded pre-values, which removed the per-page reverse code. Physics-heavy pages
+  (states of matter, ideal gas) still use the shared particle sim through `K.spawn/bounce/tick`.
+- **Engine:** `sortByPlan()` orders pages by the plan instead of script order; index.html loads any
+  `pages/*.js` files it doesn't already list.
+- **Self-test got stricter:** it now flags visible text labels that overlap by more than 6 px in both
+  directions, which caught ~15 real layout problems (calorimetry, entropy, Born–Haber, formal charge,
+  kw seesaw, …), all fixed. Final run: PASS, 83 pages, no console errors/warnings, deep-link round trip OK.
+- **Lessons:** (1) `class="fade"` plus an `opacity="0.x"` attribute fights the intro; use fill-opacity /
+  stroke-opacity. (2) A Kit page with no `.fade` elements made the default intro call GSAP with an empty
+  target (warning); the intro now returns an empty timeline. (3) A step 0 `to` is ignored: hide initially
+  hidden things in the SVG. (4) Curves (titration, Maxwell–Boltzmann, energy profile) are computed from the
+  real formulas rather than drawn by hand. (5) Values not in the data booklet (e.g. Ka of ethanoic acid
+  1.8 × 10⁻⁵) are flagged in FACTS.md.
+- **Not yet done:** most new pages were verified by the automated test rather than by eye; orbitals p-lobe dot
+  density could be higher; a visual pass on every new page is worth doing.

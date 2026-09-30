@@ -4,7 +4,7 @@ The single source of truth for this project: what it is, how it works, what's be
 wrong and why, and what could come next. If a Claude session loses its context, read this file first,
 then `BUILDLOG.md` (detailed history) and `FACTS.md` (every on-screen fact and its source).
 
-Last updated: 2026-09-30, round 6 (Le Châtelier, full syllabus plan, data booklet references).
+Last updated: 2026-09-30, round 7 (all 83 planned pages built, `js/kit.js`, label-overlap test).
 
 ---
 
@@ -95,11 +95,14 @@ js/lab.js               the "sound lab" tuning panel (sliders, copyable numbers)
 js/camera.js            Camera.zoomTo and Camera.crossZoom (hydrogen page's 4000× zoom out to the park)
 js/hint.js              Hint.ring(selector, "x y") — the pulsing gold "tap me" outline (works on any shape)
 js/particles.js         ParticleBox(box).step(particles, dtSeconds, onCollide?) — bouncing particles
+js/kit.js               Kit.page({...}) toolkit used by the 63 round-7 pages: step list → states, exact
+                        Back via recorded pre-values, helpers K.t/c/l/r/arrow/g/atom/spawn/ring, palette K.C
 js/engine.js            Book: register, plan, boot, debug; page loading, states, transitions, captions,
                         hotspots, attention chime, contents page, About panel, keyboard, #page links
 js/selftest.js          the automated test; inert unless the URL has ?test (loaded right after GSAP so it
                         catches errors thrown while the page files register)
 pages/00-planned.js     Book.plan([...]) — the contents page's topic grouping
+pages/s1-*, s2-*, s3-*, r1-*, r2-*, r3-*.js   the round-7 pages (Structure 1/2/3, Reactivity 1/2/3), Kit-based
 pages/01..17-*.js       one page each (see §7); 14a-maxwell.js and 14b-catalysts.js sit between collision
                         theory and equilibrium (file numbers are just for tidiness)
 pages/_template.js      copy this to start a new page (NOT loaded by index.html)
@@ -212,6 +215,20 @@ noise sweeping 800→2600 Hz in 0.35 s.
 ---
 
 ## 7. Page catalogue
+
+**Status: 83 of 83 planned topics are built; the contents page has no "coming soon" lines.** The 63 pages
+added in round 7 are all in `pages/` with prefixes s1/s2/s3/r1/r2/r3 (Structure 1–3, Reactivity 1–3); book
+order comes from `pages/00-planned.js` via `Book.sortByPlan()` (page `title` + `topic` must match the plan
+line exactly), not from script order. Every page's facts and sources are in FACTS.md.
+
+### The Kit (js/kit.js)
+`Kit.page({id, topic, title, description, svg, bounds:[x0,y0,x1,y1], tapLabel, legend?, setup?, teardown?,
+intro?, idle?, steps:[{caption, footnote?, booklet?, sound?, dur?, to:{selector:{gsapVars}}, text:{selector:"…"},
+run(ctx,tl,dir)}]})`. Step 0 is the starting picture (its `to` is ignored, so hide things in the SVG itself);
+tapping in step i plays step i+1; Back plays an exact undo from values recorded before each step (attrs, props,
+text). `idle(ctx)` runs once after the intro (use it for endless flows; kill them on Back). Colours in `to`
+must be hex. The squircle tap hint and hit circle are added automatically around `bounds`. The default intro
+fades every `.fade` element in (and does nothing if there are none).
 
 Book order is the order of `<script>` tags in `index.html`, which now follows the syllabus plan. The
 # column is just the file number; it isn't the page number in the book. Page ids for `#` links, in book
