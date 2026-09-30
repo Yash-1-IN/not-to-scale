@@ -41,11 +41,27 @@
     <rect class="tap-ring" id="ring" x="160" y="95" width="690" height="335" rx="40" opacity="0"/>
     <circle class="hit" id="hit" cx="500" cy="270" r="420"/>`;
 
+  // Moves the ball along a drawn curve by reading points off it (the same method as the catalysts
+  // page), so it follows the line exactly. `from`/`to` are fractions of the way along: 0 → 1 rolls
+  // forwards, 1 → 0 rolls back.
+  function rollAlong(ctx, curveId, duration, from, to) {
+    const ball = ctx.$("#ball"), curve = ctx.$("#" + curveId);
+    const len = curve.getTotalLength();
+    const proxy = { t: from };
+    return gsap.to(proxy, {
+      t: to, duration, ease: "power1.inOut",
+      onUpdate() {
+        const p = curve.getPointAtLength(proxy.t * len);
+        ball.setAttribute("cx", p.x);
+        ball.setAttribute("cy", p.y);
+      }
+    });
+  }
+
   function roll(ctx, curveId, py, glowColour) {
     const tl = gsap.timeline();
     tl.to("#" + curveId, { opacity: 1, duration: 0.3 }, 0)
-      .to("#ball", { attr: { cx: XHUMP, cy: HUMP_Y }, duration: 0.7, ease: "power1.out" }, 0.1)
-      .to("#ball", { attr: { cx: X1, cy: py }, duration: 0.7, ease: "power1.in" }, 0.8)
+      .add(rollAlong(ctx, curveId, 1.4, 0, 1), 0.1)
       .call(() => Sound.pop(), null, 1.5)
       .fromTo("#ball", { fill: glowColour }, { fill: "", duration: 0.8 }, 1.5)
       .to("#prodLabel", { attr: { y: py + 26 }, opacity: 1, duration: 0.3 }, 1.5);
@@ -69,21 +85,27 @@
   };
   const backToStart = {
     to: "start", sound: "zwoop-rev", captionAt: 0.5,
-    play() {
+    play(ctx) {
       return gsap.timeline()
-        .to(["#pathExo"], { opacity: 0, duration: 0.4 }, 0)
-        .to("#ball", { attr: { cx: X0, cy: REACT_Y }, fill: "", duration: 0.5 }, 0)
-        .to("#prodLabel", { opacity: 0, duration: 0.3 }, 0);
+        .to("#prodLabel", { opacity: 0, duration: 0.3 }, 0)
+        .set("#ball", { fill: "" }, 0)
+        .add(rollAlong(ctx, "pathExo", 1.0, 1, 0), 0)
+        .to("#pathExo", { opacity: 0, duration: 0.4 }, 0.9);
     }
   };
+  // Back from endothermic: roll back down the endo curve to the reactants, swap curves, then roll
+  // forwards along the exo curve, so the ball never cuts across the graph.
   const backToExo = {
     to: "exo", sound: "zwoop-rev", captionAt: 0.5,
-    play() {
+    play(ctx) {
       return gsap.timeline()
-        .to("#pathEndo", { opacity: 0, duration: 0.4 }, 0)
-        .set("#pathExo", { opacity: 1 }, 0.4)
-        .to("#ball", { attr: { cx: X1, cy: EXO_PROD_Y }, fill: "", duration: 0.5 }, 0.4)
-        .to("#prodLabel", { attr: { y: EXO_PROD_Y + 26 }, opacity: 1, duration: 0.3 }, 0.7);
+        .to("#prodLabel", { opacity: 0, duration: 0.3 }, 0)
+        .set("#ball", { fill: "" }, 0)
+        .add(rollAlong(ctx, "pathEndo", 1.0, 1, 0), 0)
+        .to("#pathEndo", { opacity: 0, duration: 0.3 }, 1.0)
+        .to("#pathExo", { opacity: 1, duration: 0.3 }, 1.0)
+        .add(rollAlong(ctx, "pathExo", 1.0, 0, 1), 1.2)
+        .to("#prodLabel", { attr: { y: EXO_PROD_Y + 26 }, opacity: 1, duration: 0.3 }, 2.2);
     }
   };
 

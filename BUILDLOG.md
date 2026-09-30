@@ -311,3 +311,12 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   functional groups, acids, redox) had oversized circular tap hints going off the canvas; they now have
   squircles fitted to each page's measured drawing bounds. Redox electrons sat at (0, 0), peeking out of
   the top-left corner, during their staggered start delay; they're now placed and hidden up front.
+
+## Round 5 — Energy page ball follows the curve
+- The exo/endothermic ball used to tween in two straight lines (reactants → peak → products), cutting
+  the corners of the curve. It now rolls along the drawn path itself (`getPointAtLength`, the same
+  method as the catalysts page). Measured: the ball's centre stayed within 0.9 px of the line
+  throughout a roll.
+- Back rolls along the curve too, instead of sliding straight across the graph: exo → start rolls back
+  down the exo curve; endo → exo rolls back to the reactants on the endo curve, swaps curves, then
+  rolls forward along the exo curve. Self-test PASS (19 pages, 87 transitions).
