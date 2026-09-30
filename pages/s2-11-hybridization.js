@@ -13,7 +13,7 @@
     <g id="sigma" class="fade">
       ${blob(440, 235, 78, 60, C.electron, 0.3)}${blob(560, 235, 78, 60, C.electron, 0.3)}${blob(500, 235, 40, 44, C.electron, 0.35)}
       ${K.atom("s1", 400, 235, 16, "", C.grey)}${K.atom("s2", 600, 235, 16, "", C.grey)}
-      ${K.t(500, 330, "overlap head-on, on the line between the nuclei", "graph-label")}
+      <g id="sigTxt">${K.t(500, 330, "overlap head-on, on the line between the nuclei", "graph-label")}</g>
     </g>
     <g id="pi" opacity="0">
       ${blob(440, 150, 46, 30, C.violet, 0.4)}${blob(560, 150, 46, 30, C.violet, 0.4)}${blob(440, 320, 46, 30, C.violet, 0.4)}${blob(560, 320, 46, 30, C.violet, 0.4)}
@@ -38,7 +38,7 @@
       { caption: "A sigma (σ) bond forms when two orbitals overlap head-on, so the electron density is concentrated along the line between the nuclei. Every single bond is a sigma bond.",
         footnote: "Any pair of orbitals that overlaps like this counts: s with s, s with p, or p with p end-to-end." },
       { caption: "A pi (π) bond forms when two p orbitals overlap sideways, above and below the bond axis, with the electron density off the line. A double bond is one σ plus one π; a triple bond is one σ plus two π. The sideways overlap is weaker, which is why π bonds are the reactive part of alkenes.",
-        to: { "#pi": { opacity: 1 } }, text: { "#tag": "plus a π (pi) bond: a double bond" } },
+        to: { "#pi": { opacity: 1 }, "#sigTxt": { opacity: 0 } }, text: { "#tag": "plus a π (pi) bond: a double bond" } },
       { caption: "Why are the bond angles what they are? Carbon mixes (hybridizes) its 2s and 2p orbitals into new hybrid orbitals that point where the electron pairs want to be: four sp³ (109.5°), three sp² with one p left over for a π bond (120°), or two sp with two p left over (180°).",
         to: { "#sigma": { opacity: 0 }, "#pi": { opacity: 0 }, "#table": { opacity: 1, delay: 0.3 } }, text: { "#tag": "hybridization decides the shape" }, dur: 0.8 }
     ]

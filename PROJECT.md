@@ -4,7 +4,7 @@ The single source of truth for this project: what it is, how it works, what's be
 wrong and why, and what could come next. If a Claude session loses its context, read this file first,
 then `BUILDLOG.md` (detailed history) and `FACTS.md` (every on-screen fact and its source).
 
-Last updated: 2026-09-30, round 7 (all 83 planned pages built, `js/kit.js`, label-overlap test).
+Last updated: 2026-09-30, round 8 (84 pages, feedback fixes, Le Châtelier pressure/temperature).
 
 ---
 
@@ -216,7 +216,7 @@ noise sweeping 800→2600 Hz in 0.35 s.
 
 ## 7. Page catalogue
 
-**Status: 83 of 83 planned topics are built; the contents page has no "coming soon" lines.** The 63 pages
+**Status: all 83 planned topics plus a follow-up page (Le Châtelier: pressure and temperature) are built, 84 pages; the contents page has no "coming soon" lines.** The 63 pages
 added in round 7 are all in `pages/` with prefixes s1/s2/s3/r1/r2/r3 (Structure 1–3, Reactivity 1–3); book
 order comes from `pages/00-planned.js` via `Book.sortByPlan()` (page `title` + `topic` must match the plan
 line exactly), not from script order. Every page's facts and sources are in FACTS.md.

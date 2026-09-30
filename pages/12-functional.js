@@ -10,16 +10,16 @@
   const GROUPS = [
     { label: "OH", family: "alcohols", example: "ethanol", colour: "#2E6FE0", w: 54,
       note: "Alcohols like this one tend to dissolve in water and burn cleanly.",
-      booklet: "§20 infrared data: an alcohol's O–H absorbs at 3200–3600 cm⁻¹ (strong, broad) — one way chemists spot this family." },
+      booklet: "§20 infrared data: an alcohol's O–H absorbs at 3200–3600 cm⁻¹ (strong, broad) — one way chemists spot this family. As a frequency that is about 9.6 × 10¹³ – 1.1 × 10¹⁴ Hz (ν = c × wavenumber); as energy per photon, about 6.4 × 10⁻²⁰ – 7.2 × 10⁻²⁰ J (E = hν, §2)." },
     { label: "COOH", family: "carboxylic acids", example: "ethanoic acid", colour: "#E05A2B", w: 98,
       note: "The acid in vinegar (ethanoic acid) is a carboxylic acid, this same family.",
-      booklet: "§20 infrared data: a carboxylic acid shows C=O at 1700–1750 cm⁻¹ and a very broad O–H at 2500–3000 cm⁻¹." },
+      booklet: "§20 infrared data: a carboxylic acid shows C=O at 1700–1750 cm⁻¹ (5.1 × 10¹³ – 5.3 × 10¹³ Hz, about 3.4 × 10⁻²⁰ – 3.5 × 10⁻²⁰ J) and a very broad O–H at 2500–3000 cm⁻¹ (7.5 × 10¹³ – 9.0 × 10¹³ Hz, about 5.0 × 10⁻²⁰ – 6.0 × 10⁻²⁰ J)." },
     { label: "Cl", family: "halogenoalkanes", example: "chloroethane", colour: "#2E9E63", w: 48,
       note: "Swap in a halogen atom like this and you get a halogenoalkane instead.",
-      booklet: "§20 infrared data: C–Cl absorbs at 600–800 cm⁻¹." },
+      booklet: "§20 infrared data: C–Cl absorbs at 600–800 cm⁻¹ (1.8 × 10¹³ – 2.4 × 10¹³ Hz, about 1.2 × 10⁻²⁰ – 1.6 × 10⁻²⁰ J)." },
     { label: "NH₂", family: "amines", example: "ethylamine", colour: "#6A2BD9", w: 68,
       note: "Amines like this one often smell fishy, and turn up in a lot of biology.",
-      booklet: "§20 infrared data: a primary amine's N–H shows two bands at 3300–3500 cm⁻¹." }
+      booklet: "§20 infrared data: a primary amine's N–H shows two bands at 3300–3500 cm⁻¹ (9.9 × 10¹³ – 1.05 × 10¹⁴ Hz, about 6.6 × 10⁻²⁰ – 7.0 × 10⁻²⁰ J)." }
   ];
 
   const svg = `

@@ -17,12 +17,14 @@
   const B = `<circle cx="560" cy="160" r="9" fill="${C.ion}"/>${K.arrow(575, 160, 615, 160, "var(--ink)", 3)}${K.t(770, 165, "cooler: slow", "graph-label", 'style="text-anchor:start"')}
     <circle cx="560" cy="204" r="9" fill="${C.heat}"/>${K.arrow(575, 204, 735, 204, "var(--ink)", 4)}${K.t(770, 209, "hotter: fast", "graph-label", 'style="text-anchor:start"')}`;
   // C: surface area
+  // The exposed surface is outlined in orange: one block has a small outline, twenty small blocks have a lot.
   let small = "";
-  for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) small += `<rect x="${330 + i * 22}" y="${306 + j * 22}" width="18" height="18" fill="${C.grey}"/>`;
-  const Cc = `<rect x="130" y="304" width="100" height="84" fill="${C.grey}"/>${K.arrow(250, 346, 310, 346, "var(--ink)", 3)}${small}`;
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) small += `<rect x="${326 + i * 18}" y="${350 + j * 18}" width="14" height="14" fill="${C.grey}" stroke="${C.heat}" stroke-width="2.5"/>`;
+  const Cc = `<rect x="150" y="350" width="76" height="72" fill="${C.grey}" stroke="${C.heat}" stroke-width="2.5"/>${K.arrow(250, 386, 306, 386, "var(--ink)", 3)}${small}
+    ${K.t(188, 342, "1 block", "graph-label")}${K.t(370, 342, "20 small blocks", "graph-label")}`;
   // D: catalyst
-  const D = `<path d="M 550 384 L 590 384 Q 660 296 730 384 L 770 384" fill="none" stroke="var(--ink)" stroke-width="4"/>
-    <path d="M 590 384 Q 660 340 730 384" fill="none" stroke="${C.product}" stroke-width="4" stroke-dasharray="8 6"/>${K.t(660, 296, "Ea", "molecule-label", "")}`;
+  const D = `<path d="M 550 420 L 590 420 Q 660 300 730 420 L 770 420" fill="none" stroke="var(--ink)" stroke-width="4"/>
+    <path d="M 590 420 Q 660 372 730 420 " fill="none" stroke="${C.product}" stroke-width="4" stroke-dasharray="8 6"/>${K.t(660, 348, "Ea", "molecule-label", "")}`;
 
   const svg = `${card("cA", 90, 100, "concentration (pressure)", A, "more crowded: more collisions per second", 'class="fade"')}
     ${card("cB", 510, 100, "temperature", B, "faster: more collisions, and more with enough energy", 'opacity="0"')}

@@ -78,7 +78,8 @@ Book.plan([
     ["Maxwell–Boltzmann: why a little heat goes a long way", "R2.2.4"],
     ["Catalysts: a lower hump to get over", "R2.2.5"],
     ["Equilibrium: a reaction that runs both ways at once", "R2.3.1–3"],
-    ["Le Châtelier's principle: pushing back against a change", "R2.3.4"]
+    ["Le Châtelier's principle: pushing back against a change", "R2.3.4"],
+    ["Le Châtelier: pressure and temperature", "R2.3.4"]
   ] },
   { topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [
     ["Acids and bases: passing a proton", "R3.1.1–2"],

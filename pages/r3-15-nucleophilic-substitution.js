@@ -14,12 +14,12 @@
   const svg = `
     ${K.l(480, 235, 430, 300, "var(--ink)", 6, 'class="fade"')}${K.l(480, 235, 480, 320, "var(--ink)", 6, 'class="fade"')}${K.l(480, 235, 530, 300, "var(--ink)", 6, 'class="fade"')}
     ${K.l(480, 235, 640, 235, "var(--ink)", 6, 'id="cbr" class="fade"')}
+    <line id="newBond" x1="352" y1="235" x2="470" y2="235" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
     ${hAt("hA", 482, 330)}${hAt("hB", 536, 308)}
     ${K.atom("me", 424, 308, 30, "CH₃", C.grey)}
     ${K.atom("cc", 480, 235, 24, "C", C.grey)}
     ${K.g("br", 650, 235, `<circle r="32" fill="${BR}"/><text id="brT" class="nuc-sym" style="font-size:22px">Br</text>`)}
     ${K.g("oh", 190, 235, `<circle r="32" fill="${C.proton}"/><text id="ohT" class="nuc-sym" style="font-size:20px">OH⁻</text><circle cx="40" cy="-6" r="4.5" fill="#fff"/><circle cx="40" cy="6" r="4.5" fill="#fff"/>`)}
-    <line id="newBond" x1="222" y1="235" x2="470" y2="235" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
     <g id="dl"><g class="fade">${K.t(500, 190, "δ+", "molecule-label")}${K.t(645, 188, "δ−", "molecule-label")}</g></g>
     <g id="curly" opacity="0">${curly(238, 224, 340, 130, 448, 214)}${curly(560, 222, 606, 176, 630, 208)}</g>
     ${K.t(500, 420, "bromoethane, and hydroxide ions in solution", "molecule-label fade", 'id="tag"')}`;
@@ -36,7 +36,7 @@
       { caption: "Curly arrows show electrons moving. One arrow goes from hydroxide's lone pair to the carbon, forming a new C–O bond. Another goes from the C–Br bond to bromine, showing the bond breaking with both its electrons going to bromine.",
         to: { "#curly": { opacity: 1 } }, text: { "#tag": "each curly arrow is a pair of electrons moving" }, dur: 0.8 },
       { caption: "The hydroxide has replaced the bromine: ethanol and a bromide ion, Br⁻. That's nucleophilic substitution. The bond broke unevenly, one atom keeping both electrons, which is called heterolytic fission (unlike the even split in radicals).",
-        to: { "#curly": { opacity: 0 }, "#dl": { opacity: 0 }, "#oh": { x: 322 }, "#newBond": { opacity: 1, delay: 0.7 }, "#br": { x: 800, y: 190 }, "#cbr": { opacity: 0 } },
+        to: { "#curly": { opacity: 0 }, "#dl": { opacity: 0 }, "#oh": { x: 322 }, "#newBond": { opacity: 1, delay: 1.0 }, "#br": { x: 800, y: 190 }, "#cbr": { opacity: 0 } },
         text: { "#ohT": "OH", "#brT": "Br⁻", "#tag": "ethanol, CH₃CH₂OH, and a bromide ion" }, dur: 1.4 }
     ]
   });

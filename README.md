@@ -1,6 +1,6 @@
 # Not to Scale
 
-An interactive picture book of IB Chemistry, 83 pages following the school's G12 chemistry syllabus, from states of matter and the hydrogen atom
+An interactive picture book of IB Chemistry, 84 pages following the school's G12 chemistry syllabus, from states of matter and the hydrogen atom
 to organic reaction mechanisms. Open `index.html` (double-click it). No install needed; it needs internet the first time
 for the fonts and GSAP.
 

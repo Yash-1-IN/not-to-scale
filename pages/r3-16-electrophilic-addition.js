@@ -12,12 +12,12 @@
   const svg = `
     <ellipse id="pi" class="fade" cx="500" cy="262" rx="100" ry="34" fill="${C.violet}" fill-opacity="0.18"/>
     ${K.l(430, 256, 570, 256, "var(--ink)", 6, 'id="d1" class="fade"')}${K.l(430, 268, 570, 268, "var(--ink)", 6, 'id="d2" class="fade"')}
+    <line id="cBr1" x1="430" y1="262" x2="430" y2="170" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
+    <line id="cBr2" x1="570" y1="262" x2="570" y2="170" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
     ${K.atom("c1", 430, 262, 26, "CH₂", C.grey)}${K.atom("c2", 570, 262, 26, "CH₂", C.grey)}
     ${K.l(500, 100, 500, 150, "var(--ink)", 6, 'id="brBond" class="fade"')}
     ${K.g("brA", 500, 150, `<circle r="26" fill="${BR}"/><text class="nuc-sym" style="font-size:20px">Br</text>`)}
     ${K.g("brB", 500, 84, `<circle r="26" fill="${BR}"/><text id="brBT" class="nuc-sym" style="font-size:20px">Br</text>`)}
-    <line id="cBr1" x1="430" y1="262" x2="430" y2="170" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
-    <line id="cBr2" x1="570" y1="262" x2="570" y2="170" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" opacity="0"/>
     <g id="dl" class="fade">${K.t(548, 156, "δ+", "molecule-label")}${K.t(548, 90, "δ−", "molecule-label")}</g>
     <g id="curly" opacity="0">${curly(500, 240, 470, 200, 484, 168)}${curly(512, 128, 560, 112, 528, 90)}</g>
     ${K.t(612, 236, "+", "atom-name", 'id="plus" opacity="0" style="font-size:36px"')}

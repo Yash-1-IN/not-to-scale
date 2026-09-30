@@ -362,3 +362,27 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   1.8 × 10⁻⁵) are flagged in FACTS.md.
 - **Not yet done:** most new pages were verified by the automated test rather than by eye; orbitals p-lobe dot
   density could be higher; a visual pass on every new page is worth doing.
+
+## Round 8 — feedback fixes (8 points) and Le Châtelier pressure/temperature
+- **Liquid (states of matter):** the liquid now fills the whole width of the container's bottom (a pale
+  fill shows its level) instead of clumping in a small box. Particles are bigger, can't overlap, and gently
+  push each other apart so they spread out; clamped to the walls so pushes never move them outside.
+- **Formal charge:** rewritten around "sticks and stones": FC = valence − sticks − stones. Lone-pair
+  electrons are drawn as dots on every oxygen. A tap zooms in on sulfur (highlight ring, panel with numbered
+  sticks, 6 − 4 − 0 = +2), then on an oxygen (1 stick, 6 stones, −1), then the expanded-octet structure
+  with the new sums. The top/bottom oxygens lose their outward lone pair when they become double-bonded.
+- **Sigma/pi bond:** the "overlap head-on" caption now fades out when the pi lobes appear.
+- **Bonding triangle:** redrawn like the booklet's §17 diagram: axes with ticks, region labels (ionic,
+  metallic, covalent, polar covalent), the % covalent / % ionic scale, and a last step that reads NaCl (≈73 %
+  ionic) and HCl (≈22 %) off it. Marks follow Pauling's formula (flagged in FACTS.md).
+- **IR notes** on the functional groups page also give the frequency and energy per photon.
+- **Rate factors:** surface-area card no longer overlaps its title (exposed surface outlined in orange), the
+  Ea label no longer touches the card border.
+- **New page 84: "Le Châtelier: pressure and temperature"** (`pages/r2-03-lechatelier-pt.js`, Kit + tick
+  simulation): N₂O₄ ⇌ 2NO₂ in a syringe. Forward events per particle at rate kf, reverse per NO₂ pair at
+  kr·(V₀/V), so squeezing really shifts the equilibrium. Time-averaged counts from the running sim
+  (N₂O₄/NO₂): start 11/21, squeezed 13/17, expanded 10/24, hot 6/33, cold 13/18. Gas tint follows [NO₂].
+- **Bond lines under atoms:** the C–O bond in the nucleophilic-substitution product started at the old OH
+  position (through its label) and the C–Br bonds in the electrophilic addition were drawn after the atoms.
+- **Testing lesson:** the plain `python -m http.server` let Chrome cache old JS on reload; use a server
+  that sends `Cache-Control: no-store` when iterating. Long JS snippets in the browser tool time out at 45 s.
