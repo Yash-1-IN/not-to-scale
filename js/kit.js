@@ -165,7 +165,7 @@ const Kit = (() => {
       if (s.booklet) st.booklet = s.booklet;
       if (i < steps.length - 1) {
         const nx = steps[i + 1];
-        st.tap = { hotspot: "hit", to: "s" + (i + 1), sound: nx.sound || "pop", captionAt: nx.captionAt ?? (nx.dur ?? 0.9) * 0.7, play: ctx => forward(ctx, steps, i + 1) };
+        st.tap = { hotspot: "hit", to: "s" + (i + 1), sound: nx.sound || "pop", captionAt: nx.captionAt ?? 0.15, play: ctx => forward(ctx, steps, i + 1) };
       } else st.final = true;
       if (i > 0) st.back = { to: "s" + (i - 1), sound: "zwoop-rev", captionAt: 0.3, play: ctx => backward(ctx, steps, i) };
       states["s" + i] = st;

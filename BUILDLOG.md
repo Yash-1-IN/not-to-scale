@@ -386,3 +386,11 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   position (through its label) and the C–Br bonds in the electrophilic addition were drawn after the atoms.
 - **Testing lesson:** the plain `python -m http.server` let Chrome cache old JS on reload; use a server
   that sends `Cache-Control: no-store` when iterating. Long JS snippets in the browser tool time out at 45 s.
+
+## Round 9 — text before animation (feedback from a friend)
+- Page turns: the caption fades in first and the drawing's intro now starts 1.0 s in (was 0.2 s). On opening
+  the book the intro starts 0.3 s after the caption has finished fading in.
+- Taps and Back: the animation (and its sound) starts 0.35 s after the new caption starts fading in
+  (`ANIM_DELAY` in js/engine.js); Kit pages' default `captionAt` is now 0.15 s instead of 70 % of the step's
+  duration, so their text no longer lands after the motion.
+- Self-test PASS (84 pages) with the new timing.

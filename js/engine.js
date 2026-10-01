@@ -21,6 +21,9 @@ const Book = (() => {
   let started = false;
   let busy = false;
   let idleTimer = null;
+  // The words come first: a page's drawing starts moving only after its caption has begun to appear, and a
+  // tap's animation starts a beat after the new caption starts fading in, so there is time to read first.
+  const INTRO_DELAY = 1.0, ANIM_DELAY = 0.35;
   let capCur = 0;                   // which of the two caption layers is showing
   const chimed = new Set();
   const el = {};
@@ -186,10 +189,10 @@ const Book = (() => {
     const out = tr.captionOut ?? 0;
     const at = tr.captionAt ?? 0.3;
 
-    playSound(tr.sound);
     const tl = gsap.timeline({ onComplete: () => { busy = false; enterState(targetName); } });
     ctx.track(tl);
-    if (tr.play) tl.add(tr.play(ctx), 0);
+    tl.call(() => playSound(tr.sound), null, reduceMotion ? 0 : ANIM_DELAY);
+    if (tr.play) tl.add(tr.play(ctx), reduceMotion ? 0 : ANIM_DELAY);
     addCaptionSwap(tl, target, out, at);
 
     const hadLegend = s.legend !== false && !!p.legend;
@@ -248,7 +251,7 @@ const Book = (() => {
         gsap.set(el.legend, { opacity: 0 });
         const tl = gsap.timeline({ onComplete: () => { busy = false; if (p.idle && !reduceMotion) p.idle(ctx); enterState(p.start); } });
         tl.to(el.capA, { opacity: 1, duration: 0.7 }, 0);
-        tl.add(p.intro ? p.intro(ctx) : defaultIntro(), 0.2);
+        tl.add(p.intro ? p.intro(ctx) : defaultIntro(), INTRO_DELAY);
         if (p.legend && state().legend !== false) tl.to(el.legend, { opacity: 1, duration: 0.5 }, "-=0.2");
         if (reduceMotion) tl.timeScale(12);
       }
@@ -398,7 +401,7 @@ const Book = (() => {
       .to(".rule .cap", { opacity: 1, duration: 0.3 }, "-=0.2")
       .fromTo(el.title, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.6")
       .fromTo(el.capA, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.2")
-      .add(p.intro ? p.intro(ctx) : defaultIntro(), "-=0.1");
+      .add(p.intro ? p.intro(ctx) : defaultIntro(), "+=0.3");
     if (p.legend) tl.to(el.legend, { opacity: 1, duration: 0.5 }, "-=0.2");
   }
 
