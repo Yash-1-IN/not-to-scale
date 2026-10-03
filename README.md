@@ -36,32 +36,4 @@ for the fonts and GSAP.
 The drawing is SVG on a 1000 x 480 canvas. A page is a list of *states* (for example: start, zoomed in,
 revealed). Each state has a caption and says what Next, Back, Replay or tapping a hotspot does.
 
-## Publishing it on GitHub Pages
 
-This gives the book a real link you can share, like `https://your-username.github.io/ChemistryStorybook/`.
-It's free, and GitHub hosts it for you. You'll need a (free) GitHub account.
-
-1. **Create a new repository.** Go to [github.com/new](https://github.com/new). Name it whatever you
-   like (e.g. `not-to-scale`), leave it Public, and don't add a README, .gitignore or licence (this
-   folder already has its own git history). Click **Create repository**.
-2. **Copy the remote URL** GitHub shows you on the next page — it looks like
-   `https://github.com/your-username/not-to-scale.git`.
-3. **Push this project to it.** Open a terminal in this folder (`ChemistryStorybook`) and run:
-   ```bash
-   git remote add origin https://github.com/your-username/not-to-scale.git
-   git branch -M main
-   git push -u origin main
-   ```
-   (Replace the URL with the one you copied. If it asks you to sign in, follow its prompts.)
-4. **Turn on Pages.** On GitHub, go to your repository's **Settings** tab, then **Pages** in the left
-   sidebar. Under "Build and deployment", set **Source** to **Deploy from a branch**, set **Branch** to
-   **main** and the folder to **/ (root)**, then **Save**.
-5. **Wait a minute or two**, then refresh that Pages settings screen. It'll show your live link at the
-   top: `https://your-username.github.io/not-to-scale/`. That's the link to share.
-6. **Publishing an update later:** after you change any file, run
-   ```bash
-   git add -A
-   git commit -m "describe what changed"
-   git push
-   ```
-   GitHub Pages picks up the new push automatically within a minute or two.
