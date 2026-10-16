@@ -332,3 +332,16 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 .quiz-letter { font: 500 1rem "Fredoka", sans-serif; min-width: 1.4rem; }
 .quiz-feedback { margin-top: 1rem; }
 .quiz-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+
+/* ---------- Draggable controls on "now you try" steps ---------- */
+.sl { cursor: pointer; outline: none; }
+.sl-track { stroke: #cfcad6; stroke-width: 8; stroke-linecap: round; }
+.sl-fill { stroke: var(--frame); stroke-width: 8; stroke-linecap: round; }
+.sl-knob { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+.sl:focus-visible .sl-knob { stroke: var(--tap); stroke-width: 5; }
+.dragger { cursor: grab; touch-action: none; }
+.dragger:active { cursor: grabbing; }
+.chip { cursor: pointer; outline: none; }
+.chip:focus-visible rect.chip-bg { stroke: var(--tap); stroke-width: 5; }
+.tray { outline: none; }
+.tray:focus-visible circle { stroke: var(--tap); stroke-width: 5; }

@@ -4,6 +4,9 @@
 //
 // Bar heights are exact, not random: each bin gets its share of N from the real 3D energy distribution
 // (largest-remainder rounding so they add up to N). Only the order the particles arrive in is shuffled.
+//
+// The last step is a "now you try" step: a slider sets the temperature and the curve, the shaded part past the
+// activation energy and its percentage follow live, from the exact distribution (not the 200-particle sample).
 
 (() => {
   const NS = "http://www.w3.org/2000/svg";
@@ -48,6 +51,8 @@
     return c;
   }
   const COOL = binCounts(T_COOL), HOT = binCounts(T_HOT);
+  const T_MIN = 1, T_MAX = 2.2, T_ROOM_K = 300;          // slider range, in units of the cool gas's kT; the cool gas is 300 K
+  const tailFraction = T => 1 - cdf(EA, T);              // the exact fraction with energy above Ea
   const pastEa = c => c.slice(EA_BIN).reduce((a, b) => a + b, 0);
   const curveY = (E, T) => CHART.base - PX * N * BIN_W * pdf(E, T);
 
@@ -84,8 +89,33 @@
     <text class="graph-label fade" x="740" y="175">enough energy to react:</text>
     <text class="molecule-label fade" id="count" x="740" y="203">–</text>
 
+    <g id="live" opacity="0">
+      <path id="liveArea" fill="var(--heat)" fill-opacity="0.35"/>
+      <path id="liveCurve" fill="none" stroke="var(--heat)" stroke-width="3" stroke-linejoin="round"/>
+      <text class="graph-label" x="710" y="268">temperature</text>
+      <text class="molecule-label" id="liveTemp" x="710" y="352">–</text>
+      <text class="graph-label" id="liveRatio" x="740" y="231"></text>
+      ${Kit.sliderMarkup("tslider", 560, 860, 300, "Temperature")}
+    </g>
+
     <rect class="tap-ring" id="ring" x="120" y="95" width="780" height="360" rx="40" opacity="0"/>
     <circle class="hit" id="hit" cx="510" cy="265" r="500"/>`;
+
+  // Redraw the live curve, its shaded tail and the readouts for temperature T (kT units).
+  function drawLive(ctx, T) {
+    ctx.$("#liveCurve").setAttribute("d", curvePath(T));
+    let a = "M " + EA_X.toFixed(1) + " " + CHART.base;
+    for (let k = 0; k <= 60; k++) {
+      const E = EA + (k / 60) * (BIN_W * BINS - EA);
+      a += " L " + eX(E).toFixed(1) + " " + curveY(E, T).toFixed(1);
+    }
+    ctx.$("#liveArea").setAttribute("d", a + " L " + CHART.x1 + " " + CHART.base + " Z");
+    const f = tailFraction(T);
+    ctx.$("#count").textContent = (100 * f).toFixed(f < 0.1 ? 1 : 0) + " %";
+    ctx.$("#liveTemp").textContent = Math.round(T * T_ROOM_K) + " K";
+    const x = f / tailFraction(T_MIN);
+    ctx.$("#liveRatio").textContent = x < 1.05 ? "(the same as at 300 K)" : "(about ×" + (x < 10 ? x.toFixed(1) : Math.round(x)) + " compared with 300 K)";
+  }
 
   function setCount(ctx, n) { ctx.$("#count").textContent = n + " of " + N; }
 
@@ -166,6 +196,33 @@
     }
   };
 
+  // "Now you try": swap the histogram for a live curve with a temperature slider.
+  const tryIt = {
+    hotspot: "hit", to: "play", sound: "zwoop", captionAt: 0.4,
+    play(ctx) {
+      const tl = gsap.timeline();
+      setBars(tl, new Array(BINS).fill(0), 0);
+      tl.to(["#curveCool", "#labelCool", "#curveHot", "#labelHot"], { opacity: 0, duration: 0.4 }, 0);
+      drawLive(ctx, ctx.data.slider.get());
+      tl.to("#live", { opacity: 1, duration: 0.6 }, 0.4);
+      tl.call(() => ctx.$("#tslider").setAttribute("tabindex", "0"), null, 0.4);
+      return tl;
+    }
+  };
+  const leavePlay = {
+    to: "hot", sound: "zwoop-rev", captionAt: 0.3,
+    play(ctx) {
+      const tl = gsap.timeline();
+      ctx.$("#tslider").setAttribute("tabindex", "-1");
+      tl.to("#live", { opacity: 0, duration: 0.4 }, 0);
+      setBars(tl, HOT, 0.2);
+      tl.to(["#curveHot", "#labelHot", "#labelCool"], { opacity: 1, duration: 0.4 }, 0.2)
+        .to("#curveCool", { opacity: 0.6, duration: 0.4 }, 0.2)
+        .call(() => setCount(ctx, pastEa(HOT)), null, 0.4);
+      return tl;
+    }
+  };
+
   const cool = {
     to: "cool", sound: "zwoop-rev", captionAt: 0.3,
     play(ctx) {
@@ -187,6 +244,11 @@
     svg,
     start: "empty",
 
+    setup(ctx) {
+      ctx.$("#tslider").setAttribute("tabindex", "-1");
+      ctx.data.slider = Kit.slider(ctx, "tslider", { min: T_MIN, max: T_MAX, value: T_HOT, step: 0.01, onInput: T => drawLive(ctx, T) });
+    },
+
     hotspots: [{ id: "hit", selector: "#hit", label: "Tap to measure the particles' energies", hint: Hint.ring("#ring", "510 275") }],
 
     states: {
@@ -202,10 +264,16 @@
         back: unmeasure
       },
       hot: {
-        caption: "Hotter, the curve gets lower and stretches right. It's the same particles, so the same area — but far more of them now sit past the line.",
+        caption: "Hotter, the curve gets lower and stretches right. It's the same particles, so the same area — but far more of them now sit past the line. Tap to try it yourself.",
         booklet: "§1 equations (HL): the Arrhenius equation, k = Ae<sup>−Ea/RT</sup> — raise T and the rate constant k climbs steeply.",
         footnote: "From " + pastEa(COOL) + " to " + pastEa(HOT) + " out of " + N + ": a modest temperature rise multiplies the number that can react. That's why heating speeds reactions up so much.",
-        back: cool,
+        tap: tryIt,
+        back: cool
+      },
+      play: {
+        caption: "Your turn: drag the slider to change the temperature. Watch the curve flatten and stretch as it gets hotter, while the shaded part past the dashed line, the particles that can react, grows quickly.",
+        footnote: "Temperatures here are for the model, with the cool gas as 300 K. The shaded fraction comes from the exact Maxwell–Boltzmann distribution, not from the 200 particles above.",
+        back: leavePlay,
         final: true
       }
     }

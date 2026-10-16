@@ -417,3 +417,25 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   point at real things, and that the question, glossary and booklet panels open, answer and close.
 - **Lessons:** the extracted PDF text in the scratchpad can disappear between sessions, so keep generators
   (`mk_bk.py`-style) re-runnable from the PDF; the booklet's equations come out of pypdf garbled and were typed.
+
+## Round 11 — interactive pages: drag, choose, slide
+- **`Kit.sliderMarkup` / `Kit.slider`** (js/kit.js): a draggable slider drawn in the page's SVG. Pointer, touch
+  and keyboard (arrows, Home, End, PageUp/Down); the arrow keys are stopped so they never turn the page.
+  Interactive controls live on a last "your turn" step, because the invisible tap circle covers the page until
+  a state has no tap left.
+- **Maxwell–Boltzmann:** a new last step after "hotter". A temperature slider (300–660 K for the model; the cool
+  gas is 300 K) redraws the curve, shades the part past the activation energy, and shows the exact fraction
+  with enough energy and the factor compared with 300 K (2.9 % at 300 K, 25 % at 660 K, about ×8.6).
+- **New page 85, "Build a molecule"** (`pages/s2-04b-build-molecule.js`): drag H, C, N, O, Cl from a tray; atoms
+  snap into bonds up to their valence (hollow dots show free bonds), tap a bond for double/triple, drag back to
+  the tray to delete; springs along bonds plus VSEPR-style angle springs (180°/120°/105° by electron domains),
+  so water bends and CO₂ is linear. Finished molecules get formula, name and shape; a checklist ticks
+  water, ammonia, methane, CO₂, ethene, HCN. Keyboard: Enter on a tray atom adds it bonded to the latest
+  unfinished atom. Pointer listeners sit on the book's own <svg>, so the page removes them in `teardown`.
+- **New page 86, "Pick an acid: see its pH"** (`pages/r3-04b-acid-picker.js`): seven acids (2 strong, 5 weak)
+  plus a log-scale concentration slider (0.001–1 mol dm⁻³); pH from the full charge balance
+  [H⁺] = [A⁻] + Kw/[H⁺] by bisection; 100 molecules drawn, the ionized share moves apart; pH colour bar.
+- Plan, quiz, glossary and index updated; self-test PASS on 86 pages.
+- **Bugs found while testing:** strong/weak checks inverted (isFinite(Infinity) is false); a perfectly straight
+  H–O–H never bends because the forces are exactly symmetric (fixed with a small random nudge on bonding);
+  atoms flee the one you're dragging (repulsion is skipped for the dragged atom).

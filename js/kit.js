@@ -100,6 +100,52 @@ const Kit = (() => {
     (ctx.data.kitTickers ||= []).push(f);
   }
 
+
+  // ----- a draggable slider, for pages with a "now you try" step -----
+  // Put sliderMarkup() in the page's svg (hidden with opacity="0" until the interactive step), then call
+  // slider(ctx, id, { min, max, value, step, onInput(v) }) from setup. Pointer, touch and keyboard all work
+  // (arrow keys, Home, End); the arrow keys don't leak to the book, so they won't turn the page.
+  const sliderMarkup = (id, x0, x1, y, label, extra = "") =>
+    `<g id="${id}" class="sl" role="slider" tabindex="0" aria-label="${label}" ${extra}>
+      <line class="sl-track" x1="${x0}" y1="${y}" x2="${x1}" y2="${y}"/>
+      <line class="sl-fill" x1="${x0}" y1="${y}" x2="${x0}" y2="${y}"/>
+      <circle class="sl-knob" cx="${x0}" cy="${y}" r="14"/>
+      <rect class="sl-grab" x="${x0 - 24}" y="${y - 28}" width="${x1 - x0 + 48}" height="56" fill="transparent" style="touch-action:none"/>
+    </g>`;
+  function slider(ctx, id, o) {
+    const g = ctx.$("#" + id), track = g.querySelector(".sl-track"), fill = g.querySelector(".sl-fill"), knob = g.querySelector(".sl-knob");
+    const x0 = +track.getAttribute("x1"), x1 = +track.getAttribute("x2"), y = +track.getAttribute("y1");
+    const step = o.step || 0;
+    let value = o.value;
+    const clamp = v => Math.min(o.max, Math.max(o.min, step ? Math.round(v / step) * step : v));
+    function set(v, silent) {
+      value = clamp(v);
+      const x = x0 + (value - o.min) / (o.max - o.min) * (x1 - x0);
+      knob.setAttribute("cx", x); fill.setAttribute("x2", x);
+      g.setAttribute("aria-valuemin", o.min); g.setAttribute("aria-valuemax", o.max); g.setAttribute("aria-valuenow", +value.toFixed(3));
+      if (!silent && o.onInput) o.onInput(value);
+    }
+    const fromEvent = e => {
+      const pt = ctx.svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+      const p = pt.matrixTransform(ctx.svg.getScreenCTM().inverse());
+      return o.min + Math.min(1, Math.max(0, (p.x - x0) / (x1 - x0))) * (o.max - o.min);
+    };
+    let dragging = false;
+    g.addEventListener("pointerdown", e => { dragging = true; g.setPointerCapture(e.pointerId); set(fromEvent(e)); g.focus({ preventScroll: true }); e.preventDefault(); });
+    g.addEventListener("pointermove", e => { if (dragging) set(fromEvent(e)); });
+    const stop = e => { dragging = false; try { g.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ } };
+    g.addEventListener("pointerup", stop); g.addEventListener("pointercancel", stop);
+    g.addEventListener("keydown", e => {
+      const big = (o.max - o.min) / 10, small = step || (o.max - o.min) / 50;
+      const d = { ArrowRight: small, ArrowUp: small, ArrowLeft: -small, ArrowDown: -small, PageUp: big, PageDown: -big }[e.key];
+      if (d !== undefined) set(value + d);
+      else if (e.key === "Home") set(o.min); else if (e.key === "End") set(o.max); else return;
+      e.preventDefault(); e.stopPropagation();
+    });
+    set(value, true);
+    return { set, get: () => value };
+  }
+
   // ----- steps -> states -----
   const CONTROL = new Set(["delay", "dur", "ease", "stagger", "at"]);
   const num = v => { const f = Number(v); return v !== null && v !== "" && !isNaN(f) ? f : v; };
@@ -192,5 +238,5 @@ const Kit = (() => {
     });
   }
 
-  return { NS, C, t, c, l, r, arrow, g, atom, rng, spawn, bounce, setSpeed, tick, page };
+  return { NS, C, t, c, l, r, arrow, g, atom, rng, spawn, bounce, setSpeed, tick, sliderMarkup, slider, page };
 })();
