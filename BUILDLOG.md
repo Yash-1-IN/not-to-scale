@@ -401,7 +401,7 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - **Check yourself:** one paper-1 style multiple-choice question per page (`js/data-quiz.js`, 84 entries).
   A "Check yourself" button appears in the nav on a page's last step; options are lettered A–D (keys a–d or
   1–4 work too), the answer is explained, and "Try it again" / "Next page →" follow. Results are kept per page.
-- **Glossary:** 87 terms with plain definitions and links to the pages that explain them
+- **Glossary:** 90 terms with plain definitions and links to the pages that explain them
   (`js/data-glossary.js`), searchable, reached from the Contents page.
 - **Contents:** search box (matches titles, topics and syllabus codes such as `R2.3`), progress marks
   (● visited, ✓ question answered correctly), a count, and "Clear my progress". Progress lives in
