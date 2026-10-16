@@ -158,6 +158,51 @@
     };
   }
 
+
+  // The study tools (js/study.js): every page has one good question, glossary links point at real pages,
+  // every "§N" note has a section in the booklet panel, and the panels open and close.
+  async function studyChecks(report) {
+    const problems = [];
+    if (typeof Study === "undefined") return ["js/study.js did not load"];
+    const ids = Book.pages.map(p => p.id);
+    Object.keys(QuizData).forEach(id => { if (!ids.includes(id)) problems.push("question for unknown page '" + id + "'"); });
+    ids.forEach(id => {
+      const q = QuizData[id];
+      if (!q) { problems.push("no question for '" + id + "'"); return; }
+      if (!q.q || !Array.isArray(q.o) || q.o.length !== 4 || new Set(q.o).size !== 4) problems.push("question for '" + id + "' needs four different options");
+      if (!(q.a >= 0 && q.a < 4) || !q.why) problems.push("question for '" + id + "' needs an answer 0–3 and an explanation");
+    });
+    GlossaryData.forEach(([term, def, links]) => links.forEach(id => { if (!ids.includes(id)) problems.push("glossary '" + term + "' links to unknown page '" + id + "'"); }));
+    Book.pages.forEach(p => Object.values(p.states || {}).forEach(st => {
+      (st.booklet || "").replace(/§(\d+)/g, (m, n) => { if (!BookletData.sections[n] && !BookletData.notShown[n]) problems.push("'" + p.id + "' cites §" + n + ", which the booklet panel doesn't have"); });
+    }));
+    // the panels
+    const visible = id => { const e = $(id); return !!e && !e.hidden; };
+    const B = Book.debug;
+    if (!(await until(() => !B.busy()))) problems.push("book still busy");
+    if (B.isFinal() && ($("quizBtn") || {}).hidden) problems.push("no 'Check yourself' button on a last step");
+    if ($("quizBtn") && !$("quizBtn").hidden) {
+      $("quizBtn").click();
+      if (!visible("quiz")) problems.push("the question panel didn't open");
+      else {
+        document.querySelector("#quiz .quiz-opt").click();
+        if (!document.querySelector("#quiz .quiz-feedback p")) problems.push("answering gave no feedback");
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        if (visible("quiz")) problems.push("Escape didn't close the question panel");
+      }
+    }
+    Study.openGlossary();
+    if (!visible("glossary") || document.querySelectorAll("#glossary dt").length < 50) problems.push("the glossary didn't open with its terms");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    for (const k of Object.keys(BookletData.sections).concat(Object.keys(BookletData.notShown))) {
+      Study.openBooklet(k);
+      if (!visible("booklet") || !document.querySelector("#booklet .bk-view h3")) problems.push("booklet §" + k + " didn't draw");
+    }
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    if (visible("booklet")) problems.push("Escape didn't close the booklet");
+    return problems;
+  }
+
   async function run() {
     const B = Book.debug;
     const wasMuted = Sound.isMuted();
@@ -193,10 +238,12 @@
     const returned = await until(() => B.index() === before && !B.busy(), 5000);
     report.deepLink = { opened, returned };
 
+    report.study = await studyChecks(report);
+
     gsap.globalTimeline.timeScale(1);
     clearInterval(pump);
     Sound.setMuted(wasMuted);
-    report.pass = report.pages.every(p => !p.problems.length) && opened && returned;
+    report.pass = report.pages.every(p => !p.problems.length) && opened && returned && !report.study.length;
     window.__selftest = report;
     panel.update(report, true);
     console.log("Self-test " + (report.pass ? "PASS" : "FAIL"), report);

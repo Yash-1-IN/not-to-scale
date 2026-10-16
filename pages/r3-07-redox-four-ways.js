@@ -24,7 +24,7 @@
   K.page({
     id: "redox-four-ways",
     topic: "Reactivity 3 — What are the mechanisms of chemical change?",
-    title: "Oxidation and reduction: four ways",
+    title: "Oxidation and reduction: four ways to see it",
     description: "A table with oxidation in orange on one side and reduction in blue on the other. It starts with one row, electrons: oxidation is losing electrons and reduction is gaining them. Each tap adds a row: oxidation state increases or decreases; gaining or losing oxygen; losing or gaining hydrogen. A worked example beneath changes with each row.",
     svg, bounds: [60, 110, 940, 470], tapLabel: "Tap to add another definition",
     steps: [

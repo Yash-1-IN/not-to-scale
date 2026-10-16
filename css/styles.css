@@ -117,6 +117,7 @@ body {
   text-align: center;
   font-size: clamp(1.05rem, 2vw, 1.3rem);
 }
+.caption[aria-hidden="true"] { pointer-events: none; }
 .caption p { margin: 0 0 0.5rem; }
 .footnote { font-style: italic; font-size: 0.95em; }
 
@@ -295,3 +296,39 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   .nav-btn.attn { animation: none; outline: 3px solid var(--tap); outline-offset: 3px; }
 }
+
+/* ---------- Study tools: Check yourself, glossary, data booklet, contents search ---------- */
+.study-panel { z-index: 36; }
+.sp-sub { color: #5d5a66; font-size: 0.95rem; margin: 0.3rem 0 0.8rem; }
+.sp-search { width: 100%; box-sizing: border-box; font: 400 1rem "Nunito", sans-serif; padding: 0.55rem 0.9rem; border: 2px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); margin: 0.2rem 0 0.6rem; }
+.sp-link { font: 600 0.9rem "Nunito", sans-serif; color: var(--frame); background: none; border: 0; padding: 0.15rem 0; margin-right: 1rem; cursor: pointer; text-decoration: underline; text-align: left; }
+.sp-close { margin-top: 2rem; }
+.toc-tools { margin: 0 0 1.2rem; }
+.toc-buttons { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.3rem 0; }
+.toc-mark { display: inline-block; width: 1.3rem; font-size: 0.8rem; color: var(--frame); }
+.toc-mark.right { color: #2E9E63; font-weight: 700; }
+.bk-link { font: inherit; color: var(--frame); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+.gl-list dt { font: 500 1.1rem "Fredoka", sans-serif; margin-top: 1rem; }
+.gl-list dd { margin: 0.15rem 0 0; }
+.gl-links { margin-top: 0.2rem; }
+.bk-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 1rem; }
+.bk-chip { font: 600 0.9rem "Nunito", sans-serif; padding: 0.3rem 0.7rem; border: 2px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); cursor: pointer; }
+.bk-chip.active { background: var(--ink); color: var(--paper); }
+.bk-chip.missing { opacity: 0.45; }
+.bk-view h3 { font: 500 1.25rem "Fredoka", sans-serif; margin: 0.5rem 0; color: var(--ink); }
+.bk-scroll { overflow-x: auto; }
+.bk-table { border-collapse: collapse; font-size: 0.92rem; width: 100%; }
+.bk-table th, .bk-table td { padding: 0.25rem 0.6rem; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.12); }
+.bk-table th { font: 500 0.85rem "Fredoka", sans-serif; color: var(--frame); }
+.bk-list dt { font-weight: 600; margin-top: 0.7rem; }
+.bk-list dd { margin: 0.1rem 0 0; }
+.quiz-q { font: 500 1.3rem "Fredoka", sans-serif; margin: 0.4rem 0 1rem; }
+.quiz-opts { display: grid; gap: 0.6rem; }
+.quiz-opt { display: flex; gap: 0.8rem; align-items: flex-start; text-align: left; font: 400 1.05rem "Nunito", sans-serif; padding: 0.7rem 1rem; border: 2px solid var(--ink); border-radius: 16px; background: var(--paper); color: var(--ink); cursor: pointer; }
+.quiz-opt:not(:disabled):hover { background: rgba(139, 92, 246, 0.08); }
+.quiz-opt:disabled { cursor: default; }
+.quiz-opt.right { border-color: #2E9E63; background: rgba(46, 158, 99, 0.14); }
+.quiz-opt.wrong { border-color: #FF3131; background: rgba(255, 49, 49, 0.1); }
+.quiz-letter { font: 500 1rem "Fredoka", sans-serif; min-width: 1.4rem; }
+.quiz-feedback { margin-top: 1rem; }
+.quiz-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }

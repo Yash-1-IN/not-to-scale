@@ -27,6 +27,10 @@ const Book = (() => {
   let capCur = 0;                   // which of the two caption layers is showing
   const chimed = new Set();
   const el = {};
+  // Tiny event hook so the study tools (js/study.js) can follow the book: ready, show, ui, contents.
+  const listeners = {};
+  const on = (name, fn) => { (listeners[name] ||= []).push(fn); };
+  const emit = (name, ...args) => (listeners[name] || []).forEach(fn => { try { fn(...args); } catch (e) { console.error(e); } });
 
   const taps = s => (s.tap ? [].concat(s.tap) : []); // a state may have one tap transition or a list
   const page = () => pages[pageIndex];
@@ -53,7 +57,9 @@ const Book = (() => {
   // A state's optional `booklet` is a pointer into the IB Chemistry data booklet, shown under the caption.
   const captionHTML = s => "<p>" + s.caption + "</p>" +
     (s.footnote ? '<p class="footnote">' + s.footnote + "</p>" : "") +
-    (s.booklet ? '<p class="booklet"><span>Data booklet</span> ' + s.booklet + "</p>" : "");
+    (s.booklet ? '<p class="booklet"><span>Data booklet</span> ' + bookletLinks(s.booklet) + "</p>" : "");
+  // Each "§N" in a booklet note becomes a button that opens that section of the booklet panel.
+  const bookletLinks = text => text.replace(/§(\d+)/g, '<button type="button" class="bk-link" data-sec="$1">§$1</button>');
 
   function setCaptionInstant(s) {
     const [a, b] = layers();
@@ -136,6 +142,7 @@ const Book = (() => {
     [el.nextBtn, el.backBtn, el.replayBtn].forEach(b => { b.disabled = busy; });
     el.topbar.hidden = !started;
     el.counter.textContent = pageIndex + 1 + " / " + pages.length;
+    emit("ui");
 
     (page().hotspots || []).forEach(h => {
       const e = ctx.hotspotEls[h.id];
@@ -249,6 +256,7 @@ const Book = (() => {
         gsap.set(el.scene, { opacity: 1 });
         gsap.set(el.captions, { opacity: 1 });
         gsap.set(el.legend, { opacity: 0 });
+        emit("show", pageIndex);
         const tl = gsap.timeline({ onComplete: () => { busy = false; if (p.idle && !reduceMotion) p.idle(ctx); enterState(p.start); } });
         tl.to(el.capA, { opacity: 1, duration: 0.7 }, 0);
         tl.add(p.intro ? p.intro(ctx) : defaultIntro(), INTRO_DELAY);
@@ -328,6 +336,8 @@ const Book = (() => {
           b.type = "button";
           b.className = "toc-item";
           b.textContent = it.index + 1 + ". " + it.title;
+          b.dataset.index = it.index;
+          li.dataset.search = (it.title + " " + (it.code || "") + " " + t.name).toLowerCase();
           b.addEventListener("click", () => { closeContents(); turnPage(it.index); });
           li.appendChild(b);
         } else {
@@ -350,6 +360,7 @@ const Book = (() => {
   }
   function openContents() {
     el.contents.hidden = false;
+    emit("contents");
     el.page.setAttribute("inert", "");
     el.nav.setAttribute("inert", "");
     const first = el.tocBody.querySelector("button");
@@ -384,6 +395,7 @@ const Book = (() => {
 
     const finish = () => {
       started = true;
+      emit("show", pageIndex);
       if (p.idle && !reduceMotion) p.idle(ctx);
       enterState(p.start);
     };
@@ -445,6 +457,7 @@ const Book = (() => {
     if (!pages.length) { console.warn("No pages registered."); return; }
     sortByPlan();
     buildContents();
+    emit("ready");
     loadPage(indexFromHash());
     hashTarget = pageIndex;
     window.addEventListener("hashchange", onHashChange);
@@ -464,8 +477,16 @@ const Book = (() => {
     stateName: () => stateName,
     busy: () => busy,
     started: () => started,
+    isFinal: () => !!(ctx && state().final),
     ctx: () => ctx
   };
 
-  return { register, plan: setPlan, boot, pages, debug };
+  // Turn to a page by id (the study tools use this for glossary and quiz links).
+  function goTo(id) {
+    const i = pages.findIndex(p => p.id === id);
+    if (i >= 0) turnPage(i);
+    return i >= 0;
+  }
+
+  return { register, plan: setPlan, boot, pages, debug, on, goTo };
 })();

@@ -394,3 +394,26 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   (`ANIM_DELAY` in js/engine.js); Kit pages' default `captionAt` is now 0.15 s instead of 70 % of the step's
   duration, so their text no longer lands after the motion.
 - Self-test PASS (84 pages) with the new timing.
+
+## Round 10 — study tools: questions, glossary, contents search/progress, data booklet panel
+- **`js/study.js`** (loaded after the engine, before `Book.boot()`), using a small event hook added to the
+  engine (`Book.on("ready" | "show" | "ui" | "contents")`, `Book.goTo(id)`, `Book.debug.isFinal()`).
+- **Check yourself:** one paper-1 style multiple-choice question per page (`js/data-quiz.js`, 84 entries).
+  A "Check yourself" button appears in the nav on a page's last step; options are lettered A–D (keys a–d or
+  1–4 work too), the answer is explained, and "Try it again" / "Next page →" follow. Results are kept per page.
+- **Glossary:** 87 terms with plain definitions and links to the pages that explain them
+  (`js/data-glossary.js`), searchable, reached from the Contents page.
+- **Contents:** search box (matches titles, topics and syllabus codes such as `R2.3`), progress marks
+  (● visited, ✓ question answered correctly), a count, and "Clear my progress". Progress lives in
+  localStorage (`not-to-scale-progress-v1`), is not read or written during `?test`, and degrades to memory
+  when storage is blocked.
+- **Data booklet panel** (`js/data-booklet.js`): the sections the book cites (1–5, 9–20, 22) as tables read
+  from the booklet PDF (bond lengths/enthalpies parsed by script, the rest checked by hand); §9 and §10 cover
+  H–Kr only; §6, 7, 8, 21, 23 are listed but not reproduced. Every "§N" in a caption note is now a button that
+  opens that section.
+- **Fix:** the page "Oxidation and reduction: four ways" didn't match its plan line ("…four ways to see it"),
+  so the contents page showed it as "coming soon" and listed the page again at the end. Titles now match.
+- **Self-test** now also checks that every page has a well-formed question, glossary links and `§N` notes
+  point at real things, and that the question, glossary and booklet panels open, answer and close.
+- **Lessons:** the extracted PDF text in the scratchpad can disappear between sessions, so keep generators
+  (`mk_bk.py`-style) re-runnable from the PDF; the booklet's equations come out of pypdf garbled and were typed.
