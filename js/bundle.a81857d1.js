@@ -2501,6 +2501,34 @@ const Egg = (() => {
     else play(showPanel);
   }
 
+  // Giving up isn't free: before you leave you have to say who was in Paris. Any answer lets you out, except
+  // the one the song wants (matched loosely, and never written out in full here), which is turned away.
+  const BANNED = /\bn+[i1!|]+[g9q]{2,}|\bn[\s\-_]*word\b/i;
+  const banned = text => BANNED.test(text) || (text.length < 14 && BANNED.test(text.replace(/[\s.\-_*,]+/g, "")));
+  const REFUSALS = ["Not in this book. Try again.", "We don't say that here. Who was in Paris?", "Still no. Pick literally any other answer."];
+  function parisGate() {
+    const gate = make("div", "egg-gate");
+    gate.appendChild(make("p", "egg-gate-q", "Before you go… who was in Paris?"));
+    const input = make("input", "egg-ans"); input.type = "text"; input.autocomplete = "off"; input.maxLength = 60; input.setAttribute("aria-label", "Who was in Paris?");
+    const btn = make("button", "nav-btn", "Answer"); btn.type = "button";
+    const msg = make("p", "egg-out"); msg.setAttribute("aria-live", "polite");
+    let tries = 0;
+    const answer = () => {
+      const text = input.value.trim();
+      if (!text) { msg.textContent = "Say something."; return; }
+      if (banned(text)) { msg.textContent = REFUSALS[Math.min(tries++, REFUSALS.length - 1)]; input.value = ""; input.focus(); return; }
+      msg.textContent = "Correct. Nobody important. The door is open.";
+      input.disabled = btn.disabled = true;
+      setTimeout(() => { if (!panel.el.hidden) Study.closePanel(panel); }, 1200);
+    };
+    btn.addEventListener("click", answer);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); answer(); } });
+    gate.append(input, btn, msg);
+    panel.el.querySelector(".sp-close").hidden = true;        // the only way out is through (Escape still works)
+    setTimeout(() => input.focus(), 0);
+    return gate;
+  }
+
   function showPanel() {
     if (!panel) {
       panel = Study.panel("egg", "Unscheduled assessment");
@@ -2512,6 +2540,7 @@ const Egg = (() => {
     last = i;
     const Q = QUESTIONS[i], b = panel.body;
     panel.heading.textContent = "⚠ Unscheduled assessment ⚠";
+    panel.el.querySelector(".sp-close").hidden = false;
     b.innerHTML = "";
     b.appendChild(make("p", "egg-warn", "Not on the IB syllabus. Not on any syllabus. Proceed at your own risk."));
     const meta = make("p", "egg-meta", "Level: " + Q.level + "  ·  Marks: " + Q.marks + "  ·  Time remaining: ");
@@ -2528,7 +2557,11 @@ const Egg = (() => {
       const m = ans.value.trim() ? VERDICTS[Math.floor(Math.random() * VERDICTS.length)] : BLANK;
       out.textContent = m.replace("{m}", Q.marks);
     });
-    give.addEventListener("click", () => { out.textContent = "Mark scheme: " + Q.scheme; });
+    give.addEventListener("click", () => {
+      out.textContent = "Mark scheme: " + Q.scheme;
+      [ans, row].forEach(x => { x.hidden = true; });
+      b.appendChild(parisGate());
+    });
     again.addEventListener("click", showPanel);
     b.append(ans, row, out);
 

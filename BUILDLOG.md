@@ -480,3 +480,8 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   keys are swallowed so Space can't also turn the page or press a focused button.
 - `Sound.rumble(delay, dur)`, `Sound.boom(delay)` and `Sound.hush()` (cuts the effects the moment it's skipped).
 - "A different question" no longer replays the intro (it calls `showPanel` directly).
+- "I give up" no longer ends quietly: it shows the mark scheme, then a gate, "Before you go… who was in Paris?" (the
+  Close button is hidden meanwhile; Escape still works). Any answer lets you out (the panel closes after "Correct.
+  Nobody important."), except the song's answer, which is refused. The match is loose (spaced-out and leet spellings,
+  or "n-word") but anchored to word starts so ordinary words such as "Niger" or "snigger" pass. The word itself is not
+  written out in the code. Empty input gets "Say something."
