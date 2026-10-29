@@ -112,5 +112,47 @@ const Sound = (() => {
     src.stop(t + p.dur + 0.05);
   }
 
-  return { params, defaults, unlock, applyVolume, setMuted, isMuted, zwoop, tindin, pop, page };
+  // The easter egg's cinematic: a low rumble that swells for `dur` seconds, then a boom. Both go through one
+  // bus so hush() can cut them off the moment the intro is skipped.
+  let bus = null;
+  function fxBus() {
+    if (!bus) { bus = ctx.createGain(); bus.connect(master); }
+    return bus;
+  }
+  function rumble(delay, dur) {
+    if (!canPlay()) return;
+    const t = ctx.currentTime + delay;
+    const osc = ctx.createOscillator(), low = ctx.createBiquadFilter(), g = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(34, t);
+    osc.frequency.exponentialRampToValueAtTime(72, t + dur);
+    low.type = "lowpass";
+    low.frequency.setValueAtTime(90, t);
+    low.frequency.exponentialRampToValueAtTime(420, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.9, t + dur);
+    osc.connect(low); low.connect(g); g.connect(fxBus());
+    osc.start(t); osc.stop(t + dur + 0.05);
+  }
+  function boom(delay) {
+    if (!canPlay()) return;
+    const t = ctx.currentTime + (delay || 0);
+    const osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(95, t);
+    osc.frequency.exponentialRampToValueAtTime(26, t + 0.9);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(1, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+    osc.connect(g); g.connect(fxBus());
+    osc.start(t); osc.stop(t + 1.15);
+    tone("square", 180, 60, t, 0.25, 0.25, 0.005);
+  }
+  function hush() {
+    if (!bus) return;
+    bus.gain.setTargetAtTime(0, ctx.currentTime, 0.03);
+    bus = null;
+  }
+
+  return { params, defaults, unlock, applyVolume, setMuted, isMuted, zwoop, tindin, pop, page, rumble, boom, hush };
 })();

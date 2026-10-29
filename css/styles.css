@@ -360,3 +360,70 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 @keyframes egg-flicker { 0%, 100% { opacity: 1; } 46% { opacity: 1; } 48% { opacity: 0.35; } 50% { opacity: 1; } 52% { opacity: 0.6; } 54% { opacity: 1; } }
 
 .egg ~ .topbar .counter, body:has(.egg:not([hidden])) .counter { color: #C8BFD6; }
+
+/* ---------- Easter egg: the awakening (plays before the assessment; js/egg.js) ---------- */
+.egg-intro { position: fixed; inset: 0; z-index: 60; background: #050308; color: #F4E9D8; overflow: hidden; outline: none; cursor: pointer; animation: egg-in 0.35s both; }
+.egg-cam { position: absolute; inset: 0; display: grid; place-items: center; }
+.egg-vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 46%, transparent 32%, #000 100%); }
+.egg-line { position: absolute; margin: 0; padding: 0 24px; text-align: center; font: 500 clamp(1.1rem, 3.2vw, 1.8rem) "Fredoka", sans-serif; letter-spacing: 0.08em; opacity: 0; }
+.egg-stage { position: absolute; width: min(66vmin, 520px); aspect-ratio: 1; transform: translateY(-4vh); opacity: 0; }
+.egg-face { width: 100%; height: 100%; overflow: visible; }
+.egg-tongue { transform-box: view-box; transform-origin: 120px 128px; animation: egg-lick 0.45s ease-in-out infinite alternate; }
+.egg-flames g:nth-child(odd) .egg-tongue { animation-delay: -0.22s; animation-duration: 0.38s; }
+.egg-flames g:nth-child(3n) .egg-tongue { animation-delay: -0.1s; }
+.egg-title { position: absolute; bottom: 10vh; margin: 0; padding: 0 16px; text-align: center; font: 700 clamp(1.8rem, 6.5vw, 4rem) "Fredoka", sans-serif; letter-spacing: 0.12em; color: #FF3B2F; text-shadow: 0 0 18px rgba(255, 59, 47, 0.55), 0 2px 0 #000; opacity: 0; }
+.egg-sub { position: absolute; bottom: 5vh; margin: 0; padding: 0 16px; text-align: center; font: 500 clamp(0.95rem, 2.4vw, 1.3rem) "Fredoka", sans-serif; letter-spacing: 0.06em; color: #FFB020; opacity: 0; }
+.egg-skip { position: absolute; top: 18px; right: 22px; margin: 0; font: 500 0.85rem "Fredoka", sans-serif; color: #8F85A3; opacity: 0; animation: egg-fade 0.6s 0.8s both; }
+.egg-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.egg-leaving { pointer-events: none; animation: egg-out 0.35s forwards; }
+
+/* first time: about 7 s */
+.egg-first .egg-l1 { animation: egg-line 1.4s 0.45s both; }
+.egg-first .egg-l2 { animation: egg-line 1.7s 1.85s both; }
+.egg-first .egg-cam { animation: egg-quake 1.95s 3s both; }
+.egg-first .egg-stage { animation: egg-rise 1.9s 3.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.egg-first .egg-face { animation: egg-slam 0.45s 4.95s forwards, egg-hover 2.4s 5.4s ease-in-out infinite alternate; }
+.egg-first .egg-eyes { animation: egg-eye 0.9s 5s ease-in-out infinite alternate; }
+.egg-first .egg-flash { animation: egg-flash 0.9s 4.9s both; }
+.egg-first .egg-title { animation: egg-title 0.35s 5s both, egg-flicker 2.4s 5.6s infinite; }
+.egg-first .egg-s1 { animation: egg-sub 1s 5.6s both; }
+.egg-first .egg-s2 { animation: egg-fade 0.5s 6.6s both; }
+.egg-first .egg-l1, .egg-first .egg-l2 { top: 44%; }
+
+/* later times: a short sting */
+.egg-quick .egg-line { display: none; }
+.egg-quick .egg-stage { animation: egg-pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.egg-quick .egg-face { animation: egg-hover 1.2s ease-in-out infinite alternate; }
+.egg-quick .egg-flash { animation: egg-flash 0.6s both; }
+.egg-quick .egg-title { animation: egg-title 0.3s 0.25s both; }
+.egg-quick .egg-s1 { animation: egg-fade 0.4s 0.7s both; }
+
+/* reduced motion: a calm still face, no shaking or flashing */
+.egg-calm, .egg-calm .egg-skip { animation: none; }
+.egg-calm .egg-stage, .egg-calm .egg-title, .egg-calm .egg-sub, .egg-calm .egg-skip { opacity: 1; }
+.egg-calm .egg-tongue { animation: none; }
+.egg-calm .egg-line { display: none; }
+
+@keyframes egg-in { from { opacity: 0; } }
+@keyframes egg-out { to { opacity: 0; } }
+@keyframes egg-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes egg-line { 0% { opacity: 0; letter-spacing: 0.25em; } 22% { opacity: 1; letter-spacing: 0.08em; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes egg-sub { 0% { opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes egg-lick { from { transform: scaleY(0.82); } to { transform: scaleY(1.12); } }
+@keyframes egg-rise {
+  0% { opacity: 0; transform: translateY(-4vh) scale(0.04) rotate(-25deg); }
+  60% { opacity: 1; transform: translateY(-4vh) scale(0.72) rotate(6deg); }
+  100% { opacity: 1; transform: translateY(-4vh) scale(1) rotate(0); }
+}
+@keyframes egg-slam { from { transform: scale(1.3); } to { transform: scale(1); } }
+@keyframes egg-hover { from { transform: translateY(-1.5%) scale(1); } to { transform: translateY(1.5%) scale(1.03); } }
+@keyframes egg-eye { from { filter: brightness(1); } to { filter: brightness(1.45) drop-shadow(0 0 4px #FFD54A); } }
+@keyframes egg-pop { from { opacity: 0; transform: translateY(-4vh) scale(1.8); } to { opacity: 1; transform: translateY(-4vh) scale(1); } }
+@keyframes egg-flash { 0% { opacity: 0; } 8% { opacity: 0.95; } 100% { opacity: 0; } }
+@keyframes egg-title { from { opacity: 0; transform: scale(2.6); letter-spacing: 0.4em; } to { opacity: 1; transform: scale(1); letter-spacing: 0.12em; } }
+@keyframes egg-quake {
+  0% { transform: translate(0, 0); } 10% { transform: translate(-2px, 1px); } 20% { transform: translate(3px, -2px); }
+  30% { transform: translate(-4px, 3px); } 40% { transform: translate(5px, 2px); } 50% { transform: translate(-6px, -3px); }
+  60% { transform: translate(7px, 4px); } 70% { transform: translate(-8px, 2px); } 80% { transform: translate(9px, -4px); }
+  90% { transform: translate(-10px, 3px); } 100% { transform: translate(0, 0); }
+}

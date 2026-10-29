@@ -463,3 +463,15 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - The ← → in the code are swallowed once the code is under way (after ↑↑↓↓) so the book doesn't turn pages
   mid-code. Built on `Study.panel`/`Study.openPanel` (now exported, with an `_onClose` hook), so Escape and
   the arrow-key guard are shared. Self-test opens and closes it. Not mentioned anywhere in the book itself.
+
+## Round 14 — easter egg: the Extreme Demon awakening
+- The assessment is now announced by a full-screen intro (`js/egg.js`, CSS at the end of `css/styles.css`). The face is
+  hand-drawn inline SVG (flames, six horns, red face, slanted yellow eyes, teeth), so there is nothing to download.
+- First time (about 7.5 s): "Warning." / "You were not supposed to find this." on black, a rumble and screen shake,
+  the demon spins up out of blue flames, a flash and boom, "EXTREME DEMON" slams in, "Mythic difficulty. Chemistry
+  edition." / "Good luck.", then the panel opens. After that: a 1.7 s sting ("Back so soon?"). Reduced motion gets a
+  calm still face for 1.4 s. "Seen" is remembered in localStorage (`not-to-scale-egg-seen`); `?test` skips the intro.
+- Space or Enter or a tap skips straight to the question; Escape cancels it. While it plays the page is `inert`
+  and keys are swallowed so Space can't also turn the page or press a focused button.
+- `Sound.rumble(delay, dur)`, `Sound.boom(delay)` and `Sound.hush()` (cuts the effects the moment it's skipped).
+- "A different question" no longer replays the intro (it calls `showPanel` directly).
