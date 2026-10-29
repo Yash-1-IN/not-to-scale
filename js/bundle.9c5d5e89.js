@@ -2324,9 +2324,9 @@ const Study = (() => {
 // Easter egg: type the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) while reading the book, and an "unscheduled
 // assessment" appears: a research-level question nobody could answer, with a ticking clock, a place to
 // "show your working", a cheeky marker, and a mark scheme if you give up. It is announced by the Extreme
-// Demon rising out of blue flames (a full cinematic the first time, a short sting after; Space skips it).
-// On a phone, tap the page counter seven times quickly instead. The questions are real physical chemistry (kinetics, quantum
-// tunnelling, electron transfer) and the mark schemes are correct, just very far past the IB syllabus.
+// Demon (a long cinematic the first time, a short one after; Space skips it). On a phone, tap the page counter
+// seven times quickly instead. The questions are real physical chemistry (kinetics, quantum tunnelling, electron
+// transfer) and the mark schemes are correct, just very far past the IB syllabus.
 // Uses Study.panel (js/study.js) for the overlay, so Escape and the arrow-key guard come for free.
 
 const Egg = (() => {
@@ -2362,41 +2362,50 @@ const Egg = (() => {
   const make = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
 
   // ----- the awakening: plays before the assessment -----
-  // The first time it is a full cinematic (about 7 s: a warning, a rumble, the Extreme Demon rising out of
-  // blue flames, a title slam). After that, a quick 1.7 s sting. Space, Enter or a tap skips it (straight to
-  // the question); Escape cancels the whole thing. Reduced motion gets a calm still face.
+  // The first time (about 14 s): "Warning. Challenger detected.", a fake background check that prints what the
+  // browser reveals about the reader's system, a difficulty bar that overflows into an error, then the Extreme
+  // Demon fades in: "Extreme demon chosen". After that, a short version (about 4 s). Space, Enter or a tap skips
+  // it (straight to the question); Escape cancels the whole thing. Reduced motion gets just the still demon.
   const TEST = /[?&]test\b/.test(location.search);        // the self-test opens the panel directly, no intro
   const SEEN = "not-to-scale-egg-seen";
-  const LENGTH = { first: 7500, quick: 1700, calm: 1400 };
   let intro = null, played = false;
   const wasSeen = () => { try { return localStorage.getItem(SEEN) === "1"; } catch (e) { return false; } };
   const rememberSeen = () => { played = true; try { localStorage.setItem(SEEN, "1"); } catch (e) { /* no storage: once per visit */ } };
   const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  // The face is drawn here (nothing to download): flames, horns, a red face, slanted yellow eyes, teeth.
-  const FLAMES = [0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map((a, i) =>
-    '<g transform="rotate(' + a + ' 120 128)"><path class="egg-tongue" d="' +
-    (i % 2 ? "M92,86 Q98,50 120,6 Q142,50 148,86 Z" : "M88,86 Q94,30 120,-22 Q146,30 152,86 Z") + '" fill="url(#egd-fl)"/></g>').join("");
-  const TEETH = (y, h, x0, n) => Array.from({ length: n }, (_, i) => '<rect x="' + (x0 + i * 13.5) + '" y="' + y + '" width="12" height="' + h + '" rx="2.5"/>').join("");
-  const MOUTH = "M68,150 Q120,138 172,150 Q168,188 120,193 Q72,188 68,150 Z";
-  const FACE = '<svg class="egg-face" viewBox="0 0 240 240" aria-hidden="true"><defs>' +
-    '<linearGradient id="egd-fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#EAFBFF"/><stop offset="0.55" stop-color="#5CC6FF"/><stop offset="1" stop-color="#2A6BFF" stop-opacity="0.15"/></linearGradient>' +
-    '<radialGradient id="egd-skin" cx="50%" cy="36%" r="68%"><stop offset="0" stop-color="#F23C30"/><stop offset="0.6" stop-color="#C41717"/><stop offset="1" stop-color="#6B0707"/></radialGradient>' +
-    '<radialGradient id="egd-eye" cx="50%" cy="55%" r="62%"><stop offset="0" stop-color="#FFF27A"/><stop offset="0.6" stop-color="#FFB400"/><stop offset="1" stop-color="#E06A00"/></radialGradient>' +
-    '<filter id="egd-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>' +
-    '<clipPath id="egd-mouth"><path d="' + MOUTH + '"/></clipPath>' +
-    '<g id="egd-eye-l"><path d="M74,104 L116,124 L110,142 Q90,148 76,128 Z" fill="url(#egd-eye)" stroke="#1A0000" stroke-width="4" stroke-linejoin="round"/>' +
-    '<ellipse cx="99" cy="131" rx="6" ry="9" fill="#1A0000"/><path d="M66,97 L121,122" stroke="#1A0000" stroke-width="8" stroke-linecap="round"/></g></defs>' +
-    '<g class="egg-flames" filter="url(#egd-glow)">' + FLAMES + '</g>' +
-    '<g fill="#F2F0EA" stroke="#2A0606" stroke-width="4" stroke-linejoin="round">' +
-    '<path d="M62,92 L36,48 L80,72 Z"/><path d="M82,70 L76,32 L102,60 Z"/><path d="M158,70 L164,32 L138,60 Z"/><path d="M178,92 L204,48 L160,72 Z"/>' +
-    '<path d="M54,112 L24,102 L52,134 Z"/><path d="M186,112 L216,102 L188,134 Z"/></g>' +
-    '<circle cx="120" cy="128" r="72" fill="url(#egd-skin)" stroke="#2A0606" stroke-width="5"/>' +
-    '<g class="egg-eyes"><use href="#egd-eye-l"/><use href="#egd-eye-l" transform="translate(240 0) scale(-1 1)"/></g>' +
-    '<path d="' + MOUTH + '" fill="#2A0005"/>' +
-    '<g clip-path="url(#egd-mouth)" fill="#F4EDE0" stroke="#1A0000" stroke-width="2">' + TEETH(138, 20, 74, 7) + TEETH(172, 22, 80, 6) + '</g>' +
-    '<path d="' + MOUTH + '" fill="none" stroke="#1A0000" stroke-width="4" stroke-linejoin="round"/></svg>';
+  // What the "background check" prints. Everything comes from the browser itself and is only shown on this
+  // screen: nothing is sent anywhere (no network request, no location prompt; the timezone is as close as it gets).
+  function sysInfo(short) {
+    const n = navigator, ua = n.userAgent, m = re => (re.exec(ua) || [])[1];
+    const browser = m(/Edg\/(\d+)/) ? "Edge " + m(/Edg\/(\d+)/) : m(/OPR\/(\d+)/) ? "Opera " + m(/OPR\/(\d+)/)
+      : m(/Firefox\/(\d+)/) ? "Firefox " + m(/Firefox\/(\d+)/) : m(/Chrome\/(\d+)/) ? "Chrome " + m(/Chrome\/(\d+)/)
+      : m(/Version\/(\d+).*Safari/) ? "Safari " + m(/Version\/(\d+).*Safari/) : "unidentified";
+    const os = /Windows/.test(ua) ? "Windows" : /Android/.test(ua) ? "Android" : /iPhone|iPad/.test(ua) ? "iOS"
+      : /Mac OS X/.test(ua) ? "macOS" : /Linux/.test(ua) ? "Linux" : "unknown";
+    let zone = ""; try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, " ").replace("/", " / "); } catch (e) { /* ignore */ }
+    let pages = 0, right = 0;
+    try { const pr = Study.progress(); pages = Object.keys(pr.visited).length; right = Object.values(pr.quiz).filter(v => v === "right").length; } catch (e) { /* ignore */ }
+    const conn = n.connection && n.connection.effectiveType ? "online (" + n.connection.effectiveType.toUpperCase() + ")" : n.onLine === false ? "offline (brave)" : "online";
+    const all = [
+      ["Browser", browser],
+      ["System", os],
+      ["Pages read", pages + " / " + Book.pages.length],
+      ["Processor", n.hardwareConcurrency ? n.hardwareConcurrency + " threads" : ""],
+      ["Memory", n.deviceMemory ? "at least " + n.deviceMemory + " GB" : ""],
+      ["Display", screen.width + " × " + screen.height + " @ " + (window.devicePixelRatio || 1) + "x"],
+      ["Touch screen", n.maxTouchPoints > 0 ? "yes" : "no"],
+      ["Language", n.language || ""],
+      ["Location", zone ? "somewhere in " + zone : ""],
+      ["Local time", new Date().toLocaleTimeString()],
+      ["Connection", conn],
+      ["Questions right", String(right)],
+      ["Examiner's note", "suspiciously confident"]
+    ].filter(r => r[1]);
+    return short ? all.slice(0, 3) : all;
+  }
 
+  // The Extreme Demon picture is images/extreme-demon.png, shown as it is. Around it: a fake "background check"
+  // typed out like a terminal, a progress bar that overflows into an error, then the demon fades in.
   function play(done) {
     const mode = reduced() ? "calm" : (!played && !wasSeen()) ? "first" : "quick";
     rememberSeen();
@@ -2404,24 +2413,35 @@ const Egg = (() => {
     const el = make("div", "egg-intro egg-" + mode);
     el.tabIndex = -1; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Something is awakening");
     el.innerHTML = '<div class="egg-cam">' +
-      '<p class="egg-line egg-l1">Warning.</p><p class="egg-line egg-l2">You were not supposed to find this.</p>' +
-      '<div class="egg-stage">' + FACE + '</div>' +
-      '<p class="egg-title">EXTREME DEMON</p>' +
-      '<p class="egg-sub egg-s1">' + (mode === "first" ? "Mythic difficulty. Chemistry edition." : "Back so soon?") + '</p>' +
-      (mode === "first" ? '<p class="egg-sub egg-s2">Good luck.</p>' : "") + '</div>' +
-      '<div class="egg-vig"></div><div class="egg-flash"></div><p class="egg-skip">Press Space to skip</p>';
+      '<p class="egg-line egg-l1">Warning.</p><p class="egg-line egg-l2">Challenger detected.</p>' +
+      '<div class="egg-term"></div>' +
+      '<img class="egg-demon" src="images/extreme-demon.png" alt="" width="228" height="208">' +
+      '<p class="egg-title">Extreme demon chosen</p></div>' +
+      '<div class="egg-vig"></div><p class="egg-skip">Press Space to skip</p>';
     document.body.appendChild(el);
     $page().setAttribute("inert", ""); $nav().setAttribute("inert", "");
     el.focus();
-    try { Sound.unlock(); if (mode === "first") { Sound.rumble(3.0, 1.9); Sound.boom(4.9); } else if (mode === "quick") Sound.boom(0.05); } catch (e) { /* sound is optional */ }
+    try { Sound.unlock(); } catch (e) { /* sound is optional */ }
+    const sfx = (name, ...args) => { try { Sound[name](...args); } catch (e) { /* sound is optional */ } };
 
-    let timer = null;
+    const timers = [];
+    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+    const term = el.querySelector(".egg-term");
+    const say = (cls, key, value) => {
+      const p = make("p", "egg-t " + cls);
+      if (value === undefined) p.textContent = key;
+      else { p.appendChild(make("span", "egg-k", key)); p.appendChild(make("span", "egg-v", value)); }
+      term.appendChild(p);
+      return p;
+    };
+    let ticker = null, ending = false;
     const end = openAfter => {
-      if (intro !== end) return;
-      intro = null; clearTimeout(timer);
+      if (intro !== end || ending) return;
+      ending = true; intro = null;
+      timers.forEach(clearTimeout); clearInterval(ticker);
       document.removeEventListener("keydown", onKey, true);
       el.removeEventListener("click", onClick);
-      try { Sound.hush(); } catch (e) { /* ignore */ }
+      sfx("hush");
       $page().removeAttribute("inert"); $nav().removeAttribute("inert");
       if (prev && document.contains(prev)) prev.focus();
       el.classList.add("egg-leaving");
@@ -2438,7 +2458,40 @@ const Egg = (() => {
     intro = end;
     document.addEventListener("keydown", onKey, true);
     el.addEventListener("click", onClick);
-    timer = setTimeout(() => end(true), LENGTH[mode]);
+
+    if (mode === "calm") { at(1600, () => end(true)); return; }       // reduced motion: just the still demon
+    const first = mode === "first";
+    const P = first ? { gap: 260, calc: 1700, err: 1500, hold: 1900 } : { gap: 140, calc: 600, err: 700, hold: 900 };
+    let t = first ? 2900 : 250;                                       // the first time starts with the two big warnings
+    at(t, () => say("egg-cmd", first ? "> running background check_" : "> challenger detected, again_"));
+    t += 700;
+    sysInfo(!first).forEach(r => { at(t, () => say("", r[0], r[1])); t += P.gap; });
+    t += 250;
+    at(t, () => {
+      say("egg-cmd", "> calculating difficulty level…");
+      const bar = say("egg-bar", ""), t0 = Date.now();
+      ticker = setInterval(() => {
+        const f = Math.min(0.99, (Date.now() - t0) / P.calc), n = Math.round(f * 24);
+        bar.textContent = "[" + "█".repeat(n) + "░".repeat(24 - n) + "] " + Math.floor(f * 100) + "%";
+      }, 50);
+      if (first) sfx("rumble", 0, P.calc / 1000);
+    });
+    t += P.calc;
+    at(t, () => {
+      clearInterval(ticker);
+      say("egg-err", "ERROR: difficulty level out of range");
+      say("egg-err", "ERR_DIFFICULTY_OVERFLOW (0xD3M0N)");
+      el.classList.add("egg-glitch");
+      sfx("zwoop", { reverse: true, dur: 0.5 });
+    });
+    t += P.err;
+    at(t, () => el.classList.add("egg-term-off"));
+    t += 600;
+    at(t, () => { el.classList.add("egg-reveal"); sfx("boom", 0); });
+    t += first ? 1300 : 500;
+    at(t, () => el.classList.add("egg-chosen"));
+    t += P.hold;
+    at(t, () => end(true));
   }
   const $page = () => document.getElementById("page"), $nav = () => document.getElementById("nav");
 

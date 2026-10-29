@@ -465,13 +465,18 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   the arrow-key guard are shared. Self-test opens and closes it. Not mentioned anywhere in the book itself.
 
 ## Round 14 — easter egg: the Extreme Demon awakening
-- The assessment is now announced by a full-screen intro (`js/egg.js`, CSS at the end of `css/styles.css`). The face is
-  hand-drawn inline SVG (flames, six horns, red face, slanted yellow eyes, teeth), so there is nothing to download.
-- First time (about 7.5 s): "Warning." / "You were not supposed to find this." on black, a rumble and screen shake,
-  the demon spins up out of blue flames, a flash and boom, "EXTREME DEMON" slams in, "Mythic difficulty. Chemistry
-  edition." / "Good luck.", then the panel opens. After that: a 1.7 s sting ("Back so soon?"). Reduced motion gets a
-  calm still face for 1.4 s. "Seen" is remembered in localStorage (`not-to-scale-egg-seen`); `?test` skips the intro.
-- Space or Enter or a tap skips straight to the question; Escape cancels it. While it plays the page is `inert`
-  and keys are swallowed so Space can't also turn the page or press a focused button.
+- The assessment is announced by a full-screen intro (`js/egg.js`, CSS at the end of `css/styles.css`). The demon is the
+  user's own picture, `images/extreme-demon.png` (228 × 208, transparent), shown as it is.
+- First time (about 14 s): "Warning." / "Challenger detected." on black, then a terminal that types "running
+  background check" and prints what the browser itself reports (browser, OS, pages read, processor threads, memory,
+  display, touch, language, timezone as "somewhere in …", local time, connection, questions right, a joke note).
+  Nothing is sent anywhere: no network request and no location prompt. Then "calculating difficulty level" with a
+  bar that stalls at 99 %, a red-flicker/shake "ERROR: difficulty level out of range (ERR_DIFFICULTY_OVERFLOW)",
+  and the demon fades in with "Extreme demon chosen" and a boom, then the panel opens.
+- After that (about 5 s): "challenger detected, again", three rows, a short bar, the same error and reveal.
+  Reduced motion: just the still demon and title for 1.6 s. "Seen" is in localStorage (`not-to-scale-egg-seen`);
+  `?test` skips the intro.
+- Space or Enter or a tap skips straight to the question; Escape cancels it. While it plays the page is `inert` and
+  keys are swallowed so Space can't also turn the page or press a focused button.
 - `Sound.rumble(delay, dur)`, `Sound.boom(delay)` and `Sound.hush()` (cuts the effects the moment it's skipped).
 - "A different question" no longer replays the intro (it calls `showPanel` directly).
