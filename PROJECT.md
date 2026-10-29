@@ -65,7 +65,7 @@ for f in js/*.js pages/*.js; do node --check "$f" || echo "FAIL $f"; done
 **Repo:** https://github.com/Yash-1-IN/not-to-scale (**public**, branch `main`, tracking `origin/main`). To publish
 changes: run `python tools/build.py`, commit, then `git push`. GitHub Pages serves `main` (folder `/`) at
 https://yash-1-in.github.io/not-to-scale/ and redeploys on each push (a minute or two). The GitHub CLI is installed at
-`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwein\gh.exe` and signed in
+`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwe\bin\gh.exe` and signed in
 as Yash-1-IN (it may not be on PATH until a new shell). The user removed the "publishing on GitHub Pages" section from
 the README on purpose; don't add it back.
 
