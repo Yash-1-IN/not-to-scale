@@ -191,6 +191,10 @@
         if (visible("quiz")) problems.push("Escape didn't close the question panel");
       }
     }
+    Egg.open();      // the Konami easter egg: it should open with a question, then close with Escape
+    if (!visible("egg") || !document.querySelector("#egg .egg-q")) problems.push("the easter egg didn't open");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    if (visible("egg")) problems.push("Escape didn't close the easter egg");
     Study.openGlossary();
     if (!visible("glossary") || document.querySelectorAll("#glossary dt").length < 50) problems.push("the glossary didn't open with its terms");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));

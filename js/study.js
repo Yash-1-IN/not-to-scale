@@ -46,6 +46,7 @@ const Study = (() => {
   function closePanel(p) {
     const s = p.el || p;
     s.hidden = true;
+    if (s._onClose) s._onClose();
     if (!document.querySelector(".contents:not([hidden])") && Book.debug.started()) { $("page").removeAttribute("inert"); $("nav").removeAttribute("inert"); }
     const r = s._ret;
     if (r && document.contains(r) && !r.closest("[inert]")) r.focus();
@@ -287,5 +288,5 @@ const Study = (() => {
   });
   Book.on("contents", refreshMarks);
 
-  return { openQuiz, openGlossary, openBooklet, progress: () => progress };
+  return { openQuiz, openGlossary, openBooklet, panel, openPanel, closePanel, progress: () => progress };
 })();

@@ -345,3 +345,18 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 .chip:focus-visible rect.chip-bg { stroke: var(--tap); stroke-width: 5; }
 .tray { outline: none; }
 .tray:focus-visible circle { stroke: var(--tap); stroke-width: 5; }
+
+/* ---------- Easter egg: the unscheduled assessment ---------- */
+.egg { background: #14101C; color: #F4E9D8; }
+.egg h2 { color: #FF5A4D; }
+.egg .egg-warn { color: #FFB020; font-weight: 700; }
+.egg .egg-meta { font: 500 0.95rem "Fredoka", sans-serif; color: #C8BFD6; }
+.egg .egg-clock { font-family: ui-monospace, Consolas, monospace; color: #FF5A4D; }
+.egg .egg-q { font: 400 1.15rem "Nunito", sans-serif; line-height: 1.55; }
+.egg .egg-ans { width: 100%; box-sizing: border-box; font: 400 1rem "Nunito", sans-serif; padding: 0.7rem 0.9rem; border: 2px solid #6B5B80; border-radius: 12px; background: #1E1830; color: #F4E9D8; margin: 0.6rem 0; }
+.egg .egg-out { margin-top: 1rem; font-style: italic; color: #FFB020; }
+.egg .nav-btn, .egg .sp-close { background: #1E1830; color: #F4E9D8; border-color: #6B5B80; }
+@media (prefers-reduced-motion: no-preference) { .egg h2 { animation: egg-flicker 2.4s infinite; } }
+@keyframes egg-flicker { 0%, 100% { opacity: 1; } 46% { opacity: 1; } 48% { opacity: 0.35; } 50% { opacity: 1; } 52% { opacity: 0.6; } 54% { opacity: 1; } }
+
+.egg ~ .topbar .counter, body:has(.egg:not([hidden])) .counter { color: #C8BFD6; }

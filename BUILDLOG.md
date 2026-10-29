@@ -452,3 +452,14 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - **`.gitattributes`** (`* text=auto`) so Windows/Unix line endings stop producing warnings.
 - Docs: README and PROJECT.md describe the two entry pages, the build step and the public repo / Pages setup;
   the stale page-id list in PROJECT.md was replaced by a pointer to the plan.
+
+## Round 13 — easter egg: the unscheduled assessment
+- `js/egg.js`: type the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) while reading, or tap the page counter 7 times in 4 s
+  on a phone. A dark "⚠ Unscheduled assessment ⚠" panel appears with a research-level question (five in the
+  bank: tunnelling KIE with small-curvature tunnelling, Marcus inverted region, Lindemann–Hinshelwood
+  fall-off and Troe broadening, a Wigner tunnelling correction, and H₂⁺ in prolate spheroidal coordinates),
+  a 3-hour countdown, a box for "your working", a cheeky marker on Submit, and the real mark scheme under
+  "I give up". Wigner worked answer: κ = 1 + (1.4388 × 1200/298)²/24 ≈ 2.4; H₂⁺ total energy at R = 2.00 a₀ ≈ −0.6026 Eh.
+- The ← → in the code are swallowed once the code is under way (after ↑↑↓↓) so the book doesn't turn pages
+  mid-code. Built on `Study.panel`/`Study.openPanel` (now exported, with an `_onClose` hook), so Escape and
+  the arrow-key guard are shared. Self-test opens and closes it. Not mentioned anywhere in the book itself.
