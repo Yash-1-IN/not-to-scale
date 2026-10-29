@@ -439,3 +439,16 @@ to get through the list faster, still chemistry-checked and animated, reusing th
 - **Bugs found while testing:** strong/weak checks inverted (isFinite(Infinity) is false); a perfectly straight
   H–O–H never bends because the forces are exactly symmetric (fixed with a small random nudge on bonding);
   atoms flee the one you're dragging (repulsion is skipped for the dragged atom).
+
+## Round 12 — clean-up and load time
+- **Measured first.** Per-frame cost of every page's tickers is 0.06–0.10 ms (a frame is 16.7 ms), and cycling
+  through pages leaves no leaked tickers, tweens or DOM nodes, so there was nothing worth optimizing at runtime.
+  The real cost was loading: 100 script requests (571 KB) before anything appears.
+- **`tools/build.py`:** `dev.html` is now the editable page (lists every script); `index.html` is generated
+  from it and loads one `js/bundle.<hash>.js` (2 local requests instead of 100; content hash in the file name
+  so browsers never serve an old copy). `--check` reports a stale build. Self-test PASS (86 pages) on the bundle.
+- **`tools/serve.py`:** a no-cache dev server, replacing the throwaway ones (Chrome had been serving old JS
+  from the plain `http.server`).
+- **`.gitattributes`** (`* text=auto`) so Windows/Unix line endings stop producing warnings.
+- Docs: README and PROJECT.md describe the two entry pages, the build step and the public repo / Pages setup;
+  the stale page-id list in PROJECT.md was replaced by a pointer to the plan.

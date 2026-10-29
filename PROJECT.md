@@ -34,15 +34,23 @@ small, slightly cheeky footnotes like "not to scale, of course" and "protons are
 **Run it:** double-click `index.html`. No install and no server. It needs internet the first time
 for the Google Fonts and GSAP (from cdnjs).
 
+**Two entry pages (important):** `dev.html` is the one you edit: it lists every script one by one.
+`index.html` is *generated* from it by `python tools/build.py`, which joins all the book's own scripts
+into one file, `js/bundle.<hash>.js` (100 requests become 2; the hash in the name defeats stale caches).
+After changing any script, `dev.html` or the CSS, run `python tools/build.py` before testing `index.html`
+or committing. `python tools/build.py --check` says whether they're out of date. Both pages behave the
+same; `dev.html` needs no build step to see an edit, which is handy while iterating.
+
 **Test it the way Claude has been testing it:**
 ```bash
-python -m http.server 8400 --bind 127.0.0.1
+python tools/serve.py 8494
 ```
-Then open `http://127.0.0.1:8400/index.html`. Use a **new port for each clean test**: the browser
-pane caches JS/CSS hard across reloads on the same port. Stop the server afterwards.
+Then open `http://127.0.0.1:8494/index.html` (or `dev.html`). The server sends `Cache-Control: no-store`,
+which matters: the plain `python -m http.server` lets Chrome keep old copies of the .js files. Stop it
+afterwards.
 
 **Automated self-test:** open `index.html?test` (works by double-click too, or on the server:
-`http://127.0.0.1:8400/index.html?test`). It opens the book and walks every page and every reachable
+`http://127.0.0.1:8494/index.html?test`). It opens the book and walks every page and every reachable
 state at 20× speed, then shows PASS or a list of problems in a panel. The full result is also in
 `window.__selftest` for reading from a script. See §5 for what it checks. Run it after every change.
 
@@ -54,22 +62,20 @@ Back/Forward buttons turn pages.
 for f in js/*.js pages/*.js; do node --check "$f" || echo "FAIL $f"; done
 ```
 
-**Repo:** https://github.com/Yash-1-IN/not-to-scale (**private**, branch `main`, tracking
-`origin/main`). To publish changes: commit, then `git push`. The GitHub CLI is installed at
-`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwe\bin\gh.exe`
-and signed in as Yash-1-IN (it may not be on PATH until a new shell).
-
-**Deploy:** GitHub Pages on a free account needs the repo to be **public** first
-(`gh repo edit --visibility public --accept-visibility-change-consequences`), then Settings → Pages →
-Deploy from branch `main`, folder `/`. Or run `gh api repos/Yash-1-IN/not-to-scale/pages -X POST -f source[branch]=main -f source[path]=/`.
-The manual steps are also in `README.md`.
+**Repo:** https://github.com/Yash-1-IN/not-to-scale (**public**, branch `main`, tracking `origin/main`). To publish
+changes: run `python tools/build.py`, commit, then `git push`. GitHub Pages serves `main` (folder `/`) at
+https://yash-1-in.github.io/not-to-scale/ and redeploys on each push (a minute or two). The GitHub CLI is installed at
+`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwein\gh.exe` and signed in
+as Yash-1-IN (it may not be on PATH until a new shell). The user removed the "publishing on GitHub Pages" section from
+the README on purpose; don't add it back.
 
 ---
 
 ## 3. Hard constraints (from the spec — don't break these)
 
-- Works by **double-clicking `index.html`**: no build tools, no ES modules, no `fetch()` of local
-  files, plain `<script>` tags in order.
+- Works by **double-clicking `index.html`** (or `dev.html`): no ES modules, no `fetch()` of local
+  files, plain `<script>` tags in order. The only build step is `tools/build.py` (Python, no packages),
+  and it just concatenates files; nothing is needed to *open* the book.
 - Drawings are **inline SVG drawn in code** on a **1000 × 480 viewBox**.
 - Animation is **GSAP 3.12.5** from cdnjs. Sound is **synthesised with the Web Audio API** (no audio files).
 - **One idea per page. Captions are one or two sentences.** Start with the simple picture, then peel it back.
@@ -87,8 +93,13 @@ The manual steps are also in `README.md`.
 ## 4. File map
 
 ```
-index.html              page shell: frame, cover, topbar, About panel, scene <svg>, nav, contents, sound lab.
-                        Loads GSAP, then js/*, then pages/* in book order, then Book.boot().
+dev.html                page shell you edit: frame, cover, topbar, About panel, scene <svg>, nav, contents,
+                        sound lab. Lists GSAP, then every js/* and pages/* script, then Book.boot().
+index.html              GENERATED from dev.html by tools/build.py (don't edit): same page, one bundle script
+js/bundle.<hash>.js     GENERATED: every local script joined in order (old hashes are deleted on rebuild)
+tools/serve.py          local dev server with Cache-Control: no-store;  tools/build.py: makes index.html
+js/study.js             study tools: Check yourself, glossary, contents search + progress, data booklet panel
+js/data-quiz.js, data-glossary.js, data-booklet.js   the data those tools show (self-test checks them)
 css/styles.css          palette tokens, layout, shared SVG classes (.orbit .proton .electron .tap-ring .hit ...)
 js/sound.js             Sound: zwoop, tindin, pop, page (+ unlock, mute, params for the lab)
 js/lab.js               the "sound lab" tuning panel (sliders, copyable numbers)
@@ -175,10 +186,11 @@ how things look, sound, keyboard-only use, reduced motion, phone layout.
 
 **The plan (`pages/00-planned.js`):** topics, each with items that are `"Title"` or
 `["Title", "syllabus code"]`. A page switches its line on when its `title` and `topic` match exactly.
-Keep `index.html`'s script order the same as the plan's order, so contents numbers run in sequence.
+The contents order comes from the plan (the engine sorts pages by it), so script order doesn't matter.
 
 **Adding a page:** copy `pages/_template.js`, give it a unique `id`, match `title`/`topic` to a line in
-`00-planned.js` (or add one), add its `<script>` tag to `index.html`, refresh. Then add its facts to
+`00-planned.js` (or add one), add its `<script>` tag to `dev.html`, run `python tools/build.py`, refresh. Then add its quiz question
+(`js/data-quiz.js`, required by the self-test), glossary links if relevant, and its facts to
 `FACTS.md` and an entry to `BUILDLOG.md`.
 
 ---
@@ -230,10 +242,10 @@ text). `idle(ctx)` runs once after the intro (use it for endless flows; kill the
 must be hex. The squircle tap hint and hit circle are added automatically around `bounds`. The default intro
 fades every `.fade` element in (and does nothing if there are none).
 
-Book order is the order of `<script>` tags in `index.html`, which now follows the syllabus plan. The
-# column is just the file number; it isn't the page number in the book. Page ids for `#` links, in book
-order: hydrogen, isotopes, massspec, emission, shells, mole, gases, ionic, covalent, metallic,
-periodic, functional, energy, collision, maxwell, catalysts, equilibrium, lechatelier, acids, redox.
+Book order comes from `pages/00-planned.js` (the plan). The # column below is just the file number for
+the original 20 pages. Page ids for `#` links are each page's `id`; the full list in book order is on the
+contents page, or `Book.pages.map(p => p.id)` in the browser console. The later pages (Structure 1–3,
+Reactivity 1–3, the two Le Châtelier pages, the three interactive pages) are described in BUILDLOG.md and FACTS.md.
 Pages with a data booklet note: hydrogen §2, isotopes §2, massspec §7, emission §1/§5, mole §2,
 gases §1/§2, ionic §10/§16, covalent §11/§12, periodic §10, functional §20 (per group), energy §14,
 maxwell §1, catalysts §1, redox §19.
@@ -360,7 +372,7 @@ appreciate root causes being found, not just symptoms patched.
 ## 11. Testing checklist (run after any change)
 
 - [ ] `node --check` every JS file.
-- [ ] `index.html?test` → PASS (catches most logic and layout slips; it's blind to looks).
+- [ ] `python tools/build.py`, then `index.html?test` → PASS (catches most logic and layout slips; it's blind to looks).
 - [ ] Fresh-port server, open the book, click "Open the book".
 - [ ] For each changed page: go to it from Contents, tap through every state, press Back through
       every state, and check that Next appears on the final state.

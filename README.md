@@ -10,7 +10,8 @@ for the fonts and GSAP.
   own, sped up, and shows PASS or a list of problems in the corner. Takes about 15 seconds.
 
 ## How it's organised
-- `index.html` — the page shell. Lists the page files at the bottom.
+- `dev.html` — the page shell you edit; it lists every script. `index.html` is generated from it
+  (`python tools/build.py`, which joins the scripts into one file so the book loads faster) — don't edit it by hand.
 - `js/engine.js` — runs the book: page turns, Back/Next/Replay, keyboard arrows, page counter,
   contents page, About panel, captions, attention chime, tappable things.
 - `js/kit.js` — a toolkit for writing a page as a drawing plus a list of steps (see "Adding a page").
@@ -31,8 +32,9 @@ for the fonts and GSAP.
 1. Copy `pages/_template.js` to `pages/02-something.js`.
 2. Change `id`, `title`, `topic`, the captions and the drawing. (Same `title` and `topic` as a line in
    `pages/00-planned.js` puts the page in its place in the book.)
-3. Add `<script src="pages/02-something.js"></script>` to `index.html`, after the hydrogen page.
-4. Refresh the browser.
+3. Add `<script src="pages/02-something.js"></script>` to `dev.html`, after the hydrogen page, and add a
+   question for it in `js/data-quiz.js`.
+4. Run `python tools/build.py`, then refresh the browser (or open `dev.html`, which needs no build).
 
 The drawing is SVG on a 1000 x 480 canvas. A page is a list of *states* (for example: start, zoomed in,
 revealed). Each state has a caption and says what Next, Back, Replay or tapping a hotspot does.
