@@ -485,3 +485,23 @@ to get through the list faster, still chemistry-checked and animated, reusing th
   Nobody important."), except the song's answer, which is refused. The match is loose (spaced-out and leet spellings,
   or "n-word") but anchored to word starts so ordinary words such as "Niger" or "snigger" pass. The word itself is not
   written out in the code. Empty input gets "Say something."
+
+## Round 15 — Physics, Batch 0: one book, two subjects (no physics pages yet)
+- Engine (`js/engine.js`): `Book.plan()` now appends; a plan topic has `subject` ("chemistry" if missing) and a page
+  belongs to its topic's subject. The counter reads "7 / 86 · Chemistry". Next on a subject's last page says
+  "Contents" and opens that subject's contents (it never rolls into the other subject); Back on a subject's first page
+  is hidden. Contents has a Chemistry / Physics tab each with its own numbering, search, progress summary and "coming
+  soon" lines (`Book.subjectOf/Start/End/Count/activeSubject` are exported). Cover: Open Chemistry / Open Physics
+  (with no physics pages yet, Open Physics opens straight onto the Physics contents). About text updated.
+- Plan: `pages/00-physics-planned.js` holds all 50 lines (A–D, plan order); the six chemistry topics got
+  `subject: "chemistry"`. Physics page ids start with `p-` (the self-test enforces it both ways).
+- Study tools (`js/study.js`): questions, glossary and data booklet are looked up per subject
+  (`js/data-quiz-physics.js`, `js/data-glossary-physics.js`, `js/data-booklet-physics.js` + `…-extra.js`). Glossary and
+  booklet open for the Contents tab or the page you are on; "§N" notes use the page's own subject's booklet.
+- Physics booklet: `tools/extract_physics_booklet.py <pdf>` regenerates §1 constants, §2 unit conversions and §3 metric
+  prefixes from `IB Physics Formula Booklet SL & HL.pdf` (found in Downloads). The equations (§4–§10) are added by hand
+  per batch. Palette tokens `--velocity/--force/--field/--energy-k/p/th` in CSS and `Kit.C`.
+- Self-test: new `subjectChecks` (cover button, tabs show one subject and number from 1, counter text, no Back on a
+  first page, "Contents" on the last page and no cross-over, `#p-…` deep link opens Contents on the Physics tab). Run once
+  with two temporary physics pages (they exercised every path and PASSed, then were deleted) and on the real book:
+  PASS, 86 chemistry pages unchanged.

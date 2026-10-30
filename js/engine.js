@@ -40,7 +40,20 @@ const Book = (() => {
     if (pages.some(x => x.id === p.id)) console.warn("Two pages share the id '" + p.id + "'. Give each page its own id.");
     pages.push(p);
   }
-  function setPlan(list) { plan = list; }
+  // Book.plan() appends, so each subject's plan file can add its own topics. A topic's `subject` is
+  // "chemistry" (the default when missing) or "physics"; a page belongs to the subject of its topic.
+  function setPlan(list) { plan = plan.concat(list); list.forEach(t => topicSubject.set(t.topic, t.subject || "chemistry")); }
+  const SUBJECTS = [["chemistry", "Chemistry"], ["physics", "Physics"]];
+  const subjectName = s => (SUBJECTS.find(x => x[0] === s) || [s, s])[1];
+  const topicSubject = new Map();
+  const subjectOf = p => (p && topicSubject.get(p.topic)) || "chemistry";
+  // The pages of one subject are contiguous in the book (sortByPlan puts them in plan order).
+  const subjectStart = s => pages.findIndex(p => subjectOf(p) === s);
+  const subjectCount = s => pages.filter(p => subjectOf(p) === s).length;
+  const subjectEnd = s => pages.length - 1 - [...pages].reverse().findIndex(p => subjectOf(p) === s);
+  const lastOfSubject = () => pageIndex >= subjectEnd(subjectOf(page()));
+  const firstOfSubject = () => pageIndex <= subjectStart(subjectOf(page()));
+  let shownSubject = "chemistry";     // which tab the contents page is showing
 
   // ---------- Sound ----------
   function playSound(name) {
@@ -131,8 +144,10 @@ const Book = (() => {
   }
 
   // ---------- UI state ----------
-  const canNext = () => !!state().next || (!!state().final && pageIndex < pages.length - 1);
-  const canBack = () => !!state().back || pageIndex > 0; // no `back` defined: Back turns to the previous page
+  // Next on a subject's last page opens that subject's contents (it never rolls over into the other subject);
+  // Back on a subject's first page has nothing to go back to.
+  const canNext = () => !!state().next || !!state().final;
+  const canBack = () => !!state().back || !firstOfSubject(); // no `back` defined: Back turns to the previous page
 
   function updateUI() {
     const s = started ? state() : null;
@@ -141,7 +156,9 @@ const Book = (() => {
     el.replayBtn.hidden = !started || !s.replay;
     [el.nextBtn, el.backBtn, el.replayBtn].forEach(b => { b.disabled = busy; });
     el.topbar.hidden = !started;
-    el.counter.textContent = pageIndex + 1 + " / " + pages.length;
+    const sub = subjectOf(page()), first = subjectStart(sub);
+    el.counter.textContent = pageIndex - first + 1 + " / " + subjectCount(sub) + " · " + subjectName(sub);
+    el.nextBtn.textContent = started && state().final && !state().next && lastOfSubject() ? "Contents" : "Next →";
     emit("ui");
 
     (page().hotspots || []).forEach(h => {
@@ -180,8 +197,8 @@ const Book = (() => {
     const tr = kind === "tap" ? taps(s).find(t => t.hotspot === hotspotId) : s[kind];
 
     if (!tr) {
-      if (kind === "next" && s.final) turnPage(pageIndex + 1);
-      else if (kind === "back") turnPage(pageIndex - 1);
+      if (kind === "next" && s.final) { if (lastOfSubject()) openContents(subjectOf(p)); else turnPage(pageIndex + 1); }
+      else if (kind === "back" && !firstOfSubject()) turnPage(pageIndex - 1);
       return;
     }
 
@@ -308,10 +325,12 @@ const Book = (() => {
     pages.sort((a, b) => rank(a) - rank(b) || first.get(a) - first.get(b));
   }
 
-  // A plan item is a title, or [title, syllabus code] — the code is shown beside it.
+  // A plan item is a title, or [title, syllabus code] — the code is shown beside it. The contents page has one
+  // tab per subject; each tab lists that subject's topics, with "coming soon" for pages not built yet.
   function buildContents() {
     const topics = plan.map(t => ({
       name: t.topic,
+      subject: t.subject || "chemistry",
       items: t.items.map(item => {
         const [title, code] = [].concat(item);
         return { title, code, index: pages.findIndex(p => p.title === title && p.topic === t.topic) };
@@ -320,50 +339,77 @@ const Book = (() => {
     pages.forEach((p, i) => {
       if (topics.some(t => t.items.some(it => it.index === i))) return;
       let t = topics.find(x => x.name === p.topic);
-      if (!t) { t = { name: p.topic || "Other", items: [] }; topics.push(t); }
+      if (!t) { t = { name: p.topic || "Other", subject: subjectOf(p), items: [] }; topics.push(t); }
       t.items.push({ title: p.title, index: i });
     });
 
     el.tocBody.innerHTML = "";
-    topics.forEach(t => {
-      const h = document.createElement("h3");
-      h.textContent = t.name;
-      const ul = document.createElement("ul");
-      t.items.forEach(it => {
-        const li = document.createElement("li");
-        if (it.index >= 0) {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "toc-item";
-          b.textContent = it.index + 1 + ". " + it.title;
-          b.dataset.index = it.index;
-          li.dataset.search = (it.title + " " + (it.code || "") + " " + t.name).toLowerCase();
-          b.addEventListener("click", () => { closeContents(); turnPage(it.index); });
-          li.appendChild(b);
-        } else {
-          li.className = "toc-soon";
-          li.textContent = it.title;
-          const tag = document.createElement("span");
-          tag.textContent = " coming soon";
-          li.appendChild(tag);
-        }
-        if (it.code) {
-          const code = document.createElement("span");
-          code.className = "toc-code";
-          code.textContent = it.code;
-          li.appendChild(code);
-        }
-        ul.appendChild(li);
+    const tabs = document.createElement("div");
+    tabs.className = "toc-tabs"; tabs.setAttribute("role", "tablist");
+    SUBJECTS.forEach(([sub, label]) => {
+      const tab = document.createElement("button");
+      tab.type = "button"; tab.className = "toc-tab"; tab.dataset.subject = sub; tab.id = "tab-" + sub;
+      tab.setAttribute("role", "tab"); tab.textContent = label;
+      tab.addEventListener("click", () => showSubject(sub, true));
+      tabs.appendChild(tab);
+      const section = document.createElement("div");
+      section.className = "toc-subject"; section.dataset.subject = sub; section.hidden = true;
+      section.setAttribute("role", "tabpanel"); section.setAttribute("aria-labelledby", tab.id);
+      const first = subjectStart(sub);
+      topics.filter(t => t.subject === sub).forEach(t => {
+        const h = document.createElement("h3");
+        h.textContent = t.name;
+        const ul = document.createElement("ul");
+        t.items.forEach(it => {
+          const li = document.createElement("li");
+          if (it.index >= 0) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "toc-item";
+            b.textContent = it.index - first + 1 + ". " + it.title;
+            b.dataset.index = it.index;
+            li.dataset.search = (it.title + " " + (it.code || "") + " " + t.name).toLowerCase();
+            b.addEventListener("click", () => { closeContents(); turnPage(it.index); });
+            li.appendChild(b);
+          } else {
+            li.className = "toc-soon";
+            li.textContent = it.title;
+            const tag = document.createElement("span");
+            tag.textContent = " coming soon";
+            li.appendChild(tag);
+          }
+          if (it.code) {
+            const code = document.createElement("span");
+            code.className = "toc-code";
+            code.textContent = it.code;
+            li.appendChild(code);
+          }
+          ul.appendChild(li);
+        });
+        section.append(h, ul);
       });
-      el.tocBody.append(h, ul);
+      el.tocBody.appendChild(section);
     });
+    el.tocBody.parentNode.insertBefore(tabs, el.tocBody);
+    showSubject(shownSubject);
   }
-  function openContents() {
+  function showSubject(sub, fromTab) {
+    shownSubject = sub;
+    document.querySelectorAll(".toc-tab").forEach(t => {
+      const on = t.dataset.subject === sub;
+      t.setAttribute("aria-selected", on); t.classList.toggle("active", on); t.tabIndex = on ? 0 : -1;
+    });
+    document.querySelectorAll(".toc-subject").forEach(s => { s.hidden = s.dataset.subject !== sub; });
+    emit("subject", sub);
+    if (fromTab) emit("contents");
+  }
+  function openContents(sub) {
+    showSubject(sub || subjectOf(page()));
     el.contents.hidden = false;
     emit("contents");
     el.page.setAttribute("inert", "");
     el.nav.setAttribute("inert", "");
-    const first = el.tocBody.querySelector("button");
+    const first = el.tocBody.querySelector(".toc-subject:not([hidden]) button") || document.querySelector(".toc-tab.active");
     if (first) first.focus();
   }
   function closeContents() {
@@ -389,7 +435,7 @@ const Book = (() => {
   }
 
   // ---------- Opening the book ----------
-  function startBook() {
+  function startBook(then) {
     el.page.removeAttribute("inert");
     const p = page();
 
@@ -398,6 +444,7 @@ const Book = (() => {
       emit("show", pageIndex);
       if (p.idle && !reduceMotion) p.idle(ctx);
       enterState(p.start);
+      if (then) then();
     };
 
     if (reduceMotion) {
@@ -420,7 +467,7 @@ const Book = (() => {
   // ---------- Setup ----------
   function boot() {
     ["scene", "page", "title", "captions", "capA", "capB", "legend", "nav", "backBtn", "nextBtn", "replayBtn",
-      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "lab", "labLink", "labClose",
+      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "openPhysics", "lab", "labLink", "labClose",
       "aboutBtn", "about", "aboutClose", "aboutLinkCover"
     ].forEach(id => { el[id] = $(id); });
 
@@ -462,12 +509,20 @@ const Book = (() => {
     hashTarget = pageIndex;
     window.addEventListener("hashchange", onHashChange);
 
-    el.openBook.addEventListener("click", () => {
+    // The cover has one button per subject. A link to a page (#ionic, #p-orbits) opens at that page, unless the
+    // button chosen is the other subject's, which opens at its first page. A subject with no pages yet opens
+    // straight onto its contents.
+    const openSubject = sub => {
       Sound.unlock();
-      if (reduceMotion) { el.cover.hidden = true; startBook(); return; }
+      const first = subjectStart(sub);
+      if (first >= 0 && subjectOf(page()) !== sub) { unloadPage(); loadPage(first); writeHash(first); }
+      const then = first < 0 ? () => openContents(sub) : null;
+      if (reduceMotion) { el.cover.hidden = true; startBook(then); return; }
       playSound("page");
-      gsap.to(el.cover, { opacity: 0, duration: 0.6, onComplete: () => { el.cover.hidden = true; startBook(); } });
-    });
+      gsap.to(el.cover, { opacity: 0, duration: 0.6, onComplete: () => { el.cover.hidden = true; startBook(then); } });
+    };
+    el.openBook.addEventListener("click", () => openSubject("chemistry"));
+    el.openPhysics.addEventListener("click", () => openSubject("physics"));
   }
 
   // Read-only peek at the running book, for js/selftest.js.
@@ -488,5 +543,8 @@ const Book = (() => {
     return i >= 0;
   }
 
-  return { register, plan: setPlan, boot, pages, debug, on, goTo };
+  // Which subject the reader is in: the contents tab while Contents is open, otherwise the current page's.
+  const activeSubject = () => (el.contents && !el.contents.hidden ? shownSubject : subjectOf(pages[pageIndex]));
+
+  return { register, plan: setPlan, boot, pages, debug, on, goTo, subjects: SUBJECTS, subjectOf, subjectName, subjectStart, subjectEnd, subjectCount, activeSubject };
 })();

@@ -24,7 +24,9 @@ const Kit = (() => {
   const C = {
     proton: "#FF3131", electron: "#0B44A8", heat: "#E05A2B", product: "#2E9E63", ion: "#4C6E9E",
     ink: "#1B1A22", frame: "#8B5CF6", grey: "#8B8590", pale: "#B8BEC6", violet: "#6A2BD9",
-    cyan: "#22B6A5", blue: "#2E6FE0", paper: "#FFFDF8"
+    cyan: "#22B6A5", blue: "#2E6FE0", paper: "#FFFDF8",
+    // Physics: velocity cyan, force ink (thick), field violet, energy bars (kinetic / potential / thermal)
+    velocity: "#22B6A5", force: "#1B1A22", field: "#6A2BD9", energyK: "#2E6FE0", energyP: "#2E9E63", energyTh: "#E05A2B"
   };
 
   // ----- little SVG string helpers -----

@@ -105,8 +105,7 @@
     const old = layers.find(c => c !== shown);
     if (old && old.textContent.trim() && +getComputedStyle(old).opacity > 0.05) r.problems.push(`${name}: the previous caption is still visible underneath`);
 
-    const last = Book.pages.indexOf(p) === Book.pages.length - 1;
-    if (s.final && !last && $("nextBtn").hidden) r.problems.push(`${name}: final state but no Next button`);
+    if (s.final && $("nextBtn").hidden) r.problems.push(`${name}: final state but no Next button`);
   }
 
   // Keep taking a transition not tried yet from the current state; when there's none, step to a
@@ -147,8 +146,11 @@
         const bad = report.pages.filter(p => p.problems.length);
         const total = report.pages.reduce((n, p) => n + p.transitions, 0);
         const linkOk = report.deepLink && report.deepLink.opened && report.deepLink.returned;
+        const extra = [...(report.subjects || []), ...(report.study || [])];
+        const fail = bad.length || !linkOk || extra.length;
         if (!done) add("strong", `Self-test running… page ${report.pages.length} of ${Book.pages.length}`);
-        else add("strong", bad.length || !linkOk ? "Self-test: FAIL" : "Self-test: PASS", `font-size:16px;color:${bad.length || !linkOk ? "#C62828" : "#2E7D32"}`);
+        else add("strong", fail ? "Self-test: FAIL" : "Self-test: PASS", `font-size:16px;color:${fail ? "#C62828" : "#2E7D32"}`);
+        extra.forEach(msg => add("div", "✗ " + msg, "color:#C62828"));
         add("div", `${report.pages.length} pages, ${total} transitions`);
         if (report.deepLink) add("div", `Links (#ionic, then browser Back): ${linkOk ? "ok" : "BROKEN"}`);
         report.pages.forEach(p => {
@@ -166,16 +168,19 @@
     const problems = [];
     if (typeof Study === "undefined") return ["js/study.js did not load"];
     const ids = Book.pages.map(p => p.id);
-    Object.keys(QuizData).forEach(id => { if (!ids.includes(id)) problems.push("question for unknown page '" + id + "'"); });
+    [QuizData, QuizDataPhysics].forEach(Q => Object.keys(Q).forEach(id => { if (!ids.includes(id)) problems.push("question for unknown page '" + id + "'"); }));
+    Book.pages.filter(p => Book.subjectOf(p) === "physics" && !p.id.startsWith("p-")).forEach(p => problems.push("physics page '" + p.id + "' should have an id starting with p-"));
+    Book.pages.filter(p => Book.subjectOf(p) === "chemistry" && p.id.startsWith("p-")).forEach(p => problems.push("chemistry page '" + p.id + "' should not have an id starting with p-"));
     ids.forEach(id => {
-      const q = QuizData[id];
+      const q = Study.quizOf(id);
       if (!q) { problems.push("no question for '" + id + "'"); return; }
       if (!q.q || !Array.isArray(q.o) || q.o.length !== 4 || new Set(q.o).size !== 4) problems.push("question for '" + id + "' needs four different options");
       if (!(q.a >= 0 && q.a < 4) || !q.why) problems.push("question for '" + id + "' needs an answer 0–3 and an explanation");
     });
-    GlossaryData.forEach(([term, def, links]) => links.forEach(id => { if (!ids.includes(id)) problems.push("glossary '" + term + "' links to unknown page '" + id + "'"); }));
+    [GlossaryData, GlossaryDataPhysics].forEach(G => G.forEach(([term, def, links]) => links.forEach(id => { if (!ids.includes(id)) problems.push("glossary '" + term + "' links to unknown page '" + id + "'"); })));
     Book.pages.forEach(p => Object.values(p.states || {}).forEach(st => {
-      (st.booklet || "").replace(/§(\d+)/g, (m, n) => { if (!BookletData.sections[n] && !BookletData.notShown[n]) problems.push("'" + p.id + "' cites §" + n + ", which the booklet panel doesn't have"); });
+      const bk = Study.data[Book.subjectOf(p)].booklet;
+      (st.booklet || "").replace(/§(\d+)/g, (m, n) => { if (!bk.sections[n] && !bk.notShown[n]) problems.push("'" + p.id + "' cites §" + n + ", which its booklet panel doesn't have"); });
     }));
     // the panels
     const visible = id => { const e = $(id); return !!e && !e.hidden; };
@@ -196,15 +201,94 @@
     if (!visible("egg") || !document.querySelector("#egg .egg-q")) problems.push("the easter egg didn't open");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     if (visible("egg")) problems.push("Escape didn't close the easter egg");
-    Study.openGlossary();
+    Study.openGlossary("chemistry");
     if (!visible("glossary") || document.querySelectorAll("#glossary dt").length < 50) problems.push("the glossary didn't open with its terms");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-    for (const k of Object.keys(BookletData.sections).concat(Object.keys(BookletData.notShown))) {
-      Study.openBooklet(k);
-      if (!visible("booklet") || !document.querySelector("#booklet .bk-view h3")) problems.push("booklet §" + k + " didn't draw");
-    }
+    Study.openGlossary("physics");
+    if (!visible("glossary-physics") || document.querySelectorAll("#glossary-physics dt").length !== GlossaryDataPhysics.length) problems.push("the physics glossary didn't open with its terms");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-    if (visible("booklet")) problems.push("Escape didn't close the booklet");
+    for (const [sub, id] of [["chemistry", "booklet"], ["physics", "booklet-physics"]]) {
+      const bk = Study.data[sub].booklet;
+      for (const k of Object.keys(bk.sections).concat(Object.keys(bk.notShown))) {
+        Study.openBooklet(k, sub);
+        if (!visible(id) || !document.querySelector("#" + id + " .bk-view h3")) problems.push(sub + " booklet §" + k + " didn't draw");
+      }
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      if (visible(id)) problems.push("Escape didn't close the " + sub + " booklet");
+    }
+    return problems;
+  }
+
+  // Two subjects in one book: the cover offers both, the contents have a tab each, the counter names the
+  // subject, and Next/Back never cross from one subject into the other.
+  async function subjectChecks() {
+    const problems = [], B = Book.debug;
+    const subjects = Book.subjects.map(x => x[0]);
+    const closeTop = () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    if (!$("openPhysics")) problems.push("the cover has no Open Physics button");
+    const pagesOf = sub => Book.pages.filter(p => Book.subjectOf(p) === sub);
+    const order = Book.pages.map(p => Book.subjectOf(p));
+    if (order.some((x, i) => i && x !== order[i - 1] && order.indexOf(x) < i)) problems.push("a subject's pages are split in two by another subject's");
+    // the contents: one tab per subject, only the chosen one showing, numbering restarts in each
+    $("contentsBtn").click();
+    for (const sub of subjects) {
+      const tab = document.querySelector('.toc-tab[data-subject="' + sub + '"]');
+      if (!tab) { problems.push("no contents tab for " + sub); continue; }
+      tab.click();
+      const shown = document.querySelectorAll(".toc-subject:not([hidden])");
+      if (shown.length !== 1 || shown[0].dataset.subject !== sub) { problems.push("the " + sub + " tab doesn't show only the " + sub + " contents"); continue; }
+      const items = [...shown[0].querySelectorAll(".toc-item")];
+      if (items.length !== pagesOf(sub).length) problems.push("the " + sub + " contents list " + items.length + " pages, the book has " + pagesOf(sub).length);
+      if (items.length && !items[0].textContent.startsWith("1. ")) problems.push("the " + sub + " contents don't start at 1");
+      if (!shown[0].querySelector("li")) problems.push("the " + sub + " contents have no lines in the plan");
+    }
+    closeTop();
+    await until(() => !B.busy());
+    // the edges of each subject
+    for (const sub of subjects) {
+      const list = pagesOf(sub);
+      if (!list.length) continue;
+      const firstI = Book.pages.indexOf(list[0]), lastI = Book.pages.indexOf(list[list.length - 1]);
+      B.turnPage(firstI);
+      await until(() => B.index() === firstI && !B.busy(), 5000);
+      const want = "1 / " + list.length + " · " + Book.subjectName(sub);
+      if ($("counter").textContent !== want) problems.push(sub + ": the counter says '" + $("counter").textContent + "' on its first page, expected '" + want + "'");
+      if (!list[0].states[B.stateName()].back && !$("backBtn").hidden) problems.push(sub + ": Back is offered on its first page");
+      B.turnPage(lastI);
+      await until(() => B.index() === lastI && !B.busy(), 5000);
+      const lastPage = list[list.length - 1], seen = new Set();
+      for (let k = 0; k < 40 && !B.isFinal(); k++) {      // step forward (Next, taps) to the last page's last state
+        const here = B.stateName(); seen.add(here);
+        const opts = transitionsOf(lastPage.states[here]).filter(o => o.kind === "next" || o.kind === "tap");
+        const pick = opts.find(o => !seen.has(targetOf(o))) || opts[0];
+        if (!pick) break;
+        press(pick, { problems: [] }, here);
+        await until(() => !B.busy(), 8000);
+      }
+      if (!B.isFinal()) { problems.push(sub + ": couldn't reach the last state of its last page"); continue; }
+      if ($("nextBtn").hidden || $("nextBtn").textContent !== "Contents") problems.push(sub + ": Next on its last page should say 'Contents', it says '" + $("nextBtn").textContent + "'");
+      $("nextBtn").click();
+      await sleep(50);
+      const c = document.querySelector(".toc-subject:not([hidden])");
+      if ($("contents").hidden || !c || c.dataset.subject !== sub) problems.push(sub + ": Next on its last page didn't open its contents");
+      if (B.index() !== lastI) problems.push(sub + ": Next on its last page turned the page");
+      closeTop();
+    }
+    // a link to a physics page opens it, Contents then shows the Physics tab, and the browser's Back returns
+    const phys = pagesOf("physics")[0];
+    if (phys) {
+      const before = B.index(), target = Book.pages.indexOf(phys);
+      location.hash = phys.id;
+      if (!(await until(() => B.index() === target && !B.busy(), 5000))) problems.push("#" + phys.id + " didn't open");
+      else {
+        $("contentsBtn").click();
+        const c = document.querySelector(".toc-subject:not([hidden])");
+        if (!c || c.dataset.subject !== "physics") problems.push("Contents on a physics page should show the Physics tab");
+        closeTop();
+      }
+      history.back();
+      if (!(await until(() => B.index() === before && !B.busy(), 5000))) problems.push("browser Back didn't return from #" + phys.id);
+    }
     return problems;
   }
 
@@ -243,12 +327,13 @@
     const returned = await until(() => B.index() === before && !B.busy(), 5000);
     report.deepLink = { opened, returned };
 
+    report.subjects = await subjectChecks();
     report.study = await studyChecks(report);
 
     gsap.globalTimeline.timeScale(1);
     clearInterval(pump);
     Sound.setMuted(wasMuted);
-    report.pass = report.pages.every(p => !p.problems.length) && opened && returned && !report.study.length;
+    report.pass = report.pages.every(p => !p.problems.length) && opened && returned && !report.study.length && !report.subjects.length;
     window.__selftest = report;
     panel.update(report, true);
     console.log("Self-test " + (report.pass ? "PASS" : "FAIL"), report);
@@ -653,7 +738,20 @@ const Book = (() => {
     if (pages.some(x => x.id === p.id)) console.warn("Two pages share the id '" + p.id + "'. Give each page its own id.");
     pages.push(p);
   }
-  function setPlan(list) { plan = list; }
+  // Book.plan() appends, so each subject's plan file can add its own topics. A topic's `subject` is
+  // "chemistry" (the default when missing) or "physics"; a page belongs to the subject of its topic.
+  function setPlan(list) { plan = plan.concat(list); list.forEach(t => topicSubject.set(t.topic, t.subject || "chemistry")); }
+  const SUBJECTS = [["chemistry", "Chemistry"], ["physics", "Physics"]];
+  const subjectName = s => (SUBJECTS.find(x => x[0] === s) || [s, s])[1];
+  const topicSubject = new Map();
+  const subjectOf = p => (p && topicSubject.get(p.topic)) || "chemistry";
+  // The pages of one subject are contiguous in the book (sortByPlan puts them in plan order).
+  const subjectStart = s => pages.findIndex(p => subjectOf(p) === s);
+  const subjectCount = s => pages.filter(p => subjectOf(p) === s).length;
+  const subjectEnd = s => pages.length - 1 - [...pages].reverse().findIndex(p => subjectOf(p) === s);
+  const lastOfSubject = () => pageIndex >= subjectEnd(subjectOf(page()));
+  const firstOfSubject = () => pageIndex <= subjectStart(subjectOf(page()));
+  let shownSubject = "chemistry";     // which tab the contents page is showing
 
   // ---------- Sound ----------
   function playSound(name) {
@@ -744,8 +842,10 @@ const Book = (() => {
   }
 
   // ---------- UI state ----------
-  const canNext = () => !!state().next || (!!state().final && pageIndex < pages.length - 1);
-  const canBack = () => !!state().back || pageIndex > 0; // no `back` defined: Back turns to the previous page
+  // Next on a subject's last page opens that subject's contents (it never rolls over into the other subject);
+  // Back on a subject's first page has nothing to go back to.
+  const canNext = () => !!state().next || !!state().final;
+  const canBack = () => !!state().back || !firstOfSubject(); // no `back` defined: Back turns to the previous page
 
   function updateUI() {
     const s = started ? state() : null;
@@ -754,7 +854,9 @@ const Book = (() => {
     el.replayBtn.hidden = !started || !s.replay;
     [el.nextBtn, el.backBtn, el.replayBtn].forEach(b => { b.disabled = busy; });
     el.topbar.hidden = !started;
-    el.counter.textContent = pageIndex + 1 + " / " + pages.length;
+    const sub = subjectOf(page()), first = subjectStart(sub);
+    el.counter.textContent = pageIndex - first + 1 + " / " + subjectCount(sub) + " · " + subjectName(sub);
+    el.nextBtn.textContent = started && state().final && !state().next && lastOfSubject() ? "Contents" : "Next →";
     emit("ui");
 
     (page().hotspots || []).forEach(h => {
@@ -793,8 +895,8 @@ const Book = (() => {
     const tr = kind === "tap" ? taps(s).find(t => t.hotspot === hotspotId) : s[kind];
 
     if (!tr) {
-      if (kind === "next" && s.final) turnPage(pageIndex + 1);
-      else if (kind === "back") turnPage(pageIndex - 1);
+      if (kind === "next" && s.final) { if (lastOfSubject()) openContents(subjectOf(p)); else turnPage(pageIndex + 1); }
+      else if (kind === "back" && !firstOfSubject()) turnPage(pageIndex - 1);
       return;
     }
 
@@ -921,10 +1023,12 @@ const Book = (() => {
     pages.sort((a, b) => rank(a) - rank(b) || first.get(a) - first.get(b));
   }
 
-  // A plan item is a title, or [title, syllabus code] — the code is shown beside it.
+  // A plan item is a title, or [title, syllabus code] — the code is shown beside it. The contents page has one
+  // tab per subject; each tab lists that subject's topics, with "coming soon" for pages not built yet.
   function buildContents() {
     const topics = plan.map(t => ({
       name: t.topic,
+      subject: t.subject || "chemistry",
       items: t.items.map(item => {
         const [title, code] = [].concat(item);
         return { title, code, index: pages.findIndex(p => p.title === title && p.topic === t.topic) };
@@ -933,50 +1037,77 @@ const Book = (() => {
     pages.forEach((p, i) => {
       if (topics.some(t => t.items.some(it => it.index === i))) return;
       let t = topics.find(x => x.name === p.topic);
-      if (!t) { t = { name: p.topic || "Other", items: [] }; topics.push(t); }
+      if (!t) { t = { name: p.topic || "Other", subject: subjectOf(p), items: [] }; topics.push(t); }
       t.items.push({ title: p.title, index: i });
     });
 
     el.tocBody.innerHTML = "";
-    topics.forEach(t => {
-      const h = document.createElement("h3");
-      h.textContent = t.name;
-      const ul = document.createElement("ul");
-      t.items.forEach(it => {
-        const li = document.createElement("li");
-        if (it.index >= 0) {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "toc-item";
-          b.textContent = it.index + 1 + ". " + it.title;
-          b.dataset.index = it.index;
-          li.dataset.search = (it.title + " " + (it.code || "") + " " + t.name).toLowerCase();
-          b.addEventListener("click", () => { closeContents(); turnPage(it.index); });
-          li.appendChild(b);
-        } else {
-          li.className = "toc-soon";
-          li.textContent = it.title;
-          const tag = document.createElement("span");
-          tag.textContent = " coming soon";
-          li.appendChild(tag);
-        }
-        if (it.code) {
-          const code = document.createElement("span");
-          code.className = "toc-code";
-          code.textContent = it.code;
-          li.appendChild(code);
-        }
-        ul.appendChild(li);
+    const tabs = document.createElement("div");
+    tabs.className = "toc-tabs"; tabs.setAttribute("role", "tablist");
+    SUBJECTS.forEach(([sub, label]) => {
+      const tab = document.createElement("button");
+      tab.type = "button"; tab.className = "toc-tab"; tab.dataset.subject = sub; tab.id = "tab-" + sub;
+      tab.setAttribute("role", "tab"); tab.textContent = label;
+      tab.addEventListener("click", () => showSubject(sub, true));
+      tabs.appendChild(tab);
+      const section = document.createElement("div");
+      section.className = "toc-subject"; section.dataset.subject = sub; section.hidden = true;
+      section.setAttribute("role", "tabpanel"); section.setAttribute("aria-labelledby", tab.id);
+      const first = subjectStart(sub);
+      topics.filter(t => t.subject === sub).forEach(t => {
+        const h = document.createElement("h3");
+        h.textContent = t.name;
+        const ul = document.createElement("ul");
+        t.items.forEach(it => {
+          const li = document.createElement("li");
+          if (it.index >= 0) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "toc-item";
+            b.textContent = it.index - first + 1 + ". " + it.title;
+            b.dataset.index = it.index;
+            li.dataset.search = (it.title + " " + (it.code || "") + " " + t.name).toLowerCase();
+            b.addEventListener("click", () => { closeContents(); turnPage(it.index); });
+            li.appendChild(b);
+          } else {
+            li.className = "toc-soon";
+            li.textContent = it.title;
+            const tag = document.createElement("span");
+            tag.textContent = " coming soon";
+            li.appendChild(tag);
+          }
+          if (it.code) {
+            const code = document.createElement("span");
+            code.className = "toc-code";
+            code.textContent = it.code;
+            li.appendChild(code);
+          }
+          ul.appendChild(li);
+        });
+        section.append(h, ul);
       });
-      el.tocBody.append(h, ul);
+      el.tocBody.appendChild(section);
     });
+    el.tocBody.parentNode.insertBefore(tabs, el.tocBody);
+    showSubject(shownSubject);
   }
-  function openContents() {
+  function showSubject(sub, fromTab) {
+    shownSubject = sub;
+    document.querySelectorAll(".toc-tab").forEach(t => {
+      const on = t.dataset.subject === sub;
+      t.setAttribute("aria-selected", on); t.classList.toggle("active", on); t.tabIndex = on ? 0 : -1;
+    });
+    document.querySelectorAll(".toc-subject").forEach(s => { s.hidden = s.dataset.subject !== sub; });
+    emit("subject", sub);
+    if (fromTab) emit("contents");
+  }
+  function openContents(sub) {
+    showSubject(sub || subjectOf(page()));
     el.contents.hidden = false;
     emit("contents");
     el.page.setAttribute("inert", "");
     el.nav.setAttribute("inert", "");
-    const first = el.tocBody.querySelector("button");
+    const first = el.tocBody.querySelector(".toc-subject:not([hidden]) button") || document.querySelector(".toc-tab.active");
     if (first) first.focus();
   }
   function closeContents() {
@@ -1002,7 +1133,7 @@ const Book = (() => {
   }
 
   // ---------- Opening the book ----------
-  function startBook() {
+  function startBook(then) {
     el.page.removeAttribute("inert");
     const p = page();
 
@@ -1011,6 +1142,7 @@ const Book = (() => {
       emit("show", pageIndex);
       if (p.idle && !reduceMotion) p.idle(ctx);
       enterState(p.start);
+      if (then) then();
     };
 
     if (reduceMotion) {
@@ -1033,7 +1165,7 @@ const Book = (() => {
   // ---------- Setup ----------
   function boot() {
     ["scene", "page", "title", "captions", "capA", "capB", "legend", "nav", "backBtn", "nextBtn", "replayBtn",
-      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "lab", "labLink", "labClose",
+      "topbar", "counter", "contentsBtn", "contents", "tocBody", "mute", "cover", "openBook", "openPhysics", "lab", "labLink", "labClose",
       "aboutBtn", "about", "aboutClose", "aboutLinkCover"
     ].forEach(id => { el[id] = $(id); });
 
@@ -1075,12 +1207,20 @@ const Book = (() => {
     hashTarget = pageIndex;
     window.addEventListener("hashchange", onHashChange);
 
-    el.openBook.addEventListener("click", () => {
+    // The cover has one button per subject. A link to a page (#ionic, #p-orbits) opens at that page, unless the
+    // button chosen is the other subject's, which opens at its first page. A subject with no pages yet opens
+    // straight onto its contents.
+    const openSubject = sub => {
       Sound.unlock();
-      if (reduceMotion) { el.cover.hidden = true; startBook(); return; }
+      const first = subjectStart(sub);
+      if (first >= 0 && subjectOf(page()) !== sub) { unloadPage(); loadPage(first); writeHash(first); }
+      const then = first < 0 ? () => openContents(sub) : null;
+      if (reduceMotion) { el.cover.hidden = true; startBook(then); return; }
       playSound("page");
-      gsap.to(el.cover, { opacity: 0, duration: 0.6, onComplete: () => { el.cover.hidden = true; startBook(); } });
-    });
+      gsap.to(el.cover, { opacity: 0, duration: 0.6, onComplete: () => { el.cover.hidden = true; startBook(then); } });
+    };
+    el.openBook.addEventListener("click", () => openSubject("chemistry"));
+    el.openPhysics.addEventListener("click", () => openSubject("physics"));
   }
 
   // Read-only peek at the running book, for js/selftest.js.
@@ -1101,7 +1241,10 @@ const Book = (() => {
     return i >= 0;
   }
 
-  return { register, plan: setPlan, boot, pages, debug, on, goTo };
+  // Which subject the reader is in: the contents tab while Contents is open, otherwise the current page's.
+  const activeSubject = () => (el.contents && !el.contents.hidden ? shownSubject : subjectOf(pages[pageIndex]));
+
+  return { register, plan: setPlan, boot, pages, debug, on, goTo, subjects: SUBJECTS, subjectOf, subjectName, subjectStart, subjectEnd, subjectCount, activeSubject };
 })();
 ;
 /* ---- js/kit.js ---- */
@@ -1131,7 +1274,9 @@ const Kit = (() => {
   const C = {
     proton: "#FF3131", electron: "#0B44A8", heat: "#E05A2B", product: "#2E9E63", ion: "#4C6E9E",
     ink: "#1B1A22", frame: "#8B5CF6", grey: "#8B8590", pale: "#B8BEC6", violet: "#6A2BD9",
-    cyan: "#22B6A5", blue: "#2E6FE0", paper: "#FFFDF8"
+    cyan: "#22B6A5", blue: "#2E6FE0", paper: "#FFFDF8",
+    // Physics: velocity cyan, force ink (thick), field violet, energy bars (kinetic / potential / thermal)
+    velocity: "#22B6A5", force: "#1B1A22", field: "#6A2BD9", energyK: "#2E6FE0", energyP: "#2E9E63", energyTh: "#E05A2B"
   };
 
   // ----- little SVG string helpers -----
@@ -2026,6 +2171,265 @@ const BookletData = {
   notShown: { "6": "Names of the elements", "7": "The periodic table", "8": "Melting points and boiling points of the elements", "21": "¹H NMR data", "23": "Uncertainties" }
 };
 ;
+/* ---- js/data-quiz-physics.js ---- */
+// "Check yourself" questions for the Physics pages: one per page id (ids start with "p-"), the same shape as
+// js/data-quiz.js:  "p-orbits": { q: "…", o: ["A", "B", "C", "D"], a: 0..3, why: "one-sentence explanation" }.
+// The self-test fails for any Physics page that has no question here.
+
+const QuizDataPhysics = {
+};
+;
+/* ---- js/data-glossary-physics.js ---- */
+// Glossary for the Physics side: [term, one-line definition, [ids of the pages that explain it]], the same
+// shape as js/data-glossary.js. Terms arrive with the pages (1–3 per page where they help).
+
+const GlossaryDataPhysics = [
+];
+;
+/* ---- js/data-booklet-physics.js ---- */
+// The IB Physics formula booklet (first assessment 2025), as shown by the Data booklet panel on the Physics side.
+// GENERATED by tools/extract_physics_booklet.py from the PDF: §1 constants, §2 unit conversions, §3 metric prefixes.
+// The equations of Themes A–E (§4–§10) are added by hand as pages need them (see PHYSICS_PLAN.md §4).
+// Re-running the script rewrites this file, so put hand-added sections in js/data-booklet-physics-extra.js instead.
+
+const BookletDataPhysics = {
+  "sections": {
+    "1": {
+      "title": "Fundamental constants",
+      "type": "table",
+      "columns": [
+        "Symbol",
+        "Quantity",
+        "Approximate value"
+      ],
+      "rows": [
+        [
+          "g",
+          "Free fall acceleration (Earth’s surface)",
+          "9.8 m s⁻²"
+        ],
+        [
+          "G",
+          "Gravitational constant",
+          "6.67 × 10⁻¹¹ N m² kg⁻²"
+        ],
+        [
+          "N_A",
+          "Avogadro’s constant",
+          "6.022 × 10²³ mol⁻¹"
+        ],
+        [
+          "R",
+          "Gas constant",
+          "8.31 J K⁻¹ mol⁻¹"
+        ],
+        [
+          "k_B",
+          "Boltzmann’s constant",
+          "1.38 × 10⁻²³ J K⁻¹"
+        ],
+        [
+          "σ",
+          "Stefan-Boltzmann constant",
+          "5.67 × 10⁻⁸ W m⁻² K⁻⁴"
+        ],
+        [
+          "k",
+          "Coulomb constant",
+          "8.99 × 10⁹ N m² C⁻²"
+        ],
+        [
+          "ε₀",
+          "Free space permittivity",
+          "8.85 × 10⁻¹² C² N⁻¹ m⁻²"
+        ],
+        [
+          "μ₀",
+          "Free space permeability",
+          "4π × 10⁻⁷ T m A⁻¹"
+        ],
+        [
+          "c",
+          "Speed of light in a vacuum",
+          "3.00 × 10⁸ m s⁻¹"
+        ],
+        [
+          "h",
+          "Planck’s constant",
+          "6.63 × 10⁻³⁴ J s"
+        ],
+        [
+          "e",
+          "Elementary charge",
+          "1.60 × 10⁻¹⁹ C"
+        ],
+        [
+          "m_e",
+          "Electron rest mass",
+          "9.110 × 10⁻³¹ kg = 0.000549u = 0.511 MeV c⁻²"
+        ],
+        [
+          "m_p",
+          "Proton rest mass",
+          "1.673 × 10⁻²⁷ kg = 1.007276u = 938 MeV c⁻²"
+        ],
+        [
+          "m_n",
+          "Neutron rest mass",
+          "1.675 × 10⁻²⁷ kg = 1.008665u = 940 MeV c⁻²"
+        ],
+        [
+          "u",
+          "Unified atomic mass unit",
+          "1.661 × 10⁻²⁷ kg = 931.5 MeV c⁻²"
+        ],
+        [
+          "S",
+          "Solar constant (Earth’s surface)",
+          "1.36 × 10³ W m⁻²"
+        ],
+        [
+          "R₀",
+          "Fermi Radius",
+          "1.20 × 10⁻¹⁵ m"
+        ]
+      ]
+    },
+    "2": {
+      "title": "Unit conversions",
+      "type": "list",
+      "rows": [
+        [
+          "1 radian (rad)",
+          "180°/π"
+        ],
+        [
+          "Temperature (K)",
+          "Temperature (°C) + 273"
+        ],
+        [
+          "1 light year (ly)",
+          "9.46 × 10¹⁵ m"
+        ],
+        [
+          "1 parsec (pc)",
+          "3.26 ly"
+        ],
+        [
+          "1 astronomical unit (AU)",
+          "1.50 × 10¹¹ m"
+        ],
+        [
+          "1 kilowatt-hour (kWh)",
+          "3.60 × 10⁶ J"
+        ],
+        [
+          "hc",
+          "1.99 × 10⁻²⁵ J m = 1.24 × 10⁻⁶ eV m"
+        ]
+      ]
+    },
+    "3": {
+      "title": "Metric prefixes",
+      "type": "table",
+      "columns": [
+        "Symbol",
+        "Prefix",
+        "Value"
+      ],
+      "rows": [
+        [
+          "P",
+          "peta-",
+          "10¹⁵"
+        ],
+        [
+          "T",
+          "tera-",
+          "10¹²"
+        ],
+        [
+          "G",
+          "giga-",
+          "10⁹"
+        ],
+        [
+          "M",
+          "mega-",
+          "10⁶"
+        ],
+        [
+          "k",
+          "kilo-",
+          "10³"
+        ],
+        [
+          "h",
+          "hecto-",
+          "10²"
+        ],
+        [
+          "da",
+          "deca-",
+          "10¹"
+        ],
+        [
+          "d",
+          "deci-",
+          "10⁻¹"
+        ],
+        [
+          "c",
+          "centi-",
+          "10⁻²"
+        ],
+        [
+          "m",
+          "milli-",
+          "10⁻³"
+        ],
+        [
+          "μ",
+          "micro-",
+          "10⁻⁶"
+        ],
+        [
+          "n",
+          "nano-",
+          "10⁻⁹"
+        ],
+        [
+          "p",
+          "pico-",
+          "10⁻¹²"
+        ],
+        [
+          "f",
+          "femto-",
+          "10⁻¹⁵"
+        ]
+      ]
+    }
+  },
+  "notShown": {
+    "4": "Geometry and trigonometry equations",
+    "5": "Uncertainty calculations",
+    "6": "Theme A: Space, time and motion",
+    "7": "Theme B: The particulate nature of matter",
+    "8": "Theme C: Wave behaviour",
+    "9": "Theme D: Fields",
+    "10": "Theme E: Nuclear and quantum physics"
+  }
+};
+;
+/* ---- js/data-booklet-physics-extra.js ---- */
+// Hand-added sections of the Physics formula booklet panel (the equations of Themes A–E). js/data-booklet-physics.js
+// is generated from the PDF and holds only the constants, conversions and prefixes (§1–§3). A batch that cites an
+// equation adds its section here, copied from the PDF and checked, in the same shape as the generated sections
+// (type "list" with rows [name, equation]), and removes the matching line from `notShown`:
+//   BookletDataPhysics.sections["7"] = { title: "Theme B: The particulate nature of matter", type: "list", rows: [[…]] };
+//   delete BookletDataPhysics.notShown["7"];
+;
 /* ---- js/study.js ---- */
 // Study tools, on top of the book: a "Check yourself" question for each page, a glossary, search and progress
 // marks on the contents page, and a Data booklet panel that opens from the "§N" links under captions.
@@ -2044,6 +2448,14 @@ const Study = (() => {
   }
   const save = () => { if (TEST) return; try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ } };
 
+  // What each subject brings: its questions, glossary and data booklet (js/data-*.js, js/data-*-physics.js).
+  const DATA = {
+    chemistry: { quiz: QuizData, glossary: GlossaryData, booklet: BookletData,
+      bookletIntro: "The IB Chemistry data booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions." },
+    physics: { quiz: QuizDataPhysics, glossary: GlossaryDataPhysics, booklet: BookletDataPhysics,
+      bookletIntro: "The IB Physics formula booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions. Equations are added here as the pages that use them are built." }
+  };
+  const quizOf = id => QuizData[id] || QuizDataPhysics[id];
   const pages = () => Book.pages;
   const pageById = id => pages().find(p => p.id === id);
   const currentPage = () => pages()[Book.debug.index()];
@@ -2104,7 +2516,7 @@ const Study = (() => {
   // ---------- Check yourself ----------
   let quiz = null;
   function openQuiz() {
-    const p = currentPage(), item = QuizData[p.id];
+    const p = currentPage(), item = quizOf(p.id);
     if (!item) return;
     quiz = quiz || panel("quiz", "Check yourself");
     const b = quiz.body;
@@ -2136,7 +2548,7 @@ const Study = (() => {
       retry.type = "button"; retry.addEventListener("click", openQuiz);
       row.appendChild(retry);
       const idx = Book.debug.index();
-      if (idx + 1 < pages().length) {
+      if (idx < Book.subjectEnd(Book.subjectOf(p))) {
         const next = make("button", "nav-btn", "Next page →");
         next.type = "button"; next.addEventListener("click", () => goToPage(pages()[idx + 1].id));
         row.appendChild(next);
@@ -2154,14 +2566,17 @@ const Study = (() => {
   });
 
   // ---------- Glossary ----------
-  let glossary = null;
-  function openGlossary() {
-    if (!glossary) {
-      glossary = panel("glossary", "Glossary");
+  // One glossary and one data booklet panel per subject; Contents shows the tab you're on, and a page shows its own.
+  const glossaries = {};
+  function openGlossary(sub) {
+    sub = sub || Book.activeSubject();
+    if (!glossaries[sub]) {
+      const g = glossaries[sub] = panel(sub === "chemistry" ? "glossary" : "glossary-" + sub, "Glossary");
+      if (sub !== "chemistry") g.el.querySelector("h2").textContent = "Glossary: " + Book.subjectName(sub);
       const search = make("input", "sp-search"); search.type = "search"; search.placeholder = "Search terms…"; search.setAttribute("aria-label", "Search the glossary");
       const count = make("p", "sp-sub");
       const list = make("dl", "gl-list");
-      const items = GlossaryData.slice().sort((a, b) => a[0].localeCompare(b[0])).map(([term, def, ids]) => {
+      const items = DATA[sub].glossary.slice().sort((a, b) => a[0].localeCompare(b[0])).map(([term, def, ids]) => {
         const dt = make("dt", "", term), dd = make("dd", "", def);
         const links = make("div", "gl-links");
         ids.filter(pageById).forEach(id => links.appendChild(pageLink(id)));
@@ -2173,44 +2588,49 @@ const Study = (() => {
         const q = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
         let n = 0;
         items.forEach(it => { const show = q.every(w => it.text.includes(w)); it.dt.hidden = it.dd.hidden = !show; if (show) n++; });
-        count.textContent = n === items.length ? items.length + " terms" : n + " of " + items.length + " terms";
+        count.textContent = !items.length ? "No terms yet: they arrive with the pages." : n === items.length ? items.length + " terms" : n + " of " + items.length + " terms";
       };
       search.addEventListener("input", filter);
-      glossary.body.append(search, count, list);
+      g.body.append(search, count, list);
       filter();
-      glossary.search = search;
+      g.search = search;
     }
-    openPanel(glossary, glossary.search);
+    openPanel(glossaries[sub], glossaries[sub].search);
   }
 
   // ---------- Data booklet ----------
-  let booklet = null, bookletView = null;
-  const sectionKeys = () => [...Object.keys(BookletData.sections), ...Object.keys(BookletData.notShown)].sort((a, b) => a - b);
-  function openBooklet(sec) {
-    if (!booklet) {
-      booklet = panel("booklet", "Data booklet");
-      const intro = make("p", "sp-sub", "The IB Chemistry data booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions.");
+  const booklets = {};
+  const sectionKeys = sub => { const d = DATA[sub].booklet; return [...Object.keys(d.sections), ...Object.keys(d.notShown)].sort((a, b) => a - b); };
+  function openBooklet(sec, sub) {
+    sub = sub || Book.activeSubject();
+    const d = DATA[sub].booklet;
+    let bk = booklets[sub];
+    if (!bk) {
+      bk = booklets[sub] = panel(sub === "chemistry" ? "booklet" : "booklet-" + sub, "Data booklet");
+      if (sub !== "chemistry") bk.el.querySelector("h2").textContent = "Data booklet: " + Book.subjectName(sub);
+      const intro = make("p", "sp-sub", DATA[sub].bookletIntro);
       const chips = make("div", "bk-chips");
-      sectionKeys().forEach(k => {
-        const have = !!BookletData.sections[k], b = make("button", "bk-chip" + (have ? "" : " missing"), "§" + k);
+      sectionKeys(sub).forEach(k => {
+        const have = !!d.sections[k], b = make("button", "bk-chip" + (have ? "" : " missing"), "§" + k);
         b.type = "button"; b.dataset.sec = k;
-        b.title = have ? BookletData.sections[k].title : BookletData.notShown[k] + " (not reproduced here)";
-        b.addEventListener("click", () => showSection(k));
+        b.title = have ? d.sections[k].title : d.notShown[k] + " (not reproduced here)";
+        b.addEventListener("click", () => showSection(bk, sub, k));
         chips.appendChild(b);
       });
-      bookletView = make("div", "bk-view");
-      booklet.body.append(intro, chips, bookletView);
+      bk.view = make("div", "bk-view");
+      bk.body.append(intro, chips, bk.view);
     }
-    showSection(String(sec || booklet.last || 1));
-    openPanel(booklet, booklet.el.querySelector(".bk-chip.active") || undefined);
+    showSection(bk, sub, String(sec || bk.last || 1));
+    openPanel(bk, bk.el.querySelector(".bk-chip.active") || undefined);
   }
-  function showSection(k) {
-    booklet.last = k;
-    booklet.body.querySelectorAll(".bk-chip").forEach(c => c.classList.toggle("active", c.dataset.sec === k));
-    const v = bookletView, s = BookletData.sections[k];
+  function showSection(bk, sub, k) {
+    const d = DATA[sub].booklet;
+    bk.last = k;
+    bk.body.querySelectorAll(".bk-chip").forEach(c => c.classList.toggle("active", c.dataset.sec === k));
+    const v = bk.view, s = d.sections[k];
     v.innerHTML = "";
     if (!s) {
-      v.appendChild(make("h3", "", "§" + k + " " + (BookletData.notShown[k] || "")));
+      v.appendChild(make("h3", "", "§" + k + " " + (d.notShown[k] || "")));
       v.appendChild(make("p", "", "This section of the booklet isn't reproduced here. Look it up in your copy of the data booklet."));
       return;
     }
@@ -2260,6 +2680,7 @@ const Study = (() => {
   // ---------- Contents: search, progress marks, shortcuts ----------
   function refreshMarks() {
     const items = document.querySelectorAll("#tocBody .toc-item");
+    const sub = Book.activeSubject();
     let visited = 0, right = 0;
     items.forEach(b => {
       const p = pages()[+b.dataset.index];
@@ -2271,10 +2692,11 @@ const Study = (() => {
       mark.textContent = q === "right" ? "✓" : v ? "●" : "";
       mark.className = "toc-mark" + (q === "right" ? " right" : v ? " seen" : "");
       mark.title = q === "right" ? "Visited, question answered correctly" : v ? "Visited" : "";
+      if (Book.subjectOf(p) !== sub) return;
       if (v) visited++; if (q === "right") right++;
     });
     const sum = $("tocSummary");
-    if (sum) sum.textContent = visited + " of " + pages().length + " pages visited · " + right + " questions answered correctly";
+    if (sum) sum.textContent = visited + " of " + Book.subjectCount(sub) + " " + Book.subjectName(sub) + " pages visited · " + right + " questions answered correctly";
   }
   function buildContentsTools() {
     const tools = make("div", "toc-tools");
@@ -2312,12 +2734,12 @@ const Study = (() => {
   Book.on("ui", () => {
     if (!quizBtn) return;
     const p = currentPage();
-    quizBtn.hidden = !(Book.debug.started() && Book.debug.isFinal() && p && QuizData[p.id]);
+    quizBtn.hidden = !(Book.debug.started() && Book.debug.isFinal() && p && quizOf(p.id));
     quizBtn.disabled = Book.debug.busy();
   });
   Book.on("contents", refreshMarks);
 
-  return { openQuiz, openGlossary, openBooklet, panel, openPanel, closePanel, progress: () => progress };
+  return { openQuiz, openGlossary, openBooklet, panel, openPanel, closePanel, progress: () => progress, quizOf, data: DATA };
 })();
 ;
 /* ---- js/egg.js ---- */
@@ -2611,7 +3033,7 @@ const Egg = (() => {
 // A line is either "Title" or ["Title", "syllabus code"].
 
 Book.plan([
-  { topic: "Structure 1 — Models of the particulate nature of matter", items: [
+  { subject: "chemistry", topic: "Structure 1 — Models of the particulate nature of matter", items: [
     ["Particles and the states of matter", "S1.1.1–2"],
     ["Kelvin: a temperature scale that starts at zero", "S1.1.3"],
     ["The hydrogen atom and scale", "S1.2.1"],
@@ -2631,7 +3053,7 @@ Book.plan([
     ["Real gases: when particles get in each other's way", "S1.5.2"],
     ["PV = nRT: squeezing, heating and adding gas", "S1.5.3–4"]
   ] },
-  { topic: "Structure 2 — Models of bonding and structure", items: [
+  { subject: "chemistry", topic: "Structure 2 — Models of bonding and structure", items: [
     ["Ionic bonding", "S2.1.1–2"],
     ["Ionic lattices: why salt makes crystals", "S2.1.3"],
     ["Covalent bonding: sharing electrons", "S2.2.1"],
@@ -2652,7 +3074,7 @@ Book.plan([
     ["Alloys: mixing metals", "S2.4.3"],
     ["Addition polymers: monomers joining hands", "S2.4.4–5"]
   ] },
-  { topic: "Structure 3 — Classification of matter", items: [
+  { subject: "chemistry", topic: "Structure 3 — Classification of matter", items: [
     ["The periodic table: periods, groups and blocks", "S3.1.1–2"],
     ["Walking across the periodic table: trends in atom size", "S3.1.3–4"],
     ["Hydrogen: the element that doesn't fit", "S3.1.4"],
@@ -2666,7 +3088,7 @@ Book.plan([
     ["Naming organic compounds", "S3.2.5"],
     ["Structural isomers: same atoms, different shapes", "S3.2.6"]
   ] },
-  { topic: "Reactivity 1 — What drives chemical reactions?", items: [
+  { subject: "chemistry", topic: "Reactivity 1 — What drives chemical reactions?", items: [
     ["Exothermic vs endothermic: where does the energy go?", "R1.1.1–3"],
     ["Measuring enthalpy changes: Q = mcΔT", "R1.1.4"],
     ["Bond breaking and bond making", "R1.2.1"],
@@ -2678,7 +3100,7 @@ Book.plan([
     ["Fuel cells", "R1.3.5 HL"],
     ["Entropy and spontaneity", "R1.4 HL"]
   ] },
-  { topic: "Reactivity 2 — How much, how fast, how far?", items: [
+  { subject: "chemistry", topic: "Reactivity 2 — How much, how fast, how far?", items: [
     ["Rate of reaction: how fast is fast?", "R2.2.1"],
     ["Collision theory: why heating speeds things up", "R2.2.2"],
     ["What changes the rate", "R2.2.3"],
@@ -2688,7 +3110,7 @@ Book.plan([
     ["Le Châtelier's principle: pushing back against a change", "R2.3.4"],
     ["Le Châtelier: pressure and temperature", "R2.3.4"]
   ] },
-  { topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [
+  { subject: "chemistry", topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [
     ["Acids and bases: passing a proton", "R3.1.1–2"],
     ["Amphiprotic species: acid or base?", "R3.1.3"],
     ["pH: a scale in powers of ten", "R3.1.4"],
@@ -2708,6 +3130,74 @@ Book.plan([
     ["Radicals: a lone electron looking for trouble", "R3.3"],
     ["Nucleophilic substitution", "R3.4.1–3"],
     ["Electrophilic addition to alkenes", "R3.4.4–5"]
+  ] }
+]);
+;
+/* ---- pages/00-physics-planned.js ---- */
+// The plan for the Physics half of the book (IB Physics HL, first assessment 2025): the school's Grade 12
+// half-yearly list, grouped by IB theme (A–D), in the order of PHYSICS_PLAN.md §3. It works exactly like
+// pages/00-planned.js: a page switches its line on when its `title` and `topic` match exactly, and lines
+// with no page yet show as "coming soon". Physics page ids start with "p-" (so #links never clash with
+// chemistry ids). The code beside each title is the IB topic; "HL" marks higher-level content.
+
+Book.plan([
+  { subject: "physics", topic: "A — Space, time and motion", items: [
+    ["Motion graphs: a car journey in three graphs", "A.1"],
+    ["SUVAT: four equations, one motion", "A.1"],
+    ["Projectiles: two motions at once", "A.1"],
+    ["Free-body diagrams and Newton's laws", "A.2"],
+    ["Drag and terminal speed", "A.2"],
+    ["Collisions: momentum is always conserved", "A.2"],
+    ["Impulse: the area under a force–time graph", "A.2"],
+    ["Circular motion: always turning inward", "A.2"],
+    ["Roller coaster: kinetic, potential, thermal", "A.3"],
+    ["Power, efficiency and Sankey diagrams", "A.3"],
+    ["Torque: why handles are far from hinges", "A.4 HL"],
+    ["The rolling race: hoop vs disc vs sphere", "A.4 HL"],
+    ["The spinning skater", "A.4 HL"]
+  ] },
+  { subject: "physics", topic: "B — The particulate nature of matter", items: [
+    ["Heating ice: why the line goes flat", "B.1"],
+    ["Conduction, convection, radiation", "B.1"],
+    ["Black bodies: why hot stars are blue", "B.1"],
+    ["Gas pressure: particles hitting walls", "B.3"],
+    ["pV = NkT: three dials, one gas", "B.3"],
+    ["First law: Q = ΔU + W", "B.4 HL"],
+    ["A heat engine on a p–V diagram", "B.4 HL"],
+    ["Entropy: why heat flows hot to cold", "B.4 HL"],
+    ["Current: drifting electrons", "B.5"],
+    ["Resistance, resistivity and I–V graphs", "B.5"],
+    ["Build a circuit: series and parallel", "B.5"],
+    ["EMF and internal resistance", "B.5"],
+    ["Potential divider: a night-light", "B.5"]
+  ] },
+  { subject: "physics", topic: "C — Wave behaviour", items: [
+    ["Simple harmonic motion: mass on a spring", "C.1"],
+    ["SHM is the shadow of a circle", "C.1 HL"],
+    ["The pendulum: period ignores mass", "C.1"],
+    ["Waves carry energy, not stuff", "C.2"],
+    ["The electromagnetic spectrum, zoomed", "C.2"],
+    ["Refraction and total internal reflection", "C.3"],
+    ["Two slits: ripples that cancel", "C.3"],
+    ["Single slits and gratings", "C.3 HL"],
+    ["Standing waves on a string", "C.4"],
+    ["Pipes: open, closed and missing harmonics", "C.4"],
+    ["Resonance and damping", "C.4"],
+    ["The Doppler effect: squashed and stretched", "C.5 (equations HL)"],
+    ["Redshift: galaxies running away", "C.5"]
+  ] },
+  { subject: "physics", topic: "D — Fields", items: [
+    ["Newton's cannon: from falling to orbiting", "D.1 (orbital speed HL)"],
+    ["Gravitational field strength: g = GM ÷ r²", "D.1"],
+    ["Kepler's third law: T² ∝ r³", "D.1"],
+    ["Gravitational potential and escape speed", "D.1 HL"],
+    ["Charge and Coulomb's law", "D.2"],
+    ["Electric field lines: drag the charges", "D.2 HL"],
+    ["Magnetic fields: wires, coils and magnets", "D.2"],
+    ["Charged particles in fields", "D.3"],
+    ["The motor effect: force on a wire", "D.3"],
+    ["Induction: push a magnet into a coil", "D.4 HL"],
+    ["The generator: a spinning coil", "D.4 HL"]
   ] }
 ]);
 ;

@@ -104,8 +104,7 @@
     const old = layers.find(c => c !== shown);
     if (old && old.textContent.trim() && +getComputedStyle(old).opacity > 0.05) r.problems.push(`${name}: the previous caption is still visible underneath`);
 
-    const last = Book.pages.indexOf(p) === Book.pages.length - 1;
-    if (s.final && !last && $("nextBtn").hidden) r.problems.push(`${name}: final state but no Next button`);
+    if (s.final && $("nextBtn").hidden) r.problems.push(`${name}: final state but no Next button`);
   }
 
   // Keep taking a transition not tried yet from the current state; when there's none, step to a
@@ -146,8 +145,11 @@
         const bad = report.pages.filter(p => p.problems.length);
         const total = report.pages.reduce((n, p) => n + p.transitions, 0);
         const linkOk = report.deepLink && report.deepLink.opened && report.deepLink.returned;
+        const extra = [...(report.subjects || []), ...(report.study || [])];
+        const fail = bad.length || !linkOk || extra.length;
         if (!done) add("strong", `Self-test running… page ${report.pages.length} of ${Book.pages.length}`);
-        else add("strong", bad.length || !linkOk ? "Self-test: FAIL" : "Self-test: PASS", `font-size:16px;color:${bad.length || !linkOk ? "#C62828" : "#2E7D32"}`);
+        else add("strong", fail ? "Self-test: FAIL" : "Self-test: PASS", `font-size:16px;color:${fail ? "#C62828" : "#2E7D32"}`);
+        extra.forEach(msg => add("div", "✗ " + msg, "color:#C62828"));
         add("div", `${report.pages.length} pages, ${total} transitions`);
         if (report.deepLink) add("div", `Links (#ionic, then browser Back): ${linkOk ? "ok" : "BROKEN"}`);
         report.pages.forEach(p => {
@@ -165,16 +167,19 @@
     const problems = [];
     if (typeof Study === "undefined") return ["js/study.js did not load"];
     const ids = Book.pages.map(p => p.id);
-    Object.keys(QuizData).forEach(id => { if (!ids.includes(id)) problems.push("question for unknown page '" + id + "'"); });
+    [QuizData, QuizDataPhysics].forEach(Q => Object.keys(Q).forEach(id => { if (!ids.includes(id)) problems.push("question for unknown page '" + id + "'"); }));
+    Book.pages.filter(p => Book.subjectOf(p) === "physics" && !p.id.startsWith("p-")).forEach(p => problems.push("physics page '" + p.id + "' should have an id starting with p-"));
+    Book.pages.filter(p => Book.subjectOf(p) === "chemistry" && p.id.startsWith("p-")).forEach(p => problems.push("chemistry page '" + p.id + "' should not have an id starting with p-"));
     ids.forEach(id => {
-      const q = QuizData[id];
+      const q = Study.quizOf(id);
       if (!q) { problems.push("no question for '" + id + "'"); return; }
       if (!q.q || !Array.isArray(q.o) || q.o.length !== 4 || new Set(q.o).size !== 4) problems.push("question for '" + id + "' needs four different options");
       if (!(q.a >= 0 && q.a < 4) || !q.why) problems.push("question for '" + id + "' needs an answer 0–3 and an explanation");
     });
-    GlossaryData.forEach(([term, def, links]) => links.forEach(id => { if (!ids.includes(id)) problems.push("glossary '" + term + "' links to unknown page '" + id + "'"); }));
+    [GlossaryData, GlossaryDataPhysics].forEach(G => G.forEach(([term, def, links]) => links.forEach(id => { if (!ids.includes(id)) problems.push("glossary '" + term + "' links to unknown page '" + id + "'"); })));
     Book.pages.forEach(p => Object.values(p.states || {}).forEach(st => {
-      (st.booklet || "").replace(/§(\d+)/g, (m, n) => { if (!BookletData.sections[n] && !BookletData.notShown[n]) problems.push("'" + p.id + "' cites §" + n + ", which the booklet panel doesn't have"); });
+      const bk = Study.data[Book.subjectOf(p)].booklet;
+      (st.booklet || "").replace(/§(\d+)/g, (m, n) => { if (!bk.sections[n] && !bk.notShown[n]) problems.push("'" + p.id + "' cites §" + n + ", which its booklet panel doesn't have"); });
     }));
     // the panels
     const visible = id => { const e = $(id); return !!e && !e.hidden; };
@@ -195,15 +200,94 @@
     if (!visible("egg") || !document.querySelector("#egg .egg-q")) problems.push("the easter egg didn't open");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     if (visible("egg")) problems.push("Escape didn't close the easter egg");
-    Study.openGlossary();
+    Study.openGlossary("chemistry");
     if (!visible("glossary") || document.querySelectorAll("#glossary dt").length < 50) problems.push("the glossary didn't open with its terms");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-    for (const k of Object.keys(BookletData.sections).concat(Object.keys(BookletData.notShown))) {
-      Study.openBooklet(k);
-      if (!visible("booklet") || !document.querySelector("#booklet .bk-view h3")) problems.push("booklet §" + k + " didn't draw");
-    }
+    Study.openGlossary("physics");
+    if (!visible("glossary-physics") || document.querySelectorAll("#glossary-physics dt").length !== GlossaryDataPhysics.length) problems.push("the physics glossary didn't open with its terms");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-    if (visible("booklet")) problems.push("Escape didn't close the booklet");
+    for (const [sub, id] of [["chemistry", "booklet"], ["physics", "booklet-physics"]]) {
+      const bk = Study.data[sub].booklet;
+      for (const k of Object.keys(bk.sections).concat(Object.keys(bk.notShown))) {
+        Study.openBooklet(k, sub);
+        if (!visible(id) || !document.querySelector("#" + id + " .bk-view h3")) problems.push(sub + " booklet §" + k + " didn't draw");
+      }
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      if (visible(id)) problems.push("Escape didn't close the " + sub + " booklet");
+    }
+    return problems;
+  }
+
+  // Two subjects in one book: the cover offers both, the contents have a tab each, the counter names the
+  // subject, and Next/Back never cross from one subject into the other.
+  async function subjectChecks() {
+    const problems = [], B = Book.debug;
+    const subjects = Book.subjects.map(x => x[0]);
+    const closeTop = () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    if (!$("openPhysics")) problems.push("the cover has no Open Physics button");
+    const pagesOf = sub => Book.pages.filter(p => Book.subjectOf(p) === sub);
+    const order = Book.pages.map(p => Book.subjectOf(p));
+    if (order.some((x, i) => i && x !== order[i - 1] && order.indexOf(x) < i)) problems.push("a subject's pages are split in two by another subject's");
+    // the contents: one tab per subject, only the chosen one showing, numbering restarts in each
+    $("contentsBtn").click();
+    for (const sub of subjects) {
+      const tab = document.querySelector('.toc-tab[data-subject="' + sub + '"]');
+      if (!tab) { problems.push("no contents tab for " + sub); continue; }
+      tab.click();
+      const shown = document.querySelectorAll(".toc-subject:not([hidden])");
+      if (shown.length !== 1 || shown[0].dataset.subject !== sub) { problems.push("the " + sub + " tab doesn't show only the " + sub + " contents"); continue; }
+      const items = [...shown[0].querySelectorAll(".toc-item")];
+      if (items.length !== pagesOf(sub).length) problems.push("the " + sub + " contents list " + items.length + " pages, the book has " + pagesOf(sub).length);
+      if (items.length && !items[0].textContent.startsWith("1. ")) problems.push("the " + sub + " contents don't start at 1");
+      if (!shown[0].querySelector("li")) problems.push("the " + sub + " contents have no lines in the plan");
+    }
+    closeTop();
+    await until(() => !B.busy());
+    // the edges of each subject
+    for (const sub of subjects) {
+      const list = pagesOf(sub);
+      if (!list.length) continue;
+      const firstI = Book.pages.indexOf(list[0]), lastI = Book.pages.indexOf(list[list.length - 1]);
+      B.turnPage(firstI);
+      await until(() => B.index() === firstI && !B.busy(), 5000);
+      const want = "1 / " + list.length + " · " + Book.subjectName(sub);
+      if ($("counter").textContent !== want) problems.push(sub + ": the counter says '" + $("counter").textContent + "' on its first page, expected '" + want + "'");
+      if (!list[0].states[B.stateName()].back && !$("backBtn").hidden) problems.push(sub + ": Back is offered on its first page");
+      B.turnPage(lastI);
+      await until(() => B.index() === lastI && !B.busy(), 5000);
+      const lastPage = list[list.length - 1], seen = new Set();
+      for (let k = 0; k < 40 && !B.isFinal(); k++) {      // step forward (Next, taps) to the last page's last state
+        const here = B.stateName(); seen.add(here);
+        const opts = transitionsOf(lastPage.states[here]).filter(o => o.kind === "next" || o.kind === "tap");
+        const pick = opts.find(o => !seen.has(targetOf(o))) || opts[0];
+        if (!pick) break;
+        press(pick, { problems: [] }, here);
+        await until(() => !B.busy(), 8000);
+      }
+      if (!B.isFinal()) { problems.push(sub + ": couldn't reach the last state of its last page"); continue; }
+      if ($("nextBtn").hidden || $("nextBtn").textContent !== "Contents") problems.push(sub + ": Next on its last page should say 'Contents', it says '" + $("nextBtn").textContent + "'");
+      $("nextBtn").click();
+      await sleep(50);
+      const c = document.querySelector(".toc-subject:not([hidden])");
+      if ($("contents").hidden || !c || c.dataset.subject !== sub) problems.push(sub + ": Next on its last page didn't open its contents");
+      if (B.index() !== lastI) problems.push(sub + ": Next on its last page turned the page");
+      closeTop();
+    }
+    // a link to a physics page opens it, Contents then shows the Physics tab, and the browser's Back returns
+    const phys = pagesOf("physics")[0];
+    if (phys) {
+      const before = B.index(), target = Book.pages.indexOf(phys);
+      location.hash = phys.id;
+      if (!(await until(() => B.index() === target && !B.busy(), 5000))) problems.push("#" + phys.id + " didn't open");
+      else {
+        $("contentsBtn").click();
+        const c = document.querySelector(".toc-subject:not([hidden])");
+        if (!c || c.dataset.subject !== "physics") problems.push("Contents on a physics page should show the Physics tab");
+        closeTop();
+      }
+      history.back();
+      if (!(await until(() => B.index() === before && !B.busy(), 5000))) problems.push("browser Back didn't return from #" + phys.id);
+    }
     return problems;
   }
 
@@ -242,12 +326,13 @@
     const returned = await until(() => B.index() === before && !B.busy(), 5000);
     report.deepLink = { opened, returned };
 
+    report.subjects = await subjectChecks();
     report.study = await studyChecks(report);
 
     gsap.globalTimeline.timeScale(1);
     clearInterval(pump);
     Sound.setMuted(wasMuted);
-    report.pass = report.pages.every(p => !p.problems.length) && opened && returned && !report.study.length;
+    report.pass = report.pages.every(p => !p.problems.length) && opened && returned && !report.study.length && !report.subjects.length;
     window.__selftest = report;
     panel.update(report, true);
     console.log("Self-test " + (report.pass ? "PASS" : "FAIL"), report);

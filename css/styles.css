@@ -409,3 +409,12 @@ button:focus-visible { outline: 3px solid var(--frame); outline-offset: 3px; }
 .egg .egg-gate { margin-top: 1.4rem; padding-top: 1rem; border-top: 2px dashed #6B5B80; }
 .egg .egg-gate-q { font: 600 1.25rem "Fredoka", sans-serif; color: #FF5A4D; margin: 0 0 0.4rem; }
 .egg .egg-gate .nav-btn { margin-right: 0.6rem; }
+
+/* ---------- Two subjects: cover buttons, contents tabs, physics palette ---------- */
+:root { --velocity: #22B6A5; --force: #1B1A22; --field: #6A2BD9; --energy-k: #2E6FE0; --energy-p: #2E9E63; --energy-th: #E05A2B; }
+.cover-buttons { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; }
+.toc-tabs { display: flex; gap: 0.5rem; margin: 0 0 1rem; border-bottom: 2px solid var(--ink); }
+.toc-tab { font: 500 1.1rem "Fredoka", sans-serif; color: var(--ink); background: none; border: 2px solid transparent; border-bottom: 0; border-radius: 12px 12px 0 0; padding: 0.4rem 1.2rem; cursor: pointer; margin-bottom: -2px; }
+.toc-tab:hover { background: #F1ECE1; }
+.toc-tab.active { background: var(--ink); color: #fff; }
+.toc-tab:focus-visible { outline: 3px solid var(--frame); outline-offset: 2px; }

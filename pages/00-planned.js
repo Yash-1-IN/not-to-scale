@@ -5,7 +5,7 @@
 // A line is either "Title" or ["Title", "syllabus code"].
 
 Book.plan([
-  { topic: "Structure 1 — Models of the particulate nature of matter", items: [
+  { subject: "chemistry", topic: "Structure 1 — Models of the particulate nature of matter", items: [
     ["Particles and the states of matter", "S1.1.1–2"],
     ["Kelvin: a temperature scale that starts at zero", "S1.1.3"],
     ["The hydrogen atom and scale", "S1.2.1"],
@@ -25,7 +25,7 @@ Book.plan([
     ["Real gases: when particles get in each other's way", "S1.5.2"],
     ["PV = nRT: squeezing, heating and adding gas", "S1.5.3–4"]
   ] },
-  { topic: "Structure 2 — Models of bonding and structure", items: [
+  { subject: "chemistry", topic: "Structure 2 — Models of bonding and structure", items: [
     ["Ionic bonding", "S2.1.1–2"],
     ["Ionic lattices: why salt makes crystals", "S2.1.3"],
     ["Covalent bonding: sharing electrons", "S2.2.1"],
@@ -46,7 +46,7 @@ Book.plan([
     ["Alloys: mixing metals", "S2.4.3"],
     ["Addition polymers: monomers joining hands", "S2.4.4–5"]
   ] },
-  { topic: "Structure 3 — Classification of matter", items: [
+  { subject: "chemistry", topic: "Structure 3 — Classification of matter", items: [
     ["The periodic table: periods, groups and blocks", "S3.1.1–2"],
     ["Walking across the periodic table: trends in atom size", "S3.1.3–4"],
     ["Hydrogen: the element that doesn't fit", "S3.1.4"],
@@ -60,7 +60,7 @@ Book.plan([
     ["Naming organic compounds", "S3.2.5"],
     ["Structural isomers: same atoms, different shapes", "S3.2.6"]
   ] },
-  { topic: "Reactivity 1 — What drives chemical reactions?", items: [
+  { subject: "chemistry", topic: "Reactivity 1 — What drives chemical reactions?", items: [
     ["Exothermic vs endothermic: where does the energy go?", "R1.1.1–3"],
     ["Measuring enthalpy changes: Q = mcΔT", "R1.1.4"],
     ["Bond breaking and bond making", "R1.2.1"],
@@ -72,7 +72,7 @@ Book.plan([
     ["Fuel cells", "R1.3.5 HL"],
     ["Entropy and spontaneity", "R1.4 HL"]
   ] },
-  { topic: "Reactivity 2 — How much, how fast, how far?", items: [
+  { subject: "chemistry", topic: "Reactivity 2 — How much, how fast, how far?", items: [
     ["Rate of reaction: how fast is fast?", "R2.2.1"],
     ["Collision theory: why heating speeds things up", "R2.2.2"],
     ["What changes the rate", "R2.2.3"],
@@ -82,7 +82,7 @@ Book.plan([
     ["Le Châtelier's principle: pushing back against a change", "R2.3.4"],
     ["Le Châtelier: pressure and temperature", "R2.3.4"]
   ] },
-  { topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [
+  { subject: "chemistry", topic: "Reactivity 3 — What are the mechanisms of chemical change?", items: [
     ["Acids and bases: passing a proton", "R3.1.1–2"],
     ["Amphiprotic species: acid or base?", "R3.1.3"],
     ["pH: a scale in powers of ten", "R3.1.4"],

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500&family=Nunito:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=e5fb3eb0">
+  <link rel="stylesheet" href="css/styles.css?v=6d1efec3">
 </head>
 <body>
 
@@ -27,8 +27,11 @@
   <!-- Cover: the first tap unlocks audio -->
   <div class="cover" id="cover">
     <h1 class="cover-title">Not to Scale</h1>
-    <p class="cover-sub">A picture book of IB Chemistry. Simple on purpose.</p>
-    <button class="open-btn" id="openBook" type="button">Open the book</button>
+    <p class="cover-sub">A picture book of IB Chemistry and Physics. Simple on purpose.</p>
+    <div class="cover-buttons">
+      <button class="open-btn" id="openBook" type="button">Open Chemistry</button>
+      <button class="open-btn" id="openPhysics" type="button">Open Physics</button>
+    </div>
     <button class="about-link" id="aboutLinkCover" type="button">About this book</button>
   </div>
 
@@ -36,7 +39,7 @@
   <section class="contents" id="about" hidden aria-label="About">
     <div class="contents-inner">
       <h2>About</h2>
-      <p><em>Not to Scale</em> is a picture book that explains IB Chemistry topics: simple, friendly
+      <p><em>Not to Scale</em> is a picture book that explains IB Chemistry and IB Physics (HL) topics: simple, friendly
       illustrations that move gently, short captions, and things you can tap to see what's really
       going on underneath.</p>
       <p>It simplifies on purpose. Real atoms aren't red, electrons don't really orbit like little
@@ -48,9 +51,10 @@
       panel (both from the Contents page, and the <em>Data booklet</em> notes under captions open the booklet
       section), and the Contents page marks the pages you've visited. That progress stays in your browser only.</p>
       <p>Where a page quotes a real value, a small <em>Data booklet</em> note says which section of the IB
-      Chemistry data booklet (first assessment 2025) it comes from, so you can find it there too. The
-      contents page follows the syllabus, with each topic's code.</p>
-      <p>Made by an IB Chemistry student, built together with Claude Code.</p>
+      Chemistry data booklet (or the IB Physics booklet, on the Physics pages; first assessment 2025) it comes
+      from, so you can find it there too. The contents page has a tab for each subject and follows the
+      syllabus, with each topic's code.</p>
+      <p>Made by an IB student, built together with Claude Code.</p>
       <button class="nav-btn" id="aboutClose" type="button">Close</button>
     </div>
   </section>
@@ -104,7 +108,7 @@
   </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="js/bundle.a81857d1.js"></script>
+  <script src="js/bundle.872e278a.js"></script>
 
   <script>Book.boot();</script>
 </body>

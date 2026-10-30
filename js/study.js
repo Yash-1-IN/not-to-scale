@@ -15,6 +15,14 @@ const Study = (() => {
   }
   const save = () => { if (TEST) return; try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ } };
 
+  // What each subject brings: its questions, glossary and data booklet (js/data-*.js, js/data-*-physics.js).
+  const DATA = {
+    chemistry: { quiz: QuizData, glossary: GlossaryData, booklet: BookletData,
+      bookletIntro: "The IB Chemistry data booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions." },
+    physics: { quiz: QuizDataPhysics, glossary: GlossaryDataPhysics, booklet: BookletDataPhysics,
+      bookletIntro: "The IB Physics formula booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions. Equations are added here as the pages that use them are built." }
+  };
+  const quizOf = id => QuizData[id] || QuizDataPhysics[id];
   const pages = () => Book.pages;
   const pageById = id => pages().find(p => p.id === id);
   const currentPage = () => pages()[Book.debug.index()];
@@ -75,7 +83,7 @@ const Study = (() => {
   // ---------- Check yourself ----------
   let quiz = null;
   function openQuiz() {
-    const p = currentPage(), item = QuizData[p.id];
+    const p = currentPage(), item = quizOf(p.id);
     if (!item) return;
     quiz = quiz || panel("quiz", "Check yourself");
     const b = quiz.body;
@@ -107,7 +115,7 @@ const Study = (() => {
       retry.type = "button"; retry.addEventListener("click", openQuiz);
       row.appendChild(retry);
       const idx = Book.debug.index();
-      if (idx + 1 < pages().length) {
+      if (idx < Book.subjectEnd(Book.subjectOf(p))) {
         const next = make("button", "nav-btn", "Next page →");
         next.type = "button"; next.addEventListener("click", () => goToPage(pages()[idx + 1].id));
         row.appendChild(next);
@@ -125,14 +133,17 @@ const Study = (() => {
   });
 
   // ---------- Glossary ----------
-  let glossary = null;
-  function openGlossary() {
-    if (!glossary) {
-      glossary = panel("glossary", "Glossary");
+  // One glossary and one data booklet panel per subject; Contents shows the tab you're on, and a page shows its own.
+  const glossaries = {};
+  function openGlossary(sub) {
+    sub = sub || Book.activeSubject();
+    if (!glossaries[sub]) {
+      const g = glossaries[sub] = panel(sub === "chemistry" ? "glossary" : "glossary-" + sub, "Glossary");
+      if (sub !== "chemistry") g.el.querySelector("h2").textContent = "Glossary: " + Book.subjectName(sub);
       const search = make("input", "sp-search"); search.type = "search"; search.placeholder = "Search terms…"; search.setAttribute("aria-label", "Search the glossary");
       const count = make("p", "sp-sub");
       const list = make("dl", "gl-list");
-      const items = GlossaryData.slice().sort((a, b) => a[0].localeCompare(b[0])).map(([term, def, ids]) => {
+      const items = DATA[sub].glossary.slice().sort((a, b) => a[0].localeCompare(b[0])).map(([term, def, ids]) => {
         const dt = make("dt", "", term), dd = make("dd", "", def);
         const links = make("div", "gl-links");
         ids.filter(pageById).forEach(id => links.appendChild(pageLink(id)));
@@ -144,44 +155,49 @@ const Study = (() => {
         const q = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
         let n = 0;
         items.forEach(it => { const show = q.every(w => it.text.includes(w)); it.dt.hidden = it.dd.hidden = !show; if (show) n++; });
-        count.textContent = n === items.length ? items.length + " terms" : n + " of " + items.length + " terms";
+        count.textContent = !items.length ? "No terms yet: they arrive with the pages." : n === items.length ? items.length + " terms" : n + " of " + items.length + " terms";
       };
       search.addEventListener("input", filter);
-      glossary.body.append(search, count, list);
+      g.body.append(search, count, list);
       filter();
-      glossary.search = search;
+      g.search = search;
     }
-    openPanel(glossary, glossary.search);
+    openPanel(glossaries[sub], glossaries[sub].search);
   }
 
   // ---------- Data booklet ----------
-  let booklet = null, bookletView = null;
-  const sectionKeys = () => [...Object.keys(BookletData.sections), ...Object.keys(BookletData.notShown)].sort((a, b) => a - b);
-  function openBooklet(sec) {
-    if (!booklet) {
-      booklet = panel("booklet", "Data booklet");
-      const intro = make("p", "sp-sub", "The IB Chemistry data booklet (first assessment 2025). Pick a section; the numbers match the § notes under the captions.");
+  const booklets = {};
+  const sectionKeys = sub => { const d = DATA[sub].booklet; return [...Object.keys(d.sections), ...Object.keys(d.notShown)].sort((a, b) => a - b); };
+  function openBooklet(sec, sub) {
+    sub = sub || Book.activeSubject();
+    const d = DATA[sub].booklet;
+    let bk = booklets[sub];
+    if (!bk) {
+      bk = booklets[sub] = panel(sub === "chemistry" ? "booklet" : "booklet-" + sub, "Data booklet");
+      if (sub !== "chemistry") bk.el.querySelector("h2").textContent = "Data booklet: " + Book.subjectName(sub);
+      const intro = make("p", "sp-sub", DATA[sub].bookletIntro);
       const chips = make("div", "bk-chips");
-      sectionKeys().forEach(k => {
-        const have = !!BookletData.sections[k], b = make("button", "bk-chip" + (have ? "" : " missing"), "§" + k);
+      sectionKeys(sub).forEach(k => {
+        const have = !!d.sections[k], b = make("button", "bk-chip" + (have ? "" : " missing"), "§" + k);
         b.type = "button"; b.dataset.sec = k;
-        b.title = have ? BookletData.sections[k].title : BookletData.notShown[k] + " (not reproduced here)";
-        b.addEventListener("click", () => showSection(k));
+        b.title = have ? d.sections[k].title : d.notShown[k] + " (not reproduced here)";
+        b.addEventListener("click", () => showSection(bk, sub, k));
         chips.appendChild(b);
       });
-      bookletView = make("div", "bk-view");
-      booklet.body.append(intro, chips, bookletView);
+      bk.view = make("div", "bk-view");
+      bk.body.append(intro, chips, bk.view);
     }
-    showSection(String(sec || booklet.last || 1));
-    openPanel(booklet, booklet.el.querySelector(".bk-chip.active") || undefined);
+    showSection(bk, sub, String(sec || bk.last || 1));
+    openPanel(bk, bk.el.querySelector(".bk-chip.active") || undefined);
   }
-  function showSection(k) {
-    booklet.last = k;
-    booklet.body.querySelectorAll(".bk-chip").forEach(c => c.classList.toggle("active", c.dataset.sec === k));
-    const v = bookletView, s = BookletData.sections[k];
+  function showSection(bk, sub, k) {
+    const d = DATA[sub].booklet;
+    bk.last = k;
+    bk.body.querySelectorAll(".bk-chip").forEach(c => c.classList.toggle("active", c.dataset.sec === k));
+    const v = bk.view, s = d.sections[k];
     v.innerHTML = "";
     if (!s) {
-      v.appendChild(make("h3", "", "§" + k + " " + (BookletData.notShown[k] || "")));
+      v.appendChild(make("h3", "", "§" + k + " " + (d.notShown[k] || "")));
       v.appendChild(make("p", "", "This section of the booklet isn't reproduced here. Look it up in your copy of the data booklet."));
       return;
     }
@@ -231,6 +247,7 @@ const Study = (() => {
   // ---------- Contents: search, progress marks, shortcuts ----------
   function refreshMarks() {
     const items = document.querySelectorAll("#tocBody .toc-item");
+    const sub = Book.activeSubject();
     let visited = 0, right = 0;
     items.forEach(b => {
       const p = pages()[+b.dataset.index];
@@ -242,10 +259,11 @@ const Study = (() => {
       mark.textContent = q === "right" ? "✓" : v ? "●" : "";
       mark.className = "toc-mark" + (q === "right" ? " right" : v ? " seen" : "");
       mark.title = q === "right" ? "Visited, question answered correctly" : v ? "Visited" : "";
+      if (Book.subjectOf(p) !== sub) return;
       if (v) visited++; if (q === "right") right++;
     });
     const sum = $("tocSummary");
-    if (sum) sum.textContent = visited + " of " + pages().length + " pages visited · " + right + " questions answered correctly";
+    if (sum) sum.textContent = visited + " of " + Book.subjectCount(sub) + " " + Book.subjectName(sub) + " pages visited · " + right + " questions answered correctly";
   }
   function buildContentsTools() {
     const tools = make("div", "toc-tools");
@@ -283,10 +301,10 @@ const Study = (() => {
   Book.on("ui", () => {
     if (!quizBtn) return;
     const p = currentPage();
-    quizBtn.hidden = !(Book.debug.started() && Book.debug.isFinal() && p && QuizData[p.id]);
+    quizBtn.hidden = !(Book.debug.started() && Book.debug.isFinal() && p && quizOf(p.id));
     quizBtn.disabled = Book.debug.busy();
   });
   Book.on("contents", refreshMarks);
 
-  return { openQuiz, openGlossary, openBooklet, panel, openPanel, closePanel, progress: () => progress };
+  return { openQuiz, openGlossary, openBooklet, panel, openPanel, closePanel, progress: () => progress, quizOf, data: DATA };
 })();

@@ -25,8 +25,11 @@
   <!-- Cover: the first tap unlocks audio -->
   <div class="cover" id="cover">
     <h1 class="cover-title">Not to Scale</h1>
-    <p class="cover-sub">A picture book of IB Chemistry. Simple on purpose.</p>
-    <button class="open-btn" id="openBook" type="button">Open the book</button>
+    <p class="cover-sub">A picture book of IB Chemistry and Physics. Simple on purpose.</p>
+    <div class="cover-buttons">
+      <button class="open-btn" id="openBook" type="button">Open Chemistry</button>
+      <button class="open-btn" id="openPhysics" type="button">Open Physics</button>
+    </div>
     <button class="about-link" id="aboutLinkCover" type="button">About this book</button>
   </div>
 
@@ -34,7 +37,7 @@
   <section class="contents" id="about" hidden aria-label="About">
     <div class="contents-inner">
       <h2>About</h2>
-      <p><em>Not to Scale</em> is a picture book that explains IB Chemistry topics: simple, friendly
+      <p><em>Not to Scale</em> is a picture book that explains IB Chemistry and IB Physics (HL) topics: simple, friendly
       illustrations that move gently, short captions, and things you can tap to see what's really
       going on underneath.</p>
       <p>It simplifies on purpose. Real atoms aren't red, electrons don't really orbit like little
@@ -46,9 +49,10 @@
       panel (both from the Contents page, and the <em>Data booklet</em> notes under captions open the booklet
       section), and the Contents page marks the pages you've visited. That progress stays in your browser only.</p>
       <p>Where a page quotes a real value, a small <em>Data booklet</em> note says which section of the IB
-      Chemistry data booklet (first assessment 2025) it comes from, so you can find it there too. The
-      contents page follows the syllabus, with each topic's code.</p>
-      <p>Made by an IB Chemistry student, built together with Claude Code.</p>
+      Chemistry data booklet (or the IB Physics booklet, on the Physics pages; first assessment 2025) it comes
+      from, so you can find it there too. The contents page has a tab for each subject and follows the
+      syllabus, with each topic's code.</p>
+      <p>Made by an IB student, built together with Claude Code.</p>
       <button class="nav-btn" id="aboutClose" type="button">Close</button>
     </div>
   </section>
@@ -113,12 +117,17 @@
   <script src="js/data-quiz.js"></script>
   <script src="js/data-glossary.js"></script>
   <script src="js/data-booklet.js"></script>
+  <script src="js/data-quiz-physics.js"></script>
+  <script src="js/data-glossary-physics.js"></script>
+  <script src="js/data-booklet-physics.js"></script>
+  <script src="js/data-booklet-physics-extra.js"></script>
   <script src="js/study.js"></script>
   <script src="js/egg.js"></script>
 
   <!-- Pages, in book order (same order as the syllabus plan in pages/00-planned.js).
        To add a page, add one line here (see pages/_template.js). -->
   <script src="pages/00-planned.js"></script>
+  <script src="pages/00-physics-planned.js"></script>
   <script src="pages/01-hydrogen.js"></script>
   <script src="pages/02-isotopes.js"></script>
   <script src="pages/05-massspec.js"></script>
